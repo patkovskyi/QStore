@@ -18,9 +18,12 @@ namespace QSpell.Sequences
     public class SequenceSet<T> : IEnumerable<IEnumerable<T>>
     {
         #region CONSTRUCTORS
-        public static SequenceSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, bool minimize)
+        internal static S Create<S>(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, bool minimize)
+            where S : SequenceSet<T>, new()
         {
             T[] alphabet = sequences.SelectMany(s => s).Distinct().OrderBy(a => a, comparer).ToArray();
+            var alphabetDict = alphabet.Select((c, i) => new Tuple<T, int>(c, i)).ToDictionary(t => t.Item1, t => t.Item2);
+
             var transitions = new List<List<SequenceSetTransition>>(alphabet.Length) { new List<SequenceSetTransition>() };
             foreach (var sequence in sequences)
             {
@@ -33,7 +36,8 @@ namespace QSpell.Sequences
                     {
                         transitionIndex = ~transitionIndex;
 
-                        Int32 alphabetIndex = alphabet.OptimalSearch(element);
+                        //Int32 alphabetIndex = alphabet.OptimalSearch(element);
+                        Int32 alphabetIndex = alphabetDict[element];
 
                         // add new state
                         nextState = transitions.Count;
@@ -52,7 +56,7 @@ namespace QSpell.Sequences
                 transitions[curState][transitionIndex] = new SequenceSetTransition(tmp.AlphabetIndex, tmp.StateIndex, true);
             }
 
-            var result = new SequenceSet<T>();
+            var result = new S();
             result.symbolComparer = comparer;
             result.alphabet = alphabet;
             result.start = 0;
@@ -74,22 +78,24 @@ namespace QSpell.Sequences
             }
 
             return result;
-        }        
+        }
+
+        public static SequenceSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, bool minimize)
+        {
+            return Create<SequenceSet<T>>(sequences, comparer, minimize);
+        }
         #endregion
 
         #region FIELDS
-        T[] alphabet;
-        IList<int> lowerTransitionIndexes;
-        IList<SequenceSetTransition> transitions;
-        Int32 start;
+        internal IList<SequenceSetTransition> transitions;
+        protected T[] alphabet;
+        protected IList<int> lowerTransitionIndexes;
+        protected Int32 start;
 
         /// <summary>
         /// TODO: think of serialization.
         /// </summary>
-        IComparer<T> symbolComparer;
-        #endregion
-
-        #region PROPERTIES
+        protected IComparer<T> symbolComparer;
         #endregion
 
         #region IEnumerable<IEnumerable<T>>
@@ -115,32 +121,15 @@ namespace QSpell.Sequences
             return transitions.Count;
         }
 
-        public void Minimize()
+        public virtual void Minimize()
         {
             RevuzMinimize();
         }
 
         public bool ContainsSequence(IEnumerable<T> sequence)
         {
-            if (!sequence.Any())
-            {
-                return false;
-            }
-
-            Int32 curState = start, trIndex = -1;
-            foreach (var element in sequence)
-            {
-                trIndex = GetTransitionIndex(curState, element);
-                if (trIndex >= 0)
-                {
-                    curState = transitions[trIndex].StateIndex;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return transitions[trIndex].IsFinal;
+            List<Int32> transitionPath = null;
+            return ContainsSequence(sequence, out transitionPath);
         }
 
         public IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix)
@@ -166,7 +155,7 @@ namespace QSpell.Sequences
             {
                 return Enumerate(start).Select(sequence => prefix.Concat(sequence));
             }
-        }        
+        }
 
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
         private static Int32 GetTransitionIndex(IList<SequenceSetTransition> transitions, T input, T[] alphabet, IComparer<T> comparer, Int32 lower, Int32 upper)
@@ -208,15 +197,41 @@ namespace QSpell.Sequences
 
                 return ~upper;
             }
-        }               
-        
+        }
+
+        protected bool ContainsSequence(IEnumerable<T> sequence, out List<Int32> transitionPath)
+        {
+            transitionPath = new List<Int32>();
+
+            if (!sequence.Any())
+            {
+                return false;
+            }
+
+            Int32 curState = start, trIndex = -1;
+            foreach (var element in sequence)
+            {
+                trIndex = GetTransitionIndex(curState, element);
+                if (trIndex >= 0)
+                {
+                    transitionPath.Add(trIndex);
+                    curState = transitions[trIndex].StateIndex;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return transitions[trIndex].IsFinal;
+        }
+
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
         protected Int32 GetTransitionIndex(Int32 fromState, T input)
-        {            
+        {
             Int32 lower = lowerTransitionIndexes[fromState];
             Int32 upper = transitions.GetUpperIndex(lowerTransitionIndexes, fromState);
-            return GetTransitionIndex(transitions, input, alphabet, symbolComparer, lower, upper);            
-        }        
+            return GetTransitionIndex(transitions, input, alphabet, symbolComparer, lower, upper);
+        }
 
         protected Int32 GetAlphabetIndex(T item)
         {

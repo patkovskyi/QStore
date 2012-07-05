@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SequenceComparer.cs" />
+    <Compile Include="SequenceDictionaryTest.cs" />
     <Compile Include="SequenceSetTest.cs" />
   </ItemGroup>
   <ItemGroup>

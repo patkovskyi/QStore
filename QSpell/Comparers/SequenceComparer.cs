@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace QSpell.Tests
+namespace QSpell.Comparers
 {
     public class SequenceComparer<T> : Comparer<IEnumerable<T>>
     {
