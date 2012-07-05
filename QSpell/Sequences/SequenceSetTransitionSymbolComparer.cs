@@ -8,7 +8,7 @@ namespace QSpell.Sequences
     internal class SequenceSetTransitionSymbolComparer : IComparer<SequenceSetTransition>
     {
         private static SequenceSetTransitionSymbolComparer _default = new SequenceSetTransitionSymbolComparer();
-        public static new SequenceSetTransitionSymbolComparer Default { get { return _default; } }
+        public static SequenceSetTransitionSymbolComparer Default { get { return _default; } }
 
         public int Compare(SequenceSetTransition x, SequenceSetTransition y)
         {

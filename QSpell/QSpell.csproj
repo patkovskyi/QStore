@@ -54,6 +54,9 @@
     <Compile Include="Sequences\MergeList.cs" />
     <Compile Include="Sequences\StateSignature.cs" />
     <Compile Include="Sequences\StateSignatureEqualityComparer.cs" />
+    <Compile Include="Transducer\StringTransducer.cs" />
+    <Compile Include="Transducer\Transducer.cs" />
+    <Compile Include="Transducer\TransducerTransition.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

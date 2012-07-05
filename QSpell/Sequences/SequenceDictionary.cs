@@ -39,6 +39,11 @@ namespace QSpell.Sequences
 
         public bool TryGetValue(IEnumerable<T> sequence, out V value)
         {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException("sequence");
+            }
+
             List<Int32> transitionPath = null;
             if (ContainsSequence(sequence, out transitionPath))
             {
@@ -54,6 +59,22 @@ namespace QSpell.Sequences
             {
                 value = default(V);
                 return false;
+            }
+        }
+
+        public V this[IEnumerable<T> sequence]
+        {
+            get
+            {                
+                V value;
+                if (TryGetValue(sequence, out value))
+                {
+                    return value;
+                }
+                else
+                {
+                    throw new KeyNotFoundException();
+                }
             }
         }
 
