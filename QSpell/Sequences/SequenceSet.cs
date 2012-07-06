@@ -5,6 +5,9 @@ using System.Text;
 using System.Collections;
 using System.Security;
 using QSpell.Extensions;
+using ProtoBuf;
+using ProtoBuf.Meta;
+using QSpell.Helpers;
 
 namespace QSpell.Sequences
 {
@@ -14,7 +17,9 @@ namespace QSpell.Sequences
     /// worst-case: O(log(alphabetSize)) 
     /// average case: O(log(branchingFactor))
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    [ProtoContract(IgnoreListHandling = true)]
+    [ProtoInclude(1000, typeof(SequenceDictionary<char, byte>))]
+    [ProtoInclude(1001, typeof(SequenceDictionary<char, double>))]
     public class SequenceSet<T> : IEnumerable<IEnumerable<T>>
     {
         #region CONSTRUCTORS
@@ -84,12 +89,28 @@ namespace QSpell.Sequences
         {
             return Create<SequenceSet<T>>(sequences, comparer, minimize);
         }
+
+        public virtual byte[] Serialize()
+        {
+            return ProtoBufHelper.SerializeAsBytes(this);
+        }
+
+        public static SequenceSet<T> Deserialize(byte[] bytes, IComparer<T> symbolComparer)
+        {
+            var result = ProtoBufHelper.DeserializeFromBytes<SequenceSet<T>>(bytes);
+            result.symbolComparer = symbolComparer;
+            return result;
+        }
         #endregion
 
         #region FIELDS
+        [ProtoMember(1)]
         internal IList<SequenceSetTransition> transitions;
+        [ProtoMember(2)]
         protected T[] alphabet;
+        [ProtoMember(3)]
         protected IList<int> lowerTransitionIndexes;
+        [ProtoMember(4)]
         protected Int32 start;
 
         /// <summary>

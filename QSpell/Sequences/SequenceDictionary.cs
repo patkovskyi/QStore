@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using QSpell.Extensions;
 using QSpell.Comparers;
+using ProtoBuf;
+using QSpell.Helpers;
 
 namespace QSpell.Sequences
 {
+    [ProtoContract(IgnoreListHandling = true)]
     public class SequenceDictionary<T, V> : SequenceSet<T>, IEnumerable<KeyValuePair<IEnumerable<T>, V>>
     {
         #region CONSTRUCTORS
@@ -20,10 +23,24 @@ namespace QSpell.Sequences
             }
             return result;
         }
+
+        //public override byte[] Serialize()
+        //{
+        //    return ProtoBufHelper.SerializeAsBytes(this);
+        //}
+
+        public static new SequenceDictionary<T, V> Deserialize(byte[] bytes, IComparer<T> symbolComparer)
+        {
+            var result = ProtoBufHelper.DeserializeFromBytes<SequenceDictionary<T, V>>(bytes);
+            result.symbolComparer = symbolComparer;
+            return result;
+        }
         #endregion
 
         #region FIELDS
+        [ProtoMember(5)]
         protected Int32[] pathsLeft;
+        [ProtoMember(6)]
         protected V[] values;
         #endregion
 
@@ -65,7 +82,7 @@ namespace QSpell.Sequences
         public V this[IEnumerable<T> sequence]
         {
             get
-            {                
+            {
                 V value;
                 if (TryGetValue(sequence, out value))
                 {

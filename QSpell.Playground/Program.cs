@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using QSpell.Helpers;
 
 namespace QSpell.Playground
 {
@@ -48,7 +49,9 @@ namespace QSpell.Playground
 
         static void Main(string[] args)
         {
-            
+            IEnumerable<IEnumerable<char>> values = new string[]{"world", "boy", "girl"};
+            var bytes = ProtoBufHelper.SerializeAsBytes(new Foo<char>("hello", 42, values));
+            var message = ProtoBufHelper.DeserializeFromBytes<Foo<char>>(bytes);
         }
     }
 }

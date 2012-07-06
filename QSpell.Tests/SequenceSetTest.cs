@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using QSpell.Comparers;
+using QSpell.Helpers;
 
 namespace QSpell.Tests
 {
@@ -27,6 +28,9 @@ namespace QSpell.Tests
             Assert.AreEqual(expectedStartTransitionsCount, actualStartTransitionsCount);
 
             target.Minimize();
+
+            var bytes = target.Serialize();
+            target = SequenceSet<T>.Deserialize(bytes, comparer);
 
             int actualEndStateCount = target.GetStatesCount();
             int actualEndTransitionsCount = target.GetTransitionsCount();

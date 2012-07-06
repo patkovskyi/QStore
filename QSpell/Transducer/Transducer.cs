@@ -6,7 +6,7 @@ using QSpell.Extensions;
 
 namespace QSpell.Transducer
 {
-    internal class Transducer<I, O> : IEnumerable<Tuple<IEnumerable<I>, float, IEnumerable<O>>>
+    internal class Transducer<I, O> : IEnumerable<Tuple<IEnumerable<I>, float, IEnumerable<O>>>        
     {
         #region CONSTRUCTORS
         internal static T Create<T>(IEnumerable<Tuple<IEnumerable<Tuple<I, O>>, float>> rules, IComparer<I> inputComparer, IComparer<O> outputComparer)
@@ -147,7 +147,7 @@ namespace QSpell.Transducer
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
         #endregion
     }
