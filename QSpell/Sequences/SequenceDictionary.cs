@@ -45,6 +45,13 @@ namespace QSpell.Sequences
         #endregion
 
         #region PROPERTIES
+        public Int32 Start
+        {
+            get
+            {
+                return start;
+            }
+        }
         #endregion
 
         #region METHODS

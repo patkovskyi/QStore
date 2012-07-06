@@ -178,6 +178,39 @@ namespace QSpell.Sequences
             }
         }
 
+        internal bool TrySend(Int32 fromState, T input, out SequenceSetTransition transition)
+        {
+            Int32 transitionIndex = GetTransitionIndex(fromState, input);
+            if (transitionIndex >= 0)
+            {
+                transition = transitions[transitionIndex];
+                return true;
+            }
+            else
+            {
+                transition = default(SequenceSetTransition);
+                return false;
+            }
+        }
+
+        internal bool TrySend(Int32 fromState, IEnumerable<T> inputSequence, out SequenceSetTransition transition)
+        {
+            Int32 currentState = fromState;
+            transition = default(SequenceSetTransition);
+            foreach (var input in inputSequence)
+            {
+                if (TrySend(currentState, input, out transition))
+                {
+                    currentState = transition.StateIndex;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
         private static Int32 GetTransitionIndex(IList<SequenceSetTransition> transitions, T input, T[] alphabet, IComparer<T> comparer, Int32 lower, Int32 upper)
         {
@@ -218,7 +251,7 @@ namespace QSpell.Sequences
 
                 return ~upper;
             }
-        }
+        }        
 
         protected bool ContainsSequence(IEnumerable<T> sequence, out List<Int32> transitionPath)
         {
@@ -307,7 +340,7 @@ namespace QSpell.Sequences
             start = oldToNewStates[start];
         }
 
-        Int32 Register(Int32 state, Dictionary<StateSignature, Int32> registered, MergeList mergeList)
+        private Int32 Register(Int32 state, Dictionary<StateSignature, Int32> registered, MergeList mergeList)
         {
             Int32 lower = lowerTransitionIndexes[state];
             Int32 upper = transitions.GetUpperIndex(lowerTransitionIndexes, state);
@@ -346,7 +379,7 @@ namespace QSpell.Sequences
             return -1;
         }
 
-        MergeList GetMergeList()
+        private MergeList GetMergeList()
         {
             var merge = new MergeList(lowerTransitionIndexes.Count, transitions.Count);
             for (int i = 0; i < transitions.Count; i++)
