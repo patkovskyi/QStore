@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace QSpell.Spellchecker
 {
-    public class Rule
+    [DebuggerDisplay("{debuggerDisplay}")]
+    public class Rule<I, O>
     {
         /// <summary>
-        /// Wrong string sequence.
+        /// Wrong (input) sequence.
         /// </summary>
-        public String Left { get; protected set; }
+        public I[] Left { get; protected set; }
 
         /// <summary>
         /// Typo cost.
@@ -18,11 +20,19 @@ namespace QSpell.Spellchecker
         public double Cost { get; protected set; }
 
         /// <summary>
-        /// Corrected string sequence.
+        /// Corrected (output) sequence.
         /// </summary>
-        public String Right { get; protected set; }        
+        public O[] Right { get; protected set; }
 
-        public Rule(String left, double cost, String right)
+        private string debuggerDisplay
+        {
+            get
+            {
+                return String.Format("Left - {{0}} Cost - {1} Right - {{2}}", String.Join(",", Left), Cost, String.Join(",", Right));
+            }
+        }
+
+        public Rule(I[] left, double cost, O[] right)
         {
             Left = left;
             Cost = cost;

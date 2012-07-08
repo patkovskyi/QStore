@@ -60,9 +60,11 @@
     <Compile Include="Sequences\MergeList.cs" />
     <Compile Include="Sequences\StateSignature.cs" />
     <Compile Include="Sequences\StateSignatureEqualityComparer.cs" />
+    <Compile Include="Spellchecker\LevenshteinModel.cs" />
     <Compile Include="Spellchecker\PriorityStack.cs" />
     <Compile Include="Spellchecker\QStackObject.cs" />
     <Compile Include="Spellchecker\SortedSequence.cs" />
+    <Compile Include="Spellchecker\StringRule.cs" />
     <Compile Include="Spellchecker\Suggestion.cs" />
     <Compile Include="Spellchecker\PrefixTree.cs" />
     <Compile Include="Spellchecker\QSpellchecker.cs" />

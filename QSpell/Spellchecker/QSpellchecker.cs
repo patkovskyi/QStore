@@ -9,35 +9,35 @@ using QSpell.Sequences;
 
 namespace QSpell.Spellchecker
 {
-    public class QSpellchecker<T> 
+    public class QSpellchecker<T>
         where T : IComparable<T>
     {
         protected SequenceDictionary<char, T> _lexicon;
-        protected Dictionary<String, Rule[]> _ruleCache;
+        protected Dictionary<string, StringRule[]> _ruleCache;
         protected int _maxPrefixLength;
 
-        protected Rule[] Filter(String input, int fromIndex)
+        protected StringRule[] Filter(string input, int fromIndex)
         {
             for (int i = Math.Min(_maxPrefixLength, input.Length); i >= 0; i--)
             {
-                Rule[] res = null;
+                StringRule[] res = null;
                 if (_ruleCache.TryGetValue(input.Substring(0, i), out res))
                 {
                     return res;
                 }
             }
-            return new Rule[0];
+            return new StringRule[0];
         }
 
-        public QSpellchecker(IEnumerable<Rule> rules, IEnumerable<KeyValuePair<string, T>> lexicon)
+        public QSpellchecker(IEnumerable<StringRule> rules, IEnumerable<KeyValuePair<string, T>> lexicon)
         {
-            var prefixTree = new PrefixTree<Rule>(new RuleCostComparer());
+            var prefixTree = new PrefixTree<StringRule>(new RuleCostComparer<char, char>());
             foreach (var rule in rules)
             {
-                prefixTree.Add(rule.Left, rule);
+                prefixTree.Add(new string(rule.Left), rule);
             }
-            var prefixes = rules.Select(e => e.Left).Distinct(StringComparer.Ordinal);
-            _ruleCache = new Dictionary<string, Rule[]>();
+            var prefixes = rules.Select(e => new string(e.Left)).Distinct(StringComparer.Ordinal);
+            _ruleCache = new Dictionary<string, StringRule[]>();
             _maxPrefixLength = prefixes.Max(p => p.Length);
             foreach (var prefix in prefixes)
             {
@@ -46,17 +46,17 @@ namespace QSpell.Spellchecker
             _lexicon = SequenceDictionary<char, T>.Create(lexicon.Select(l => new KeyValuePair<IEnumerable<char>, T>(l.Key, l.Value)), Comparer<char>.Default, true);
         }
 
-        public bool Contains(String s)
+        public bool Contains(string s)
         {
             return _lexicon.ContainsSequence(s);
-        }        
+        }
 
-        protected IEnumerable<Suggestion<T>> GetCorrectionsProtected(String input, int timeLimit, double costLimit, int suggestionsLimit, bool limitToBestPaths, CancellationToken? token)
+        protected IEnumerable<Suggestion<T>> GetCorrectionsProtected(string input, int timeLimit, double costLimit, int suggestionsLimit, bool limitToBestPaths, CancellationToken? token)
         {
-            var stack = new PriorityStack<double, QStackObject>();
-            var startStackObject = new QStackObject(_lexicon.Start, false, 0, 0, null, null, null, 0);            
+            var stack = new PriorityStack<double, QStackObject<char, char>>();
+            var startStackObject = new QStackObject<char, char>(_lexicon.Start, false, 0, 0, null, null, null, 0);
             stack.Push(0, startStackObject);
-            var returned = new HashSet<String>();
+            var returned = new HashSet<string>();
 
             double bestCost = double.MaxValue;
             Stopwatch watch = null;
@@ -81,7 +81,7 @@ namespace QSpell.Spellchecker
 
                 if (top.IsFinal && top.CharIndex > input.Length)
                 {
-                    string output = top.Backtrace(input);
+                    string output = new string(top.Backtrace().ToArray());
                     if (!returned.Contains(output))
                     {
                         if (limitToBestPaths && bestCost == double.MaxValue)
@@ -100,21 +100,21 @@ namespace QSpell.Spellchecker
                     var rule = filteredRules[i++];
                     SequenceSetTransition nextTransition;
                     if (_lexicon.TrySend(top.State, rule.Right, out nextTransition))
-                    {                        
+                    {
                         top.LastRuleIndex = i;
                         stack.Push(top.Cost + rule.Cost, top);
-                        var newStackObject = new QStackObject(nextTransition.StateIndex, nextTransition.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, filteredRules, 0);
+                        var newStackObject = new QStackObject<char, char>(nextTransition.StateIndex, nextTransition.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, filteredRules, 0);
                         stack.Push(top.Cost + rule.Cost, newStackObject);
                         break;
                     }
-                }                
+                }
             }
-        }        
+        }
 
         public IEnumerable<Suggestion<T>> GetCorrections(
-            String word, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
+            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
         {
-            return GetCorrectionsProtected(input: word, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
+            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
             limitToBestPaths: limitToBestPaths, token: token);
         }
     }

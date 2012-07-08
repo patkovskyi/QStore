@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="protobuf-net, Version=2.0.0.480, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -50,13 +51,15 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comparers\SuggestionComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuleComparer.cs" />
+    <Compile Include="QSpellcheckerTest.cs" />
+    <Compile Include="Comparers\RuleComparer.cs" />
     <Compile Include="SequenceDictionaryTest.cs" />
     <Compile Include="SequenceSetTest.cs" />
     <Compile Include="StringTransducerTest.cs" />
     <Compile Include="TransducerTest.cs" />
-    <Compile Include="TupleComparer.cs" />
+    <Compile Include="Comparers\TupleComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QSpell\QSpell.csproj">

@@ -24,11 +24,6 @@ namespace QSpell.Sequences
             return result;
         }
 
-        //public override byte[] Serialize()
-        //{
-        //    return ProtoBufHelper.SerializeAsBytes(this);
-        //}
-
         public static new SequenceDictionary<T, V> Deserialize(byte[] bytes, IComparer<T> symbolComparer)
         {
             var result = ProtoBufHelper.DeserializeFromBytes<SequenceDictionary<T, V>>(bytes);
@@ -74,6 +69,10 @@ namespace QSpell.Sequences
                 Int32 valueIndex = 0;
                 for (int i = 0; i < transitionPath.Count; i++)
                 {
+                    if (i > 0 && transitions[transitionPath[i - 1]].IsFinal)
+                    {
+                        ++valueIndex;
+                    }
                     valueIndex += pathsLeft[transitionPath[i]];
                 }
                 value = values[valueIndex];
@@ -128,12 +127,9 @@ namespace QSpell.Sequences
                 for (int i = lower; i < upper; i++)
                 {
                     pathsLeft[i] = pathsLeftCounter;
+                    pathsLeftCounter += (transitions[i].IsFinal ? 1 : 0);
                     pathsLeftCounter += RefreshPathsFrom(transitions[i].StateIndex, memoizeCache);
                 }
-            }
-            else
-            {
-                pathsLeftCounter = 1;
             }
 
             memoizeCache.Add(state, pathsLeftCounter);

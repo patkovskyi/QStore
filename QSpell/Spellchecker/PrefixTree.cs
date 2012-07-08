@@ -18,7 +18,7 @@ namespace QSpell.Spellchecker
             Comparer = comparer;
         }
 
-        public void Add(String prefix, T item)
+        public void Add(string prefix, T item)
         {
             if (prefix == null)
             {
@@ -29,7 +29,7 @@ namespace QSpell.Spellchecker
                 throw new ArgumentNullException("items");
             }
 
-            if (prefix == String.Empty)
+            if (prefix == string.Empty)
             {
                 _items.SortedInsert(item, Comparer);
             }
@@ -45,7 +45,7 @@ namespace QSpell.Spellchecker
             }
         }
 
-        public IEnumerable<T> Get(String prefix)
+        public IEnumerable<T> Get(string prefix)
         {
             if (prefix == null)
             {
@@ -53,7 +53,7 @@ namespace QSpell.Spellchecker
             }
 
             PrefixTree<T> child = null;
-            if (prefix == String.Empty || !_childTrees.TryGetValue(prefix[0], out child))
+            if (prefix == string.Empty || !_childTrees.TryGetValue(prefix[0], out child))
             {
                 return _items;
             }

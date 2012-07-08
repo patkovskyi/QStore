@@ -59,5 +59,42 @@ namespace QSpell.Tests
             var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
             CreateTestHelper(sequences, Comparer<char>.Default, Comparer<byte>.Default);
         }
+
+        [TestMethod()]
+        public void CreateTest4()
+        {
+            var lexicon = new KeyValuePair<IEnumerable<char>, byte>[]
+            {
+                new KeyValuePair<IEnumerable<char>, byte>("defied", 3),
+                new KeyValuePair<IEnumerable<char>, byte>("defies", 4),
+                new KeyValuePair<IEnumerable<char>, byte>("defy", 0),
+                new KeyValuePair<IEnumerable<char>, byte>("defying", 235),
+                new KeyValuePair<IEnumerable<char>, byte>("denied", 111),
+                new KeyValuePair<IEnumerable<char>, byte>("denies", 13),
+                new KeyValuePair<IEnumerable<char>, byte>("deny", 14),
+                new KeyValuePair<IEnumerable<char>, byte>("denying", 15),
+                new KeyValuePair<IEnumerable<char>, byte>("trie", 15),
+                new KeyValuePair<IEnumerable<char>, byte>("tried", 16),
+                new KeyValuePair<IEnumerable<char>, byte>("tries", 14),
+                new KeyValuePair<IEnumerable<char>, byte>("try", 21),
+                new KeyValuePair<IEnumerable<char>, byte>("trying", 22),
+            };
+
+            var target = SequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
+
+            Assert.AreEqual(3, target["defied"]);
+            Assert.AreEqual(4, target["defies"]);
+            Assert.AreEqual(0, target["defy"]);
+            Assert.AreEqual(235, target["defying"]);
+            Assert.AreEqual(111, target["denied"]);
+            Assert.AreEqual(13, target["denies"]);
+            Assert.AreEqual(14, target["deny"]);
+            Assert.AreEqual(15, target["denying"]);
+            Assert.AreEqual(15, target["trie"]);
+            Assert.AreEqual(16, target["tried"]);
+            Assert.AreEqual(14, target["tries"]);
+            Assert.AreEqual(21, target["try"]);
+            Assert.AreEqual(22, target["trying"]);
+        }
     }
 }

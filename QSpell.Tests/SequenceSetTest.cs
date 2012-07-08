@@ -45,7 +45,7 @@ namespace QSpell.Tests
         [TestMethod()]
         public void MinimizeTest1()
         {
-            MinimizeTestHelper(new String[] { "tap", "taps", "top", "tops" },
+            MinimizeTestHelper(new string[] { "tap", "taps", "top", "tops" },
                 Comparer<Char>.Default, 8, 7, 5, 5);
         }
 
