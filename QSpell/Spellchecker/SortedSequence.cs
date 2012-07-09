@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QSpell.Spellchecker
 {
-    public static class SortedSequence<T>
+    internal static class SortedSequence<T>
     {
         public static IEnumerable<T> Join(IComparer<T> comparer, params IEnumerable<T>[] sequences)
         {

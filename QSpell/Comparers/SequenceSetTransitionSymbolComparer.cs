@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using QSpell.Sequences;
 
-namespace QSpell.Sequences
+namespace QSpell.Comparers
 {
     internal class SequenceSetTransitionSymbolComparer : IComparer<SequenceSetTransition>
     {

@@ -6,7 +6,7 @@ using QSpell.Extensions;
 
 namespace QSpell.Spellchecker
 {
-    public class PrefixTree<T>
+    internal class PrefixTree<T>
     {
         protected Dictionary<char, PrefixTree<T>> _childTrees = new Dictionary<char, PrefixTree<T>>();
         protected List<T> _items = new List<T>();

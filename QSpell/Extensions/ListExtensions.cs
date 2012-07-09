@@ -6,7 +6,7 @@ using QSpell.Spellchecker;
 
 namespace QSpell.Extensions
 {
-    public static class ListExtensions
+    internal static class ListExtensions
     {
         internal static int SortedInsert<T>(this List<T> list, T item, IComparer<T> comparer)
         {

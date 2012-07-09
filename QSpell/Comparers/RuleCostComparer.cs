@@ -6,7 +6,7 @@ using QSpell.Spellchecker;
 
 namespace QSpell.Comparers
 {
-    public class RuleCostComparer<I, O> : Comparer<Rule<I, O>>
+    internal class RuleCostComparer<I, O> : Comparer<Rule<I, O>>
     {
         public override int Compare(Rule<I, O> x, Rule<I, O> y)
         {

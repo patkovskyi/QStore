@@ -7,7 +7,7 @@ using ProtoBuf;
 
 namespace QSpell.Helpers
 {
-    public static class ProtoBufHelper
+    internal static class ProtoBufHelper
     {
         public static byte[] SerializeAsBytes<T>(T obj)
         {

@@ -55,8 +55,8 @@
     <Compile Include="Sequences\SequenceDictionary.cs" />
     <Compile Include="Sequences\SequenceSet.cs" />
     <Compile Include="Sequences\SequenceSetTransition.cs" />
-    <Compile Include="Sequences\SequenceSetTransitionComparer.cs" />
-    <Compile Include="Sequences\SequenceSetTransitionSymbolComparer.cs" />
+    <Compile Include="Comparers\SequenceSetTransitionComparer.cs" />
+    <Compile Include="Comparers\SequenceSetTransitionSymbolComparer.cs" />
     <Compile Include="Sequences\MergeList.cs" />
     <Compile Include="Sequences\StateSignature.cs" />
     <Compile Include="Sequences\StateSignatureEqualityComparer.cs" />

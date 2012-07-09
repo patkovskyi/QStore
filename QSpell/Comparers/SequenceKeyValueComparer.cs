@@ -2,7 +2,7 @@
 
 namespace QSpell.Comparers
 {
-    public class SequenceKeyValueComparer<K, V> : Comparer<KeyValuePair<IEnumerable<K>, V>>
+    internal class SequenceKeyValueComparer<K, V> : Comparer<KeyValuePair<IEnumerable<K>, V>>
     {
         private IComparer<IEnumerable<K>> keyComparer;
         private IComparer<V> valueComparer;

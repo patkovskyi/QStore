@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QSpell.Spellchecker
 {
-    public class PriorityStack<P, V>
+    internal class PriorityStack<P, V>
     {
         private SortedDictionary<P, Stack<V>> stack;
 

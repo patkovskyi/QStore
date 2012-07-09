@@ -49,9 +49,7 @@ namespace QSpell.Playground
 
         static void Main(string[] args)
         {
-            IEnumerable<IEnumerable<char>> values = new string[]{"world", "boy", "girl"};
-            var bytes = ProtoBufHelper.SerializeAsBytes(new Foo<char>("hello", 42, values));
-            var message = ProtoBufHelper.DeserializeFromBytes<Foo<char>>(bytes);
+            
         }
     }
 }
