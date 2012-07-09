@@ -44,7 +44,7 @@ namespace QSpell.Spellchecker
             string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
         {
             return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
-            limitToBestPaths: limitToBestPaths, token: token).OrderBy(s => s.Frequency);
+            limitToBestPaths: limitToBestPaths, token: token).OrderByDescending(s => s.Frequency).ThenBy(s => s.Cost);
         }
 
         protected void InitRules(IEnumerable<StringRule> rules)
