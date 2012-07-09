@@ -16,20 +16,38 @@ namespace QSpell.Spellchecker
         protected Dictionary<string, StringRule[]> _ruleCache;
         protected int _maxPrefixLength;
 
-        protected StringRule[] Filter(string input, int fromIndex)
+        public QSpellchecker(IEnumerable<StringRule> rules, SequenceDictionary<char, T> lexicon)
         {
-            for (int i = Math.Min(_maxPrefixLength, input.Length - fromIndex); i >= 0; i--)
-            {
-                StringRule[] res = null;
-                if (_ruleCache.TryGetValue(input.Substring(fromIndex, i), out res))
-                {
-                    return res;
-                }
-            }
-            return new StringRule[0];
+            InitRules(rules);
+            _lexicon = lexicon;
         }
 
         public QSpellchecker(IEnumerable<StringRule> rules, IEnumerable<KeyValuePair<string, T>> lexicon)
+        {
+            InitRules(rules);
+            _lexicon = SequenceDictionary<char, T>.Create(lexicon.Select(l => new KeyValuePair<IEnumerable<char>, T>(l.Key, l.Value)), Comparer<char>.Default, true);
+        }
+
+        public bool Contains(string s)
+        {
+            return _lexicon.ContainsSequence(s);
+        }
+
+        public IEnumerable<Suggestion<T>> GetCorrections(
+            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
+        {
+            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
+            limitToBestPaths: limitToBestPaths, token: token);
+        }
+
+        public IEnumerable<Suggestion<T>> GetFrequencyRankedCorrections(
+            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
+        {
+            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
+            limitToBestPaths: limitToBestPaths, token: token).OrderBy(s => s.Frequency);
+        }
+
+        protected void InitRules(IEnumerable<StringRule> rules)
         {
             var prefixTree = new PrefixTree<StringRule>(new RuleCostComparer<char, char>());
             foreach (var rule in rules)
@@ -43,12 +61,19 @@ namespace QSpell.Spellchecker
             {
                 _ruleCache.Add(prefix, prefixTree.Get(prefix).ToArray());
             }
-            _lexicon = SequenceDictionary<char, T>.Create(lexicon.Select(l => new KeyValuePair<IEnumerable<char>, T>(l.Key, l.Value)), Comparer<char>.Default, true);
         }
 
-        public bool Contains(string s)
+        protected StringRule[] Filter(string input, int fromIndex)
         {
-            return _lexicon.ContainsSequence(s);
+            for (int i = Math.Min(_maxPrefixLength, input.Length - fromIndex); i >= 0; i--)
+            {
+                StringRule[] res = null;
+                if (_ruleCache.TryGetValue(input.Substring(fromIndex, i), out res))
+                {
+                    return res;
+                }
+            }
+            return new StringRule[0];
         }
 
         protected IEnumerable<Suggestion<T>> GetCorrectionsProtected(string input, int timeLimit, double costLimit, int suggestionsLimit, bool limitToBestPaths, CancellationToken? token)
@@ -118,13 +143,6 @@ namespace QSpell.Spellchecker
                     }
                 }
             }
-        }
-
-        public IEnumerable<Suggestion<T>> GetCorrections(
-            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
-        {
-            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
-            limitToBestPaths: limitToBestPaths, token: token);
         }
     }
 }

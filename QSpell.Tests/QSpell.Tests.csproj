@@ -58,6 +58,7 @@
     <Compile Include="Comparers\RuleComparer.cs" />
     <Compile Include="SequenceDictionaryTest.cs" />
     <Compile Include="SequenceSetTest.cs" />
+    <Compile Include="SparseSequenceDictionaryTest.cs" />
     <Compile Include="StringTransducerTest.cs" />
     <Compile Include="TransducerTest.cs" />
     <Compile Include="Comparers\TupleComparer.cs" />

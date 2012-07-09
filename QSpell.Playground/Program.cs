@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using QSpell.Helpers;
+using QSpell.Sequences;
 
 namespace QSpell.Playground
 {
@@ -49,7 +50,10 @@ namespace QSpell.Playground
 
         static void Main(string[] args)
         {
-            
+            //var before = GC.GetTotalMemory(true);
+            //var pairs = new AlignedPair<int, byte>[1000];
+            //var after = GC.GetTotalMemory(true);
+            //Console.WriteLine("+{0}", after - before);
         }
     }
 }

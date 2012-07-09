@@ -18,8 +18,7 @@ namespace QSpell.Sequences
     /// average case: O(log(branchingFactor))
     /// </summary>
     [ProtoContract(IgnoreListHandling = true)]
-    [ProtoInclude(1000, typeof(SequenceDictionary<char, byte>))]
-    [ProtoInclude(1001, typeof(SequenceDictionary<char, double>))]
+    // see Protobuf-net inheritance hierarchy defined in ProtoBufHelper
     public class SequenceSet<T> : IEnumerable<IEnumerable<T>>
     {
         #region CONSTRUCTORS

@@ -11,19 +11,19 @@ using QSpell.Helpers;
 namespace QSpell.Tests
 {
     [TestClass()]
-    public class SequenceDictionaryTest
+    public class SparseSequenceDictionaryTest
     {
-        public SequenceDictionary<T, V> CreateTestHelper<T, V>(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, IComparer<V> valueComparer)
+        public SparseSequenceDictionary<T, V> CreateTestHelper<T, V>(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, IComparer<V> valueComparer)
         {
             var rand = new Random(DateTime.Now.Millisecond);
             var shuffledSequences = sequences.OrderBy(s => rand.NextDouble());
 
-            var target = SequenceDictionary<T, V>.Create(shuffledSequences, comparer, false);
+            var target = SparseSequenceDictionary<T, V>.Create(shuffledSequences, comparer, false);
 
             target.Minimize();
 
             var bytes = target.Serialize();
-            target = SequenceDictionary<T, V>.Deserialize(bytes, comparer);
+            target = SparseSequenceDictionary<T, V>.Deserialize(bytes, comparer);
 
             var sequenceComparer = new SequenceKeyValueComparer<T, V>(comparer, valueComparer);
             var expectedSequences = sequences.OrderBy(s => s, sequenceComparer).ToArray();
@@ -33,15 +33,15 @@ namespace QSpell.Tests
             return target;
         }
 
-        public SequenceDictionary<T, V> IndexerTestHelper<T, V>(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, IComparer<V> valueComparer)
+        public SparseSequenceDictionary<T, V> IndexerTestHelper<T, V>(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, IComparer<V> valueComparer)
         {
             var rand = new Random(DateTime.Now.Millisecond);
             var shuffledSequences = sequences.OrderBy(s => rand.NextDouble());
 
-            var target = SequenceDictionary<T, V>.Create(shuffledSequences, comparer, true);
+            var target = SparseSequenceDictionary<T, V>.Create(shuffledSequences, comparer, true);
 
             var bytes = target.Serialize();
-            target = SequenceDictionary<T, V>.Deserialize(bytes, comparer);
+            target = SparseSequenceDictionary<T, V>.Deserialize(bytes, comparer);
 
             foreach (var sequence in sequences)
             {
@@ -54,7 +54,7 @@ namespace QSpell.Tests
         }
 
         [TestMethod()]
-        public void CreateTest1()
+        public void SparseSequenceDictionaryCreateTest1()
         {
             var sequences = new List<KeyValuePair<IEnumerable<char>, byte>>() 
             { 
@@ -67,21 +67,21 @@ namespace QSpell.Tests
         }
 
         [TestMethod()]
-        public void CreateTest2()
+        public void SparseSequenceDictionaryCreateTest2()
         {
             var sequences = File.ReadAllLines(@"..\..\..\TestData\Baseforms.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, double>(s, s.GetHashCode() / (double)s.Length)).ToArray();
             CreateTestHelper(sequences, Comparer<char>.Default, Comparer<double>.Default);
         }
 
         [TestMethod()]
-        public void CreateTest3()
+        public void SparseSequenceDictionaryCreateTest3()
         {
-            var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
+            var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select((s, i) => new KeyValuePair<IEnumerable<char>, byte>(s, i > 69000 ? (byte)0 : (byte)(s.GetHashCode() % 256))).ToArray();
             CreateTestHelper(sequences, Comparer<char>.Default, Comparer<byte>.Default);
         }
 
         [TestMethod()]
-        public void IndexerTest1()
+        public void SparseSequenceDictionaryIndexerTest1()
         {
             var lexicon = new KeyValuePair<IEnumerable<char>, byte>[]
             {
@@ -100,7 +100,7 @@ namespace QSpell.Tests
                 new KeyValuePair<IEnumerable<char>, byte>("trying", 22),
             };
 
-            var target = SequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
+            var target = SparseSequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
             //IndexerTestHelper(lexicon, Comparer<char>.Default, Comparer<byte>.Default);
 
             Assert.AreEqual(3, target["defied"]);
@@ -119,10 +119,10 @@ namespace QSpell.Tests
         }
 
         [TestMethod()]
-        public void IndexerTest2()
+        public void SparseSequenceDictionaryIndexerTest2()
         {
             var lexicon = File.ReadAllLines(@"..\..\..\TestData\Baseforms.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
-            var target = SequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
+            var target = SparseSequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
             IndexerTestHelper(lexicon, Comparer<char>.Default, Comparer<byte>.Default);
         }
     }

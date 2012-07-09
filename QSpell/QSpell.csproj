@@ -58,8 +58,10 @@
     <Compile Include="Comparers\SequenceSetTransitionComparer.cs" />
     <Compile Include="Comparers\SequenceSetTransitionSymbolComparer.cs" />
     <Compile Include="Sequences\MergeList.cs" />
+    <Compile Include="Sequences\SparseSequenceDictionary.cs" />
     <Compile Include="Sequences\StateSignature.cs" />
     <Compile Include="Sequences\StateSignatureEqualityComparer.cs" />
+    <Compile Include="Sequences\AlignedPair.cs" />
     <Compile Include="Spellchecker\LevenshteinModel.cs" />
     <Compile Include="Spellchecker\PriorityStack.cs" />
     <Compile Include="Spellchecker\QStackObject.cs" />

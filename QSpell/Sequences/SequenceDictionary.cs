@@ -9,19 +9,26 @@ using QSpell.Helpers;
 
 namespace QSpell.Sequences
 {
-    [ProtoContract(IgnoreListHandling = true)]
+    [ProtoContract(IgnoreListHandling = true)]    
+    // see Protobuf-net inheritance hierarchy defined in ProtoBufHelper
     public class SequenceDictionary<T, V> : SequenceSet<T>, IEnumerable<KeyValuePair<IEnumerable<T>, V>>
     {
         #region CONSTRUCTORS
-        public static SequenceDictionary<T, V> Create(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, bool minimize)
+        internal static S Create<S>(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, bool minimize)
+            where S : SequenceDictionary<T, V>, new()
         {
-            var result = SequenceSet<T>.Create<SequenceDictionary<T, V>>(sequences.Select(s => s.Key), comparer, minimize);
+            var result = SequenceSet<T>.Create<S>(sequences.Select(s => s.Key), comparer, minimize);
             result.values = sequences.OrderBy(s => s.Key, new SequenceComparer<T>(comparer)).Select(s => s.Value).ToArray();
             if (!minimize)
             {
                 result.RefreshPaths();
             }
             return result;
+        }
+
+        public static SequenceDictionary<T, V> Create(IEnumerable<KeyValuePair<IEnumerable<T>, V>> sequences, IComparer<T> comparer, bool minimize)
+        {
+            return Create<SequenceDictionary<T, V>>(sequences, comparer, minimize);
         }
 
         public static new SequenceDictionary<T, V> Deserialize(byte[] bytes, IComparer<T> symbolComparer)
