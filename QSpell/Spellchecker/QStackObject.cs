@@ -13,7 +13,7 @@ namespace QSpell.Spellchecker
         internal Int32 CharIndex { get; private set; }
         internal QStackObject<I, O> Prev { get; private set; }
         internal Rule<I, O> PrevUsedRule { get; private set; }
-        internal Rule<I, O>[] CachedRules { get; private set; }
+        internal Rule<I, O>[] CachedRules { get; set; }
         internal Int32 LastRuleIndex { get; set; }
 
         public QStackObject(Int32 state, bool isFinal, double cost, Int32 charIndex, QStackObject<I, O> prev, Rule<I, O> prevUsedRule, Rule<I, O>[] cachedRules, Int32 lastRuleIndex)

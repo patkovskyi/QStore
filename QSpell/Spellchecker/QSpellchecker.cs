@@ -18,10 +18,10 @@ namespace QSpell.Spellchecker
 
         protected StringRule[] Filter(string input, int fromIndex)
         {
-            for (int i = Math.Min(_maxPrefixLength, input.Length); i >= 0; i--)
+            for (int i = Math.Min(_maxPrefixLength, input.Length - fromIndex); i >= 0; i--)
             {
                 StringRule[] res = null;
-                if (_ruleCache.TryGetValue(input.Substring(0, i), out res))
+                if (_ruleCache.TryGetValue(input.Substring(fromIndex, i), out res))
                 {
                     return res;
                 }
@@ -79,7 +79,7 @@ namespace QSpell.Spellchecker
                     yield break;
                 }
 
-                if (top.IsFinal && top.CharIndex > input.Length)
+                if (top.IsFinal && top.CharIndex >= input.Length)
                 {
                     string output = new string(top.Backtrace().ToArray());
                     if (!returned.Contains(output))
@@ -94,7 +94,7 @@ namespace QSpell.Spellchecker
                     continue;
                 }
 
-                var filteredRules = Filter(input, top.CharIndex);
+                var filteredRules = top.CachedRules ?? (top.CachedRules = Filter(input, top.CharIndex));
                 for (int i = top.LastRuleIndex; i < filteredRules.Length; )
                 {
                     var rule = filteredRules[i++];
@@ -103,7 +103,16 @@ namespace QSpell.Spellchecker
                     {
                         top.LastRuleIndex = i;
                         stack.Push(top.Cost + rule.Cost, top);
-                        var newStackObject = new QStackObject<char, char>(nextTransition.StateIndex, nextTransition.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, filteredRules, 0);
+                        QStackObject<char, char> newStackObject = null;
+                        if (rule.Right.Length == 0)
+                        {
+                            // Fix for case when TrySend returns default(SequenceSetTransition)
+                            newStackObject = new QStackObject<char, char>(top.State, top.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
+                        }
+                        else
+                        {
+                            newStackObject = new QStackObject<char, char>(nextTransition.StateIndex, nextTransition.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
+                        }
                         stack.Push(top.Cost + rule.Cost, newStackObject);
                         break;
                     }

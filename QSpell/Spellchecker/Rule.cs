@@ -28,7 +28,7 @@ namespace QSpell.Spellchecker
         {
             get
             {
-                return String.Format("Left - {{0}} Cost - {1} Right - {{2}}", String.Join(",", Left), Cost, String.Join(",", Right));
+                return String.Format("Left - [{0}] Cost - {1} Right - [{2}]", String.Join(",", Left), Cost, String.Join(",", Right));
             }
         }
 

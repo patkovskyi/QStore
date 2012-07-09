@@ -190,7 +190,7 @@ namespace QSpell.Extensions
 
         internal static int SortedInsert<T>(ref IList<T> list, T item, IComparer<T> comparer)
         {
-            return SortedInsert(ref list, item, comparer, 0, list.Count - 1);
+            return SortedInsert(ref list, item, comparer, 0, list.Count);
         }
 
         internal static int SortedInsert<T>(ref IList<T> list, T item)

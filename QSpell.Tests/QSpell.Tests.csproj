@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comparers\SuggestionComparer.cs" />
+    <Compile Include="IListExtensionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QSpellcheckerTest.cs" />
     <Compile Include="Comparers\RuleComparer.cs" />
