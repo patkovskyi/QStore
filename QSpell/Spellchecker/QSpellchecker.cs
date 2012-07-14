@@ -33,18 +33,9 @@ namespace QSpell.Spellchecker
             return _lexicon.ContainsSequence(s);
         }
 
-        public IEnumerable<Suggestion<T>> GetCorrections(
-            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
+        public IEnumerable<Suggestion<T>> GetCorrections(string input, int timeLimit = 1000, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null, double autoCompletionRate = 1.0)
         {
-            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
-            limitToBestPaths: limitToBestPaths, token: token);
-        }
-
-        public IEnumerable<Suggestion<T>> GetFrequencyRankedCorrections(
-            string input, int timeLimit = 1000, int suggestionsLimit = 0, double costLimit = 0, bool limitToBestPaths = false, CancellationToken? token = null)
-        {
-            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, suggestionsLimit: suggestionsLimit,
-            limitToBestPaths: limitToBestPaths, token: token).OrderByDescending(s => s.Frequency).ThenBy(s => s.Cost);
+            return GetCorrectionsProtected(input: input, timeLimit: timeLimit, costLimit: costLimit, limitToBestPaths: limitToBestPaths, token: token, autoCompletionRate: autoCompletionRate);
         }
 
         protected void InitRules(IEnumerable<StringRule> rules)
@@ -52,9 +43,9 @@ namespace QSpell.Spellchecker
             var prefixTree = new PrefixTree<StringRule>(new RuleCostComparer<char, char>());
             foreach (var rule in rules)
             {
-                prefixTree.Add(new string(rule.Left), rule);
+                prefixTree.Add(rule.LeftStr, rule);
             }
-            var prefixes = rules.Select(e => new string(e.Left)).Distinct(StringComparer.Ordinal);
+            var prefixes = rules.Select(e => e.LeftStr).Distinct(StringComparer.Ordinal);
             _ruleCache = new Dictionary<string, StringRule[]>();
             _maxPrefixLength = prefixes.Max(p => p.Length);
             foreach (var prefix in prefixes)
@@ -76,7 +67,7 @@ namespace QSpell.Spellchecker
             return new StringRule[0];
         }
 
-        protected IEnumerable<Suggestion<T>> GetCorrectionsProtected(string input, int timeLimit, double costLimit, int suggestionsLimit, bool limitToBestPaths, CancellationToken? token)
+        protected IEnumerable<Suggestion<T>> GetCorrectionsProtected(string input, int timeLimit, double costLimit, bool limitToBestPaths, CancellationToken? token, double autoCompletionRate)
         {
             var stack = new PriorityStack<double, QStackObject<char, char>>();
             var startStackObject = new QStackObject<char, char>(_lexicon.Start, false, 0, 0, null, null, null, 0);
@@ -98,7 +89,6 @@ namespace QSpell.Spellchecker
                 if (timeLimit != 0 && watch.ElapsedMilliseconds > timeLimit ||
                     costLimit != 0 && top.Cost > costLimit ||
                     limitToBestPaths && top.Cost > bestCost ||
-                    suggestionsLimit != 0 && returned.Count >= suggestionsLimit ||
                     token.HasValue && token.Value.IsCancellationRequested)
                 {
                     yield break;
@@ -116,7 +106,6 @@ namespace QSpell.Spellchecker
                         returned.Add(output);
                         yield return new Suggestion<T>(output, top.Cost, _lexicon[output]);
                     }
-                    continue;
                 }
 
                 var filteredRules = top.CachedRules ?? (top.CachedRules = Filter(input, top.CharIndex));
@@ -127,18 +116,19 @@ namespace QSpell.Spellchecker
                     if (_lexicon.TrySend(top.State, rule.Right, out nextTransition))
                     {
                         top.LastRuleIndex = i;
-                        stack.Push(top.Cost + rule.Cost, top);
+                        double newCost = top.Cost + rule.Cost * (top.CharIndex >= input.Length ? autoCompletionRate : 1.0);
+                        stack.Push(newCost, top);
                         QStackObject<char, char> newStackObject = null;
                         if (rule.Right.Length == 0)
                         {
                             // Fix for case when TrySend returns default(SequenceSetTransition)
-                            newStackObject = new QStackObject<char, char>(top.State, top.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
+                            newStackObject = new QStackObject<char, char>(top.State, top.IsFinal, newCost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
                         }
                         else
                         {
-                            newStackObject = new QStackObject<char, char>(nextTransition.StateIndex, nextTransition.IsFinal, top.Cost + rule.Cost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
+                            newStackObject = new QStackObject<char, char>(nextTransition.StateIndex, nextTransition.IsFinal, newCost, top.CharIndex + rule.Left.Length, top, rule, null, 0);
                         }
-                        stack.Push(top.Cost + rule.Cost, newStackObject);
+                        stack.Push(newCost, newStackObject);
                         break;
                     }
                 }

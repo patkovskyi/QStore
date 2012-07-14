@@ -6,7 +6,7 @@ using QSpell.Extensions;
 
 namespace QSpell.Transducer
 {
-    internal class Transducer<I, O> : IEnumerable<Tuple<IEnumerable<I>, float, IEnumerable<O>>>        
+    internal class Transducer<I, O> : IEnumerable<Tuple<IEnumerable<I>, float, IEnumerable<O>>>
     {
         #region CONSTRUCTORS
         internal static T Create<T>(IEnumerable<Tuple<IEnumerable<Tuple<I, O>>, float>> rules, IComparer<I> inputComparer, IComparer<O> outputComparer)
@@ -22,7 +22,8 @@ namespace QSpell.Transducer
                 foreach (var pair in rule.Item1)
                 {
                     curState = nextState;
-                    transitionIndex = GetTransitionIndex(transitions[curState], pair.Item1, inputAlphabet, inputComparer, pair.Item2, outputAlphabet, outputComparer, 0, transitions[curState].Count);
+                    //transitionIndex = GetTransitionIndex(transitions[curState], pair.Item1, inputAlphabet, inputComparer, pair.Item2, outputAlphabet, outputComparer, 0, transitions[curState].Count);
+                    transitionIndex = GetTransitionIndex(transitions[curState], pair.Item1, inputAlphabet, inputComparer, 0, transitions[curState].Count);
                     if (transitionIndex < 0)
                     {
                         transitionIndex = ~transitionIndex;
@@ -85,13 +86,31 @@ namespace QSpell.Transducer
         #endregion
 
         #region METHODS
-        public bool TryGetTransition(Int32 fromState, I input, Int32 costIndex, out TransducerTransition transition)
+        protected bool TryGetTransition(Int32 fromState, I input, Int32 costIndex, out TransducerTransition transition)
         {
-            throw new NotImplementedException();
+            Int32 lower = lowerTransitionIndexes[fromState];
+            Int32 upper = transitions.GetUpperIndex(lowerTransitionIndexes, fromState);            
+
+            // TODO: throw exception if upper - lower > costIndex ?
+
+            Int32 transitionIndex = GetTransitionIndex(transitions, input, inputAlphabet, inputComparer, lower, upper);
+            if (transitionIndex >= 0)
+            {
+                while (transitionIndex > 0 && inputComparer.Compare(inputAlphabet[transitions[transitionIndex].InputAlphabetIndex], input) == 0)
+                {
+                    transitionIndex--;
+                }
+                transition = transitions[transitionIndex + costIndex];
+                return true;
+            }
+            else
+            {
+                transition = default(TransducerTransition);
+                return false;
+            }
         }
 
-        /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
-        private static Int32 GetTransitionIndex(IList<TransducerTransition> transitions, I input, I[] inputAlphabet, IComparer<I> inputComparer, O output, O[] outputAlphabet, IComparer<O> outputComparer, Int32 lower, Int32 upper)
+        private static Int32 GetTransitionIndex(IList<TransducerTransition> transitions, I input, I[] inputAlphabet, IComparer<I> inputComparer, double cost, Int32 lower, Int32 upper)
         {
             const Int32 BINARY_SEARCH_THRESHOLD = 5;
             if (upper - lower >= BINARY_SEARCH_THRESHOLD)
@@ -102,8 +121,6 @@ namespace QSpell.Transducer
                 {
                     Int32 middle = (lower + upper) / 2;
                     Int32 comparisonResult = inputComparer.Compare(inputAlphabet[transitions[middle].InputAlphabetIndex], input);
-                    if (comparisonResult == 0)
-                        comparisonResult = outputComparer.Compare(outputAlphabet[transitions[middle].OutputAlphabetIndex], output);
 
                     if (comparisonResult == 0)
                         return middle;
@@ -121,8 +138,6 @@ namespace QSpell.Transducer
                 for (Int32 i = lower; i < upper; i++)
                 {
                     Int32 comparisonResult = inputComparer.Compare(inputAlphabet[transitions[i].InputAlphabetIndex], input);
-                    if (comparisonResult == 0)
-                        comparisonResult = outputComparer.Compare(outputAlphabet[transitions[i].OutputAlphabetIndex], output);
 
                     if (comparisonResult == 0)
                     {
@@ -137,6 +152,54 @@ namespace QSpell.Transducer
                 return ~upper;
             }
         }
+
+        /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
+        //private static Int32 GetTransitionIndex(IList<TransducerTransition> transitions, I input, I[] inputAlphabet, IComparer<I> inputComparer, O output, O[] outputAlphabet, IComparer<O> outputComparer, Int32 lower, Int32 upper)
+        //{
+        //    const Int32 BINARY_SEARCH_THRESHOLD = 5;
+        //    if (upper - lower >= BINARY_SEARCH_THRESHOLD)
+        //    {
+        //        // Binary search
+        //        upper--;
+        //        while (lower <= upper)
+        //        {
+        //            Int32 middle = (lower + upper) / 2;
+        //            Int32 comparisonResult = inputComparer.Compare(inputAlphabet[transitions[middle].InputAlphabetIndex], input);
+        //            if (comparisonResult == 0)
+        //                comparisonResult = outputComparer.Compare(outputAlphabet[transitions[middle].OutputAlphabetIndex], output);
+
+        //            if (comparisonResult == 0)
+        //                return middle;
+        //            else if (comparisonResult > 0)
+        //                upper = middle - 1;
+        //            else
+        //                lower = middle + 1;
+        //        }
+
+        //        return ~lower;
+        //    }
+        //    else
+        //    {
+        //        // Linear search
+        //        for (Int32 i = lower; i < upper; i++)
+        //        {
+        //            Int32 comparisonResult = inputComparer.Compare(inputAlphabet[transitions[i].InputAlphabetIndex], input);
+        //            if (comparisonResult == 0)
+        //                comparisonResult = outputComparer.Compare(outputAlphabet[transitions[i].OutputAlphabetIndex], output);
+
+        //            if (comparisonResult == 0)
+        //            {
+        //                return i;
+        //            }
+        //            else if (comparisonResult > 0)
+        //            {
+        //                return ~i;
+        //            }
+        //        }
+
+        //        return ~upper;
+        //    }
+        //}
         #endregion
 
         #region IEnumerable<Tuple<IEnumerable<I>, float, IEnumerable<O>>>

@@ -76,8 +76,8 @@ namespace QSpell.Tests
         [TestMethod()]
         public void SparseSequenceDictionaryCreateTest3()
         {
-            var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select((s, i) => new KeyValuePair<IEnumerable<char>, byte>(s, i > 69000 ? (byte)0 : (byte)(s.GetHashCode() % 256))).ToArray();
-            CreateTestHelper(sequences, Comparer<char>.Default, Comparer<byte>.Default);
+            var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select((s, i) => new KeyValuePair<IEnumerable<char>, float>(s, i > 69000 ? (float)0 : (float)(s.GetHashCode()))).ToArray();
+            CreateTestHelper(sequences, Comparer<char>.Default, Comparer<float>.Default);
         }
 
         [TestMethod()]

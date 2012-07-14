@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("QSpell.Tests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("QSpell.Tests, PublicKey=00240000048000009400000006020000002400005253413100040000010001002193b0379f355501b603c9ba270bbc724e7fb2a7cc51f3de66e2ff803e731e0559807f6a806a15358da05afe07be90a9add223dc7a9aa2c08bd7b8bfda06e415be362de4609d7613bf6ca66ef490b7ed719357ef265854a6553c2a885e3697b46c2c5ae4b169f6836cdcdd40a6af481af2eaf13cdabdccab1074de12517b09c1")]

@@ -14,7 +14,8 @@ namespace QSpell.Tests.Comparers
             int comp = StringComparer.Ordinal.Compare(x.Correction, y.Correction);
             if (comp == 0)
             {
-                comp = x.Cost.CompareTo(y.Cost);
+                double diff = x.Cost - y.Cost;
+                comp = ((diff > -1e-6) || (diff < 1e-6)) ? 0 : Math.Sign(diff);
                 if (comp == 0)
                 {
                     comp = x.Frequency.CompareTo(y.Frequency);

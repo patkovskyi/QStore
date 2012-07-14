@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\QSpell.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>QSpell.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
       <HintPath>..\Libraries\protobuf-net r480\protobuf-net.dll</HintPath>
@@ -53,6 +59,7 @@
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Helpers\ProtoBufHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sequences\ISequenceSet.cs" />
     <Compile Include="Sequences\SequenceDictionary.cs" />
     <Compile Include="Sequences\SequenceSet.cs" />
     <Compile Include="Sequences\SequenceSetTransition.cs" />
@@ -76,7 +83,9 @@
     <Compile Include="Transducer\Transducer.cs" />
     <Compile Include="Transducer\TransducerTransition.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="QSpell.pfx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
