@@ -9,6 +9,8 @@ using QSpell.Sequences;
 
 namespace QSpell.Playground
 {
+    using System.Diagnostics;
+
     class Program
     {
         /// <summary>
@@ -48,8 +50,24 @@ namespace QSpell.Playground
             File.WriteAllLines(newFileName, newLines.Distinct(StringComparer.Ordinal).OrderBy(s => s, StringComparer.Ordinal), Encoding.GetEncoding(1251));
         }
 
+        static void TestStringConversion()
+        {            
+            IEnumerable<IEnumerable<char>> strings = Enumerable.Repeat(0, 1000000).Select(i => Path.GetRandomFileName());
+            var watch = new Stopwatch();
+            watch.Start();
+            var ctorStrings = strings.Select(seq => new string(seq.ToArray())).ToArray();
+            watch.Stop();
+            Console.WriteLine("CtorStrings: {0}", watch.Elapsed);
+
+            watch.Restart();
+            var concatStrings = strings.Select(seq => string.Concat(seq)).ToArray();
+            watch.Stop();
+            Console.WriteLine("ConcatStrings: {0}", watch.Elapsed);
+        }
+
         static void Main(string[] args)
         {
+            TestStringConversion();
             //var before = GC.GetTotalMemory(true);
             //var pairs = new AlignedPair<int, byte>[1000];
             //var after = GC.GetTotalMemory(true);

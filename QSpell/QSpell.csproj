@@ -32,10 +32,11 @@
     <DocumentationFile>bin\Release\QSpell.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>QSpell.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net">
@@ -82,9 +83,6 @@
     <Compile Include="Transducer\StringTransducer.cs" />
     <Compile Include="Transducer\Transducer.cs" />
     <Compile Include="Transducer\TransducerTransition.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="QSpell.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

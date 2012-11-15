@@ -6,11 +6,11 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5E93AD2E-7A25-48B2-9E57-38787A2AB7AC}</ProjectGuid>
+    <ProjectGuid>{72D159FF-40BA-4E9C-AE83-00DD6854617B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QSpell.Tests</RootNamespace>
-    <AssemblyName>QSpell.Tests</AssemblyName>
+    <RootNamespace>QStore.Tests</RootNamespace>
+    <AssemblyName>QStore.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -32,24 +32,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
@@ -57,23 +45,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comparers\SuggestionComparer.cs" />
-    <Compile Include="IListExtensionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QSpellcheckerTest.cs" />
-    <Compile Include="Comparers\RuleComparer.cs" />
-    <Compile Include="SequenceDictionaryTest.cs" />
-    <Compile Include="SequenceSetTest.cs" />
-    <Compile Include="SparseSequenceDictionaryTest.cs" />
-    <Compile Include="StringTransducerTest.cs" />
-    <Compile Include="TransducerTest.cs" />
-    <Compile Include="Comparers\TupleComparer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QSpell\QSpell.csproj">
-      <Project>{8DB8EE0E-30B2-485D-A14B-E9D0338538EA}</Project>
-      <Name>QSpell</Name>
-    </ProjectReference>
+    <Compile Include="QStringSetTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
