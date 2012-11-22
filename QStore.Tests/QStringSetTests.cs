@@ -7,6 +7,8 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+    using QSpell.Playground;
+
     [TestClass]
     public class QStringSetTests
     {

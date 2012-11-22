@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IService.cs" />
     <Compile Include="Comparers\SequenceComparer.cs" />
     <Compile Include="Comparers\SequenceKeyValueComparer.cs" />
     <Compile Include="Comparers\SequenceSetTransitionComparer.cs" />

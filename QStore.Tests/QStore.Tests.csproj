@@ -48,6 +48,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QStringSetTests.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QSpell.Playground\QSpell.Playground.csproj">
+      <Project>{5FF4359A-3A69-4569-96D7-0354BBF98F40}</Project>
+      <Name>QSpell.Playground</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

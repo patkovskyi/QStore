@@ -1,4 +1,10 @@
-﻿namespace QStore
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MergeList.cs" company="Dmytro Patkovskyi">
+//   Dmytro Patkovskyi, released under MIT license
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace QStore
 {
     using System.Collections.Generic;
 
@@ -8,15 +14,9 @@
     /// each state in the automaton.
     /// Used in Revuz algorithm.
     /// </summary>
-    internal class MergeList
+    public class MergeList
     {
-        #region Fields
-
         private readonly List<int>[] transitions;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         public MergeList(int numberOfStates, int numberOfTransitions)
         {
@@ -27,10 +27,6 @@
                 this.transitions[i] = new List<int>(ratio);
             }
         }
-
-        #endregion
-
-        #region Methods
 
         internal void Add(int transition, int toState)
         {
@@ -48,7 +44,5 @@
             // transitions[stateToKeep].UnionWith(transitions[stateToRemove]);
             this.transitions[stateToRemove] = null;
         }
-
-        #endregion
     }
 }

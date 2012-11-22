@@ -235,8 +235,6 @@
             {
                 return false;
             }
-
-            private set;
         }
 
         #endregion

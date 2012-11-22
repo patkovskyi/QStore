@@ -213,23 +213,16 @@
           </RuleSettings>
         </Rule>
       </Rules>
-      <AnalyzerSettings />
+      <AnalyzerSettings>
+        <StringProperty Name="CompanyName">Dmytro Patkovskyi</StringProperty>
+        <StringProperty Name="Copyright">Dmytro Patkovskyi, released under MIT license</StringProperty>
+      </AnalyzerSettings>
     </Analyzer>
-    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.ReadabilityRules">
       <Rules>
-        <Rule Name="FieldNamesMustNotUseHungarianNotation">
+        <Rule Name="DoNotUseRegions">
           <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-      </Rules>
-      <AnalyzerSettings />
-    </Analyzer>
-    <Analyzer AnalyzerId="StyleCop.CSharp.LayoutRules">
-      <Rules>
-        <Rule Name="CurlyBracketsMustNotBeOmitted">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
+            <BooleanProperty Name="Enabled">True</BooleanProperty>
           </RuleSettings>
         </Rule>
       </Rules>
