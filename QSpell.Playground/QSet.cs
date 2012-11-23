@@ -1,13 +1,18 @@
-﻿namespace QSpell.Playground
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="QSet.cs" company="Dmytro Patkovskyi">
+//   Dmytro Patkovskyi, released under MIT license
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace QSpell.Playground
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class QSet<T> : IEnumerable<IEnumerable<T>>
     {
-        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences)
+        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
         {
             throw new NotImplementedException();
         }
@@ -16,19 +21,16 @@
         /// Will throw an exception if alphabet is not enough.
         /// </summary>
         /// <param name="sequences"></param>
+        /// <param name="comparer"></param>
         /// <param name="alphabet"></param>
         /// <returns></returns>
-        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IEnumerable<T> alphabet)
+        public static QSet<T> Create(
+            IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, IEnumerable<T> alphabet)
         {
             throw new NotImplementedException();
         }
 
         #region Implementation of IEnumerable
-
-        protected IEnumerable<IEnumerable<T>> Enumerate()
-        {
-            return this;
-        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -38,7 +40,7 @@
         /// </returns>
         /// <filterpriority>1</filterpriority>
         public IEnumerator<IEnumerable<T>> GetEnumerator()
-        {            
+        {
             throw new NotImplementedException();
         }
 
@@ -52,6 +54,11 @@
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        protected IEnumerable<IEnumerable<T>> Enumerate()
+        {
+            return this;
         }
 
         #endregion
