@@ -6,7 +6,7 @@
 
 	<PropertyGroup>
 		<SolutionDir>$(MSBuildProjectDirectory)\..\</SolutionDir>
-		<OutputDir>$(MSBuildProjectDirectory)\Output</OutputDir>
+		<OutputDir>$(MSBuildProjectDirectory)\..\Output</OutputDir>
 	</PropertyGroup>
 
 	<ItemGroup>
