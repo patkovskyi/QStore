@@ -5,8 +5,8 @@
     DefaultTargets="Build">
 
 	<PropertyGroup>
-		<SolutionDir>$(MSBuildProjectDirectory)\..\</SolutionDir>
-		<OutputDir>$(MSBuildProjectDirectory)\..\Output</OutputDir>
+		<SolutionDir>$(MSBuildProjectDirectory)\..\..\</SolutionDir>
+		<OutputDir>$(SolutionDir)\_Out</OutputDir>
 	</PropertyGroup>
 
 	<ItemGroup>
