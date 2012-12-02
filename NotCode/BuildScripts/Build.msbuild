@@ -4,18 +4,21 @@
     ToolsVersion="4.0"
     DefaultTargets="Build">
 
-	<PropertyGroup>
-		<SolutionDir>$(MSBuildProjectDirectory)\..\..\</SolutionDir>
-		<OutputDir>$(SolutionDir)\_Out</OutputDir>
-	</PropertyGroup>
+    <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+    <Import Project="$(ProgramFiles)\MSBuild\StyleCop\v4.7\StyleCop.targets" />  
 
-	<ItemGroup>
-		<ProjectToBuild Include="$(SolutionDir)\QSpell.sln">
-			<Properties>OutputPath=$(OutputDir);Configuration=Release</Properties>
-		</ProjectToBuild>
-	</ItemGroup>
+  <PropertyGroup>
+    <SolutionDir>$(MSBuildProjectDirectory)\..\..\</SolutionDir>
+    <OutputDir>$(SolutionDir)\_Out</OutputDir>
+  </PropertyGroup>
 
-	<Target Name="Build">
-		<MSBuild Projects="@(ProjectToBuild)"/>
-	</Target>
+  <ItemGroup>
+    <ProjectToBuild Include="$(SolutionDir)\QSpell.sln">
+      <Properties>OutputPath=$(OutputDir);Configuration=Release</Properties>
+    </ProjectToBuild>
+  </ItemGroup>
+
+  <Target Name="Build">
+    <MSBuild Projects="@(ProjectToBuild)"/>
+  </Target>
 </Project>

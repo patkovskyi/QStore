@@ -6,9 +6,15 @@
 
     public class QStringSet : IStringSet, IEnumerable<string>
     {
+        private QSet<char> qSet;
+
+        private QStringSet()
+        {
+        }
+
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            throw new NotImplementedException();
+            return new QStringSet() { qSet = QSet<char>.Create(strings, comparer) };
         }
 
         public bool Contains(IEnumerable<char> sequence)
