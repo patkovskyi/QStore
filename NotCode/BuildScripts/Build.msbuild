@@ -11,7 +11,7 @@
     <Compile Include="$(SolutionDir)\QSpell.sln"/>                  
 	</ItemGroup>
 
-	<Target	Name="Build" DependsOnTargets="RunSourceAnalysis">
+	<Target	Name="Build">
 		<MSBuild Projects="@(Solution)" Properties="OutputPath=$(OutputDir);Configuration=Release"/>
 	</Target>	
 </Project>
