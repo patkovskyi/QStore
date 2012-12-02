@@ -16,21 +16,6 @@
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerator<string> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetIndex(IEnumerable<char> sequence)
-        {
-            throw new NotImplementedException();
-        }
-
         string IStringSet.GetByIndex(int index)
         {
             throw new NotImplementedException();
@@ -41,14 +26,29 @@
             throw new NotImplementedException();
         }
 
+        public IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
+        {
+            throw new NotImplementedException();
+        }
+
         IEnumerable<IEnumerable<char>> ISequenceSet<char>.GetByPrefix(IEnumerable<char> prefix)
         {
             return this.GetByPrefix(prefix);
         }
 
+        public IEnumerator<string> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
+        }
+
+        public int GetIndex(IEnumerable<char> sequence)
+        {
+            throw new NotImplementedException();
         }
     }
 }

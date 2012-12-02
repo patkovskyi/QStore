@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Structs\AlignedPair.cs" />
+    <Compile Include="Structs\SequenceSetTransition.cs" />
     <Compile Include="ISequenceMap.cs" />
     <Compile Include="ISequenceSet.cs" />
     <Compile Include="IStringSet.cs" />

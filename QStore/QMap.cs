@@ -20,6 +20,11 @@
             throw new System.NotImplementedException();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
         public int GetIndex(IEnumerable<TKey> sequence)
         {
             throw new System.NotImplementedException();
@@ -38,11 +43,6 @@
         public bool TryGetValue(IEnumerable<TKey> key, out TValue value)
         {
             throw new System.NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
     }
 }

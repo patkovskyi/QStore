@@ -4,7 +4,7 @@
 
     public class SequenceComparer<T> : NullComparer<IEnumerable<T>>
     {
-        private readonly IComparer<T> elementComparer;        
+        private readonly IComparer<T> elementComparer;
 
         public SequenceComparer(IComparer<T> elementComparer)
         {

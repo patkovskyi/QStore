@@ -16,8 +16,8 @@
 	
 	<s:String x:Key="/Default/CodeStyle/CodeCleanup/SilentCleanupProfile/@EntryValue">StyleCop</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/ALIGN_MULTILINE_ARGUMENT/@EntryValue">False</s:Boolean>
-	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/ALIGN_MULTILINE_ARRAY_AND_OBJECT_INITIALIZER/@EntryValue">True</s:Boolean>
-	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/ANONYMOUS_METHOD_DECLARATION_BRACES/@EntryValue">NEXT_LINE_SHIFTED_2</s:String>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/ALIGN_MULTILINE_ARRAY_AND_OBJECT_INITIALIZER/@EntryValue">False</s:Boolean>
+	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/ANONYMOUS_METHOD_DECLARATION_BRACES/@EntryValue">NEXT_LINE</s:String>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/BLANK_LINES_AROUND_SINGLE_LINE_FIELD/@EntryValue">1</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/BLANK_LINES_AROUND_SINGLE_LINE_INVOCABLE/@EntryValue">1</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/BLANK_LINES_BETWEEN_USING_GROUPS/@EntryValue">1</s:Int64>
@@ -29,7 +29,7 @@
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/FORCE_IFELSE_BRACES_STYLE/@EntryValue">ALWAYS_ADD</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/FORCE_USING_BRACES_STYLE/@EntryValue">DO_NOT_CHANGE</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/FORCE_WHILE_BRACES_STYLE/@EntryValue">ALWAYS_ADD</s:String>
-	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/INITIALIZER_BRACES/@EntryValue">NEXT_LINE_SHIFTED_2</s:String>
+	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/INITIALIZER_BRACES/@EntryValue">NEXT_LINE</s:String>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/KEEP_BLANK_LINES_IN_CODE/@EntryValue">1</s:Int64>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/KEEP_BLANK_LINES_IN_DECLARATIONS/@EntryValue">1</s:Int64>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/KEEP_USER_LINEBREAKS/@EntryValue">False</s:Boolean>
@@ -93,19 +93,16 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
 &#xD;
 &lt;Patterns xmlns="urn:shemas-jetbrains-com:member-reordering-patterns"&gt;&#xD;
 &#xD;
-  &lt;!--Do not reorder COM interfaces and structs marked by StructLayout attribute--&gt;&#xD;
+  &lt;!--Do not reorder COM interfaces--&gt;&#xD;
   &lt;Pattern RemoveAllRegions="true"&gt;&#xD;
     &lt;Match&gt;&#xD;
-      &lt;Or Weight="100"&gt;&#xD;
-        &lt;And&gt;&#xD;
-          &lt;Kind Is="interface"/&gt;&#xD;
-          &lt;Or&gt;&#xD;
-            &lt;HasAttribute CLRName="System.Runtime.InteropServices.InterfaceTypeAttribute"/&gt;&#xD;
-            &lt;HasAttribute CLRName="System.Runtime.InteropServices.ComImport"/&gt;&#xD;
-          &lt;/Or&gt;&#xD;
-        &lt;/And&gt;&#xD;
-        &lt;HasAttribute CLRName="System.Runtime.InteropServices.StructLayoutAttribute"/&gt;&#xD;
-      &lt;/Or&gt;&#xD;
+      &lt;And&gt;&#xD;
+        &lt;Kind Is="interface"/&gt;&#xD;
+        &lt;Or&gt;&#xD;
+          &lt;HasAttribute CLRName="System.Runtime.InteropServices.InterfaceTypeAttribute"/&gt;&#xD;
+          &lt;HasAttribute CLRName="System.Runtime.InteropServices.ComImport"/&gt;&#xD;
+        &lt;/Or&gt;&#xD;
+      &lt;/And&gt;&#xD;
     &lt;/Match&gt;&#xD;
   &lt;/Pattern&gt;&#xD;
 &#xD;
@@ -132,10 +129,10 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;/And&gt;&#xD;
       &lt;/Match&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &#xD;
+&#xD;
     &lt;!--All other members--&gt;&#xD;
     &lt;Entry/&gt;&#xD;
-    &#xD;
+&#xD;
     &lt;!--Test methods--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
@@ -165,7 +162,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;Name/&gt;&#xD;
       &lt;/Sort&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &#xD;
+&#xD;
     &lt;!--public enum--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
@@ -194,7 +191,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;Kind Order="constant field"/&gt;&#xD;
       &lt;/Sort&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &#xD;
+&#xD;
     &lt;!--instance fields--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
@@ -220,7 +217,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;Static/&gt;&#xD;
       &lt;/Sort&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &#xD;
+&#xD;
     &lt;!--properties, indexers--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
@@ -230,19 +227,39 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;/Or&gt;&#xD;
       &lt;/Match&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &#xD;
-    &lt;!--all other members--&gt;&#xD;
+&#xD;
+    &lt;!--public methods and explicit interface implementations--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
-        &lt;Kind Is="member"/&gt;&#xD;
+        &lt;Or&gt;&#xD;
+          &lt;And&gt;&#xD;
+            &lt;Kind Is="method"/&gt;&#xD;
+            &lt;Access Is="public"/&gt;  &#xD;
+            &lt;Not&gt;&#xD;
+              &lt;Kind Is="constructor"/&gt;&#xD;
+            &lt;/Not&gt;        &#xD;
+          &lt;/And&gt;&#xD;
+          &lt;ImplementsInterface/&gt;&#xD;
+        &lt;/Or&gt;&#xD;
+      &lt;/Match&gt;  &#xD;
+      &lt;Sort&gt;&#xD;
+        &lt;Static/&gt;&#xD;
+        &lt;Name/&gt;&#xD;
+      &lt;/Sort&gt;&#xD;
+    &lt;/Entry&gt;&#xD;
+&#xD;
+    &lt;!--all other methods--&gt;&#xD;
+    &lt;Entry&gt;&#xD;
+      &lt;Match&gt;&#xD;
+        &lt;Kind Is="method"/&gt;        &#xD;
       &lt;/Match&gt;&#xD;
       &lt;Sort&gt;                 &#xD;
-        &lt;Access Order="public protected-internal protected internal private"/&gt;        &#xD;
+        &lt;Access Order="protected-internal protected internal private"/&gt;        &#xD;
         &lt;Static/&gt;&#xD;
         &lt;Name/&gt;&#xD;
       &lt;/Sort&gt;&#xD;
     &lt;/Entry&gt;  &#xD;
-    &#xD;
+&#xD;
     &lt;!--nested types--&gt;&#xD;
     &lt;Entry&gt;&#xD;
       &lt;Match&gt;&#xD;
@@ -253,7 +270,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
       &lt;/Sort&gt;&#xD;
     &lt;/Entry&gt;&#xD;
   &lt;/Pattern&gt;&#xD;
-  &#xD;
+&#xD;
 &lt;/Patterns&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/CSharpMemberOrderPattern/LayoutType/@EntryValue">CustomLayout</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CSharpUsing/AddImportsToDeepestScope/@EntryValue">True</s:Boolean>
