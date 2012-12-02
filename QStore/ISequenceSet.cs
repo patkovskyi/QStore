@@ -2,12 +2,15 @@
 {
     using System.Collections.Generic;
 
-    public interface ISequenceSet<T> : IEnumerable<IEnumerable<T>>
+    public interface ISequenceSet<T>
     {
         bool Contains(IEnumerable<T> sequence);
 
-        IEnumerable<T> GetByPrefix(IEnumerable<T> prefix);
+        IEnumerable<T> GetByIndex(int index);
 
+        IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix);
+
+        /// TODO: check if "int" is enough
         int GetIndex(IEnumerable<T> sequence);
     }
 }

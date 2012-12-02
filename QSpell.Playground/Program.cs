@@ -51,13 +51,15 @@ namespace QSpell.Playground
         {            
             IEnumerable<IEnumerable<char>> strings = Enumerable.Repeat(0, 1000000).Select(i => Path.GetRandomFileName());
             var watch = new Stopwatch();
-            watch.Start();
             var ctorStrings = strings.Select(seq => new string(seq.ToArray())).ToArray();
+            watch.Start();
+            ctorStrings = strings.Select(seq => new string(seq.ToArray())).ToArray();
             watch.Stop();
             Console.WriteLine("CtorStrings: {0}", watch.Elapsed);
 
-            watch.Restart();
             var concatStrings = strings.Select(seq => string.Concat(seq)).ToArray();
+            watch.Restart();
+            concatStrings = strings.Select(seq => string.Concat(seq)).ToArray();
             watch.Stop();
             Console.WriteLine("ConcatStrings: {0}", watch.Elapsed);
         }

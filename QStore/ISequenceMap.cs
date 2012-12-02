@@ -2,8 +2,19 @@
 {
     using System.Collections.Generic;
 
-    public interface ISequenceMap<TKey, TValue> : IEnumerable<KeyValuePair<IEnumerable<TKey>, TValue>>
+    public interface ISequenceMap<TKey, TValue>
     {
+        bool Contains(IEnumerable<TKey> sequence);
+
+        IEnumerable<KeyValuePair<IEnumerable<TKey>, TValue>> GetByPrefix(IEnumerable<TKey> prefix);
+
+        /// TODO: check if "int" is enough
+        int GetIndex(IEnumerable<TKey> sequence);
+
+        IEnumerable<TKey> GetKeyByIndex(int index);
+
+        TValue GetValueByIndex(int index);
+
         bool TryGetValue(IEnumerable<TKey> key, out TValue value);
     }
 }

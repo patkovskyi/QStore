@@ -1,45 +1,45 @@
 ﻿namespace QStore
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
 
-    public class QSet<T> : ISequenceSet<T>
+    public class QSet<T> : ISequenceSet<T>, IEnumerable<IEnumerable<T>>
     {
+        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Contains(IEnumerable<T> sequence)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<T> GetByPrefix(IEnumerable<T> prefix)
+        public IEnumerable<T> GetByIndex(int index)
         {
             throw new System.NotImplementedException();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-        /// </returns>
+        public IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public IEnumerator<IEnumerable<T>> GetEnumerator()
         {
             throw new System.NotImplementedException();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
+        /// TODO: check if "int" is enough
         public int GetIndex(IEnumerable<T> sequence)
         {
             throw new System.NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }
