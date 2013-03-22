@@ -9,11 +9,10 @@
   </PropertyGroup>   
 
   <ItemGroup>
-    <Compile Include="$(SolutionDir)\QSpell.sln"/>    
+    <Compile Include="$(SolutionFile)"/>    
   </ItemGroup>
 
-  <Target Name="Build">
-    <Message Importance="high" Text="'$(OutputPath)'" />
+  <Target Name="Build">    
     <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
   </Target>
 </Project>

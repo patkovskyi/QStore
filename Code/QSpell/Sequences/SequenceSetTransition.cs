@@ -8,11 +8,11 @@ namespace QSpell.Sequences
 {
     [ProtoContract]
     internal struct SequenceSetTransition
-    {
-        [ProtoMember(1)]
+    {        
         /// <summary>
         /// Highest (32-nd) bit stands for IsFinal.
         /// </summary>
+        [ProtoMember(1)]
         private Int32 _alphabetIndex;
 
         internal Int32 AlphabetIndex

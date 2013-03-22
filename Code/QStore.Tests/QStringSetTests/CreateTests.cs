@@ -25,22 +25,23 @@ namespace QStore.Tests.QStringSetTests
             Assert.AreEqual(0, 0);
         }
 
-        //[TestMethod]
-        //public void CreateTestSimple()
-        //{
-        //    CreateTestHelper(Comparer<char>.Default, "one", "two", "three", "four", "five");
-        //}
+        /*
+        [TestMethod]
+        public void CreateTestSimple()
+        {
+            CreateTestHelper(Comparer<char>.Default, "one", "two", "three", "four", "five");
+        }
 
-        //[TestMethod]
-        //public void CreateTestZaliznyak()
-        //{
-        //    CreateTestHelper(Comparer<char>.Default, TestData.Zaliznyak);
-        //}
+        [TestMethod]
+        public void CreateTestZaliznyak()
+        {
+            CreateTestHelper(Comparer<char>.Default, TestData.Zaliznyak);
+        }
 
-        //[TestMethod]
-        //public void CreateTestZaliznyakBaseforms()
-        //{
-        //    CreateTestHelper(Comparer<char>.Default, TestData.ZaliznyakBaseforms);
-        //}
+        [TestMethod]
+        public void CreateTestZaliznyakBaseforms()
+        {
+            CreateTestHelper(Comparer<char>.Default, TestData.ZaliznyakBaseforms);
+        } */
     }
 }
