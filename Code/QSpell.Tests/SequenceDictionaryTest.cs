@@ -69,14 +69,14 @@ namespace QSpell.Tests
         [TestMethod()]
         public void CreateTest2()
         {
-            var sequences = File.ReadAllLines(@"..\..\..\TestData\Baseforms.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, double>(s, s.GetHashCode() / (double)s.Length)).ToArray();
+            var sequences = File.ReadAllLines(@"..\..\..\..\TestData\Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, double>(s, s.GetHashCode() / (double)s.Length)).ToArray();
             CreateTestHelper(sequences, Comparer<char>.Default, Comparer<double>.Default);
         }
 
         [TestMethod()]
         public void CreateTest3()
         {
-            var sequences = File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
+            var sequences = File.ReadAllLines(@"..\..\..\..\TestData\Zaliznyak-1251.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
             CreateTestHelper(sequences, Comparer<char>.Default, Comparer<byte>.Default);
         }
 
@@ -121,7 +121,7 @@ namespace QSpell.Tests
         [TestMethod()]
         public void IndexerTest2()
         {
-            var lexicon = File.ReadAllLines(@"..\..\..\TestData\Baseforms.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
+            var lexicon = File.ReadAllLines(@"..\..\..\..\TestData\Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251)).Select(s => new KeyValuePair<IEnumerable<char>, byte>(s, (byte)(s.GetHashCode() % 256))).ToArray();
             var target = SequenceDictionary<char, byte>.Create(lexicon, Comparer<char>.Default, true);
             IndexerTestHelper(lexicon, Comparer<char>.Default, Comparer<byte>.Default);
         }

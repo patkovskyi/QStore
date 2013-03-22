@@ -52,14 +52,14 @@ namespace QSpell.Tests
         [TestMethod()]
         public void MinimizeTest2()
         {
-            MinimizeTestHelper(File.ReadAllLines(@"..\..\..\TestData\Baseforms.txt", Encoding.GetEncoding(1251)),
+            MinimizeTestHelper(File.ReadAllLines(@"..\..\..\TestData\Zaliznyak-baseforms-1251.txt.txt", Encoding.GetEncoding(1251)),
                 Comparer<Char>.Default, 357827, 357826, 49040, 108176);
         }
 
         [TestMethod()]
         public void MinimizeTest3()
         {
-            MinimizeTestHelper(File.ReadAllLines(@"..\..\..\TestData\Zaliznyak.txt", Encoding.GetEncoding(1251)),
+            MinimizeTestHelper(File.ReadAllLines(@"..\..\..\TestData\Zaliznyak-1251.txt.txt", Encoding.GetEncoding(1251)),
                 Comparer<Char>.Default, 2531993, 2531992, 64810, 196694);
         }
     }

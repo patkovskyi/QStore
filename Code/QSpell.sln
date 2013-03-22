@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSpell.Playground", "QSpell.Playground\QSpell.Playground.csproj", "{5FF4359A-3A69-4569-96D7-0354BBF98F40}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QStore", "QStore\QStore.csproj", "{BEAF3690-7763-4C78-B17E-E42CA312B1CC}"
@@ -10,6 +10,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSpell", "QSpell\QSpell.csproj", "{8DB8EE0E-30B2-485D-A14B-E9D0338538EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QSpell.Tests", "QSpell.Tests\QSpell.Tests.csproj", "{5E93AD2E-7A25-48B2-9E57-38787A2AB7AC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89133F74-8112-48B1-AEAB-E2ACB5247A3B}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		QSpell.vsmdi = QSpell.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

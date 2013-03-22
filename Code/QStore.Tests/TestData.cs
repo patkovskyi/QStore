@@ -5,7 +5,7 @@
 
     public static class TestData
     {
-        public const string TestDataDir = @"..\..\..\NotCode\TestData";
+        public const string TestDataDir = @"..\..\..\..\TestData";
 
         public static readonly string[] Zaliznyak = File.ReadAllLines(
             Path.Combine(TestDataDir, @"Zaliznyak-1251.txt"), Encoding.GetEncoding(1251));
