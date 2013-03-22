@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets"/>
+  
+  <PropertyGroup>
+    <SolutionDir>$(MSBuildProjectDirectory)\..\Code</SolutionDir>
+    <SolutionFile>$(SolutionDir)\QSpell.sln</SolutionFile>
+    <OutputPath>$(MSBuildProjectDirectory)\Artifacts\bin</OutputPath>
+  </PropertyGroup>   
+
+  <ItemGroup>
+    <Compile Include="$(SolutionDir)\QSpell.sln"/>    
+  </ItemGroup>
+
+  <Target Name="Build">
+    <Message Importance="high" Text="'$(OutputPath)'" />
+    <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
+  </Target>
+</Project>
