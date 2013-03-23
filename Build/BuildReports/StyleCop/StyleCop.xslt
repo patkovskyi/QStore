@@ -13,7 +13,7 @@
 
     <div id="stylecop-report">
 
-      <script type="text/javascript" src="report.js"/> 
+      <script type="text/javascript" src="report.js">//</script>
       <link rel="stylesheet" type="text/css" href="stylecop.css" />
      
       <div class="header">
