@@ -21,10 +21,12 @@
   </ItemGroup>
 
   <Target Name="Build">
+    <TeamCityProgressMessage Text="Compiling solution" />
     <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
   </Target>
 
   <Target Name="StyleCop">
+    <TeamCityProgressMessage Text="Running StyleCop" />
     <!-- Copy resource files for html report -->
     <CreateItem Include="BuildReports\StyleCop\Resources\*.*">
       <Output TaskParameter="Include" ItemName="StyleCopResources" />
