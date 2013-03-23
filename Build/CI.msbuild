@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build; StyleCop" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets"/>
-  
+  <Import Project="MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+  <Import Project="StyleCop 4.7\StyleCop.Targets"/>
+
+  <UsingTask TaskName="MSBuild.ExtensionPack.Xml.XmlTask" AssemblyFile="MSBuild.ExtensionPack\4.0.0.0\Binaries\MSBuild.ExtensionPack.dll"></UsingTask>
+
   <PropertyGroup>
     <SolutionDir>$(MSBuildProjectDirectory)\..\Code</SolutionDir>
     <SolutionFile>$(SolutionDir)\QSpell.sln</SolutionFile>
-    <OutputPath>$(MSBuildProjectDirectory)\Artifacts\bin</OutputPath>
-  </PropertyGroup>   
+    <ArtifactsDir>$(MSBuildProjectDirectory)\Artifacts</ArtifactsDir>
+	<StyleCopSettingsFile>$(SolutionDir)\Settings.StyleCop</StyleCopSettingsFile>
+    <StyleCopReportDir>$(ArtifactsDir)\StyleCopReport</StyleCopReportDir>
+    <StyleCopReportXml>$(StyleCopReportDir)\StyleCopReport.xml</StyleCopReportXml>
+    <StyleCopReportHtml>$(StyleCopReportDir)\StyleCopReport.html</StyleCopReportHtml>
+    <OutputPath>$(ArtifactsDir)\bin</OutputPath>    
+  </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="$(SolutionFile)"/>    
+    <Compile Include="$(SolutionFile)"/>
+    <StyleCopFiles Include="..\Code\\QStore*\*.cs"></StyleCopFiles>
+    <StyleCopResources Include="BuildReports\StyleCop\Resources\*.*"></StyleCopResources>
   </ItemGroup>
 
-  <Target Name="Build">    
+  <Target Name="Build">
     <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
+  </Target>
+
+  <Target Name="StyleCop" DependsOnTargets="Build">
+    <!--Copy stylecop resources to BuildReports folder-->
+    <Copy DestinationFolder="$(StyleCopReportDir)" SourceFiles="@(StyleCopResources)"></Copy>
+
+    <Microsoft.StyleCop.StyleCopTask
+      ProjectFullPath="$(MSBuildProjectDirectory)"
+      SourceFiles="@(StyleCopFiles)"
+      ForceFullAnalysis="true"
+      DefineConstants="$(DefineConstants)"
+      TreatErrorsAsWarnings="true"	  
+      CacheResults="$(StyleCopCacheResults)"      
+	  OverrideSettingsFile="$(StyleCopSettingsFile)"
+      OutputFile="$(StyleCopReportXml)"
+      MaxViolationCount="100">
+    </Microsoft.StyleCop.StyleCopTask>
+
+    <MSBuild.ExtensionPack.Xml.XmlTask
+      TaskAction="Transform"
+      XmlFile="$(StyleCopReportXml)"
+      XslTransformFile="BuildReports\StyleCop\StyleCop.xslt"
+      OutputFile="$(StyleCopReportHtml)">
+    </MSBuild.ExtensionPack.Xml.XmlTask>
   </Target>
 </Project>
