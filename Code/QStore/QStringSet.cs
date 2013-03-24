@@ -45,7 +45,7 @@
 
         public IEnumerator<string> GetEnumerator()
         {
-            return set.Select(s => new string(s.ToArray())).GetEnumerator();
+            return this.set.Select(s => new string(s.ToArray())).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
