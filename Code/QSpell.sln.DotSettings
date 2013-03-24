@@ -254,7 +254,7 @@ II.2.12 &lt;HandlesEvent /&gt;&#xD;
         &lt;Kind Is="method"/&gt;        &#xD;
       &lt;/Match&gt;&#xD;
       &lt;Sort&gt;                 &#xD;
-        &lt;Access Order="protected-internal protected internal private"/&gt;        &#xD;
+        &lt;Access Order="internal protected-internal protected private"/&gt;        &#xD;
         &lt;Static/&gt;&#xD;
         &lt;Name/&gt;&#xD;
       &lt;/Sort&gt;&#xD;

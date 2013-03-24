@@ -10,38 +10,37 @@ namespace QStore.Tests.QStringSetTests
     [TestClass]
     public class CreateTests
     {
-        public static void CreateTestHelper(IComparer<char> comparer, params string[] strings)
+        public static void CreateTestHelper(
+            IComparer<char> comparer, IEqualityComparer<char> equalityComparer, params string[] strings)
         {
-            var target = QStringSet.Create(strings, comparer);
+            var target = QStringSet.Create(strings, comparer, equalityComparer);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
             var actual = target.ToArray();
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }
 
-        [TestMethod]
-        public void TestTest()
+        public static void DefaultTestHelper(params string[] strings)
         {
-            Assert.AreEqual(0, 0);
+            CreateTestHelper(Comparer<char>.Default, EqualityComparer<char>.Default, strings);
         }
 
-        /*
         [TestMethod]
         public void CreateTestSimple()
         {
-            CreateTestHelper(Comparer<char>.Default, "one", "two", "three", "four", "five");
+            DefaultTestHelper("one", "two", "three", "four", "five");
         }
 
         [TestMethod]
         public void CreateTestZaliznyak()
         {
-            CreateTestHelper(Comparer<char>.Default, TestData.Zaliznyak);
+            DefaultTestHelper(TestData.Zaliznyak);
         }
 
         [TestMethod]
         public void CreateTestZaliznyakBaseforms()
         {
-            CreateTestHelper(Comparer<char>.Default, TestData.ZaliznyakBaseforms);
-        } */
+            DefaultTestHelper(TestData.ZaliznyakBaseforms);
+        }
     }
 }

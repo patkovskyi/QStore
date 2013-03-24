@@ -3,6 +3,7 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class QStringSet : IStringSet, IEnumerable<string>
     {
@@ -12,9 +13,9 @@
         {
         }
 
-        public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
+        public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer, IEqualityComparer<char> equalityComparer)
         {
-            return new QStringSet() { set = QSet<char>.Create(strings, comparer) };
+            return new QStringSet() { set = QSet<char>.Create(strings, comparer, equalityComparer) };
         }
 
         public bool Contains(IEnumerable<char> sequence)
@@ -44,7 +45,7 @@
 
         public IEnumerator<string> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return set.Select(s => new string(s.ToArray())).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -1,10 +1,10 @@
 ﻿namespace QStore
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
+    using QStore.Extensions;
     using QStore.Structs;
 
     public class QSet<T> : ISequenceSet<T>, IEnumerable<IEnumerable<T>>
@@ -20,24 +20,20 @@
 
         private SequenceSetTransition[] transitions;
 
-        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        public static QSet<T> Create(
+            IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, IEqualityComparer<T> equalityComparer)
         {
             var sequencesArray = sequences as T[][] ?? sequences.Select(s => s.ToArray()).ToArray();
-            return Create(sequencesArray, comparer, ExtractAlphabet(sequencesArray, comparer));
-        }
-
-        // TODO: should throw some meaningful exception when alphabet is not OK
-        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, T[] alphabet)
-        {
-            var alphabetDict = alphabet.Select((c, i) => new Tuple<T, int>(c, i))
-                                       .ToDictionary(t => t.Item1, t => t.Item2);
+            var alphabet = ExtractAlphabet(sequencesArray, comparer, equalityComparer);
+            var alphabetDict = alphabet.Select((a, i) => new KeyValuePair<T, int>(a, i))
+                                       .ToDictionary(p => p.Key, p => p.Value, equalityComparer);
 
             var transitions = new List<List<SequenceSetTransition>>(alphabet.Length)
             {
                 new List<SequenceSetTransition>()
             };
 
-            foreach (var sequence in sequences)
+            foreach (var sequence in sequencesArray)
             {
                 int curState = -1, nextState = 0, transitionIndex = -1;
                 foreach (var element in sequence)
@@ -92,9 +88,10 @@
             return result;
         }
 
-        public static T[] ExtractAlphabet(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        public static T[] ExtractAlphabet(
+            IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, IEqualityComparer<T> equalityComparer)
         {
-            return sequences.SelectMany(s => s).Distinct().OrderBy(a => a, comparer).ToArray();
+            return sequences.SelectMany(s => s).Distinct(equalityComparer).OrderBy(a => a, comparer).ToArray();
         }
 
         public bool Contains(IEnumerable<T> sequence)
@@ -114,7 +111,7 @@
 
         public IEnumerator<IEnumerable<T>> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return this.Enumerate(this.start).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -128,8 +125,65 @@
             throw new System.NotImplementedException();
         }
 
-        protected void SomeProtest()
+        internal bool TrySend(int fromState, T input, out SequenceSetTransition transition)
         {
+            int transitionIndex = this.GetTransitionIndex(fromState, input);
+            if (transitionIndex >= 0)
+            {
+                transition = this.transitions[transitionIndex];
+                return true;
+            }
+
+            transition = default(SequenceSetTransition);
+            return false;
+        }
+
+        internal bool TrySend(int fromState, IEnumerable<T> inputSequence, out SequenceSetTransition transition)
+        {
+            int currentState = fromState;
+            transition = default(SequenceSetTransition);
+            foreach (var input in inputSequence)
+            {
+                if (this.TrySend(currentState, input, out transition))
+                {
+                    currentState = transition.StateIndex;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        protected IEnumerable<IEnumerable<T>> Enumerate(int fromState)
+        {
+            int lower = this.lowerTransitionIndexes[fromState];
+            int upper = this.transitions.GetUpperIndex(this.lowerTransitionIndexes, fromState);
+
+            for (int i = lower; i < upper; i++)
+            {
+                var tr = this.transitions[i];
+                T element = this.alphabet[tr.AlphabetIndex];
+                if (tr.IsFinal)
+                {
+                    yield return new[] { element };
+                }
+
+                foreach (var w in this.Enumerate(tr.StateIndex).Select(w => w.Prepend(element)))
+                {
+                    yield return w;
+                }
+            }
+        }
+
+        /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
+        protected int GetTransitionIndex(int fromState, T input)
+        {
+            int lower = this.lowerTransitionIndexes[fromState];
+            int upper = this.transitions.GetUpperIndex(this.lowerTransitionIndexes, fromState);
+            return GetTransitionIndex(this.transitions, input, this.alphabet, this.symbolComparer, lower, upper);
         }
 
         private static int GetTransitionIndex(
@@ -161,25 +215,23 @@
 
                 return ~lower;
             }
-            else
-            {
-                // Linear search
-                for (int i = lower; i < upper; i++)
-                {
-                    int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], input);
-                    if (comp == 0)
-                    {
-                        return i;
-                    }
 
-                    if (comp > 0)
-                    {
-                        return ~i;
-                    }
+            // Linear search
+            for (int i = lower; i < upper; i++)
+            {
+                int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], input);
+                if (comp == 0)
+                {
+                    return i;
                 }
 
-                return ~upper;
+                if (comp > 0)
+                {
+                    return ~i;
+                }
             }
+
+            return ~upper;
         }
     }
 }
