@@ -18,7 +18,7 @@
      
       <div class="header">
         <div class="headertext">
-          StyleCop 4.4 Code Analysis Report
+          StyleCop 4.7 Code Analysis Report
         </div>
       </div>
       <div class="wrapper">
