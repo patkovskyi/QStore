@@ -9,9 +9,7 @@ namespace QStore.Tests.QStringSetTests
 
     using QStore.Tests.Comparers;
 
-    [TestClass]
-    [DeploymentItem(@"..\TestData\Zaliznyak-1251.txt")]
-    [DeploymentItem(@"..\TestData\Zaliznyak-baseforms-1251.txt")]
+    [TestClass]        
     public class CreateTests
     {
         public static void CreateTestHelper(
@@ -36,12 +34,14 @@ namespace QStore.Tests.QStringSetTests
         }
 
         [TestMethod]
+        [DeploymentItem(@"..\TestData\Zaliznyak-1251.txt")]
         public void CreateTestZaliznyak()
         {
             DefaultTestHelper(File.ReadAllLines(@"Zaliznyak-1251.txt", Encoding.GetEncoding(1251)));
         }
 
         [TestMethod]
+        [DeploymentItem(@"..\TestData\Zaliznyak-baseforms-1251.txt")]
         public void CreateTestZaliznyakBaseforms()
         {
             DefaultTestHelper(File.ReadAllLines(@"Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251)));
