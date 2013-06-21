@@ -13,7 +13,7 @@
 
         private int[] lowerTransitionIndexes;
 
-        private int start;
+        private int Start;
 
         // TODO: think of serialization.        
         private IComparer<T> symbolComparer;
@@ -71,7 +71,7 @@
             {
                 symbolComparer = comparer, 
                 alphabet = alphabet, 
-                start = 0, 
+                Start = 0, 
                 lowerTransitionIndexes = new int[transitions.Count], 
                 transitions = new SequenceSetTransition[transitions.Sum(s => s.Count)]
             };
@@ -111,7 +111,7 @@
 
         public IEnumerator<IEnumerable<T>> GetEnumerator()
         {
-            return this.Enumerate(this.start).GetEnumerator();
+            return this.Enumerate(this.Start).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
