@@ -55,11 +55,10 @@
     <XmlRead XPath="count(//Violation)" XmlFileName="$(StyleCopReportXml)">
       <Output TaskParameter="Value" PropertyName="StyleCopViolations" />
     </XmlRead>
-	
-	<Message Text="##teamcity[buildStatus status='FAILURE' text='{build.status.text}; StyleCop warnings : $(StyleCopViolations)']" Condition="$(StyleCopViolations) > 0" />
-	<!--<TeamCitySetStatus Status="ERROR" Text="{build.status.text}; StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />-->
+		
+	<TeamCitySetStatus Status="FAILURE" Text="{build.status.text}; StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />
 
-	<!--Uncomment if you want to fail when violation found (without actually running tests)-->
+	<!--Uncomment if you want to fail right after violation was found (without actually running tests)-->
     <!--<Error Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />-->
   </Target>
 </Project>
