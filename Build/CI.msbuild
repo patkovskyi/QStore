@@ -56,8 +56,9 @@
       <Output TaskParameter="Value" PropertyName="StyleCopViolations" />
     </XmlRead>
 	
-	<TeamCitySetStatus Status="FAILURE" Text="StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />
+	<TeamCitySetStatus Status="FAILURE" Text="{build.status.text} ; StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />
 
-    <!--<Warning Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />-->
+	<!--Uncomment if you want to fail when violation found (without actually running tests)-->
+    <!--<Error Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />-->
   </Target>
 </Project>
