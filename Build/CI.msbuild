@@ -20,7 +20,7 @@
     <Compile Include="$(SolutionFile)"/>
   </ItemGroup>
 
-  <Target Name="Build">
+  <Target Name="Build">  
     <TeamCityProgressMessage Text="Compiling solution" />
     <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
   </Target>
@@ -55,7 +55,9 @@
     <XmlRead XPath="count(//Violation)" XmlFileName="$(StyleCopReportXml)">
       <Output TaskParameter="Value" PropertyName="StyleCopViolations" />
     </XmlRead>
+	
+	<TeamCitySetStatus Status="FAILURE" Text="StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />
 
-    <Warning Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />
+    <!--<Warning Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />-->
   </Target>
 </Project>
