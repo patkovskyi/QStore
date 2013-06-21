@@ -1,13 +1,17 @@
 namespace QStore.Tests.QStringSetTests
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Text;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using QStore.Tests.Comparers;
 
     [TestClass]
+    [DeploymentItem(@"..\TestData\Zaliznyak-1251.txt")]
+    [DeploymentItem(@"..\TestData\Zaliznyak-baseforms-1251.txt")]
     public class CreateTests
     {
         public static void CreateTestHelper(
@@ -34,13 +38,13 @@ namespace QStore.Tests.QStringSetTests
         [TestMethod]
         public void CreateTestZaliznyak()
         {
-            DefaultTestHelper(TestData.Zaliznyak);
+            DefaultTestHelper(File.ReadAllLines(@"Zaliznyak-1251.txt", Encoding.GetEncoding(1251)));
         }
 
         [TestMethod]
         public void CreateTestZaliznyakBaseforms()
         {
-            DefaultTestHelper(TestData.ZaliznyakBaseforms);
+            DefaultTestHelper(File.ReadAllLines(@"Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251)));
         }
     }
 }
