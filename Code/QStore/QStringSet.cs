@@ -21,17 +21,7 @@
         public bool Contains(IEnumerable<char> sequence)
         {
             throw new NotImplementedException();
-        }
-
-        string IStringSet.GetByIndex(int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<char> ISequenceSet<char>.GetByIndex(int index)
-        {
-            throw new NotImplementedException();
-        }
+        }             
 
         public IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
         {

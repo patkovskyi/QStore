@@ -5,22 +5,62 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using QStore.Comparers;
     using QStore.Extensions;
     using QStore.Structs;
 
-    public class QSet<T> : ISequenceSet<T>, IEnumerable<IEnumerable<T>>
+    public class QSet<T> : ISequenceSet<T>, IEnumerable<T[]>
     {
-        private T[] alphabet;
-        
-        private IComparer<T> comparer;
+        protected internal T[] Alphabet;
 
-        private int rootState;
+        protected internal IComparer<T> Comparer;
 
-        private int[] stateStarts;
+        protected internal int RootState;
 
-        private QSetTransition[] transitions;        
+        protected internal int[] StateStarts;
+
+        protected internal QSetTransition[] Transitions;
 
         public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        {
+            return Create<QSet<T>>(sequences, comparer);
+        }
+
+        public bool Contains(IEnumerable<T> sequence)
+        {
+            QSetTransition transition;
+            if (this.TrySendSequence(this.RootState, sequence, out transition))
+            {
+                return transition.IsFinal;
+            }
+
+            return false;
+        }
+
+        public IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix)
+        {
+            QSetTransition transition;
+            var fromStack = new Stack<int>();
+            if (this.TrySendSequence(this.RootState, prefix, out transition, fromStack))
+            {
+                return this.Enumerate(transition.StateIndex, fromStack);
+            }
+
+            return Enumerable.Empty<IEnumerable<T>>();
+        }
+
+        public IEnumerator<T[]> GetEnumerator()
+        {
+            return this.Enumerate(this.RootState).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        protected internal static TSet Create<TSet>(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+            where TSet : QSet<T>, new()
         {
             // avoid multiple enumeration
             var seqArray = sequences as T[][] ?? sequences.Select(s => s.ToArray()).ToArray();
@@ -47,7 +87,8 @@
                 foreach (var symbol in sequence)
                 {
                     currentStateTransitions = transitions[nextState];
-                    transitionIndex = GetTransitionIndex(currentStateTransitions, symbol, alphabet, comparer);
+                    transitionIndex = GetTransitionIndex(
+                        currentStateTransitions, symbol, alphabet, comparer, 0, currentStateTransitions.Count);
                     if (transitionIndex >= 0)
                     {
                         // transition from currentState by symbol already exists
@@ -73,7 +114,7 @@
                         currentStateTransitions.Insert(transitionIndex, newTransition);
                     }
                 }
-                
+
                 if (currentStateTransitions == null)
                 {
                     throw new ArgumentException("Empty sequences are not allowed!");
@@ -83,153 +124,37 @@
                 {
                     throw new ArgumentException(
                         string.Format(
-                            "An element with Key = \"{0}\" already exists.",
+                            "An element with Key = \"{0}\" already exists.", 
                             string.Concat(sequence.Select(e => e.ToString()))));
                 }
-                
+
                 // mark last transition in this sequence as final
                 currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
-            }        
+            }
 
-            var result = new QSet<T>
+            var result = new TSet
             {
-                comparer = comparer, 
-                alphabet = alphabet, 
-                rootState = 0, 
-                stateStarts = new int[transitions.Count], 
-                transitions = new QSetTransition[transitions.Sum(s => s.Count)]
+                Comparer = comparer, 
+                Alphabet = alphabet, 
+                RootState = 0, 
+                StateStarts = new int[transitions.Count], 
+                Transitions = new QSetTransition[transitions.Sum(s => s.Count)]
             };
 
             for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
             {
-                result.stateStarts[i] = transitionIndex;
+                result.StateStarts[i] = transitionIndex;
                 for (int j = 0; j < transitions[i].Count; j++, transitionIndex++)
                 {
-                    result.transitions[transitionIndex] = transitions[i][j];
+                    result.Transitions[transitionIndex] = transitions[i][j];
                 }
             }
 
+            result.Minimize();
             return result;
-        }        
-
-        public bool Contains(IEnumerable<T> sequence)
-        {
-            throw new System.NotImplementedException();
         }
 
-        public IEnumerable<T> GetByIndex(int index)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerator<IEnumerable<T>> GetEnumerator()
-        {
-            return this.Enumerate(this.rootState).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        public long GetIndex(IEnumerable<T> sequence)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        internal bool TrySend(int fromState, T input, out QSetTransition transition)
-        {
-            int transitionIndex = this.GetTransitionIndex(fromState, input);
-            if (transitionIndex >= 0)
-            {
-                transition = this.transitions[transitionIndex];
-                return true;
-            }
-
-            transition = default(QSetTransition);
-            return false;
-        }
-
-        internal bool TrySend(int fromState, IEnumerable<T> inputSequence, out QSetTransition transition)
-        {
-            int currentState = fromState;
-            transition = default(QSetTransition);
-            foreach (var input in inputSequence)
-            {
-                if (this.TrySend(currentState, input, out transition))
-                {
-                    currentState = transition.StateIndex;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }        
-
-        protected IEnumerable<T[]> Enumerate(int fromState, Stack<int> fromStack = null)
-        {            
-            fromStack = fromStack ?? new Stack<int>();
-            var toStack = new Stack<int>();
-            int lower = this.stateStarts[fromState];
-            int upper = this.transitions.GetUpperIndex(this.stateStarts, fromState);
-            fromStack.Push(lower);
-            toStack.Push(upper);
-
-            while (fromStack.Count > 0)
-            {
-                lower = fromStack.Pop();
-                upper = toStack.Peek();                
-
-                if (lower < upper)
-                {
-                    fromStack.Push(lower + 1);
-
-                    if (this.transitions[lower].IsFinal)
-                    {
-                        var tmp = new int[fromStack.Count];
-                        fromStack.CopyTo(tmp, 0);
-                        var res = new T[fromStack.Count];
-                        for (int i = 0; i < res.Length; i++)
-                        {
-                            res[i] = this.alphabet[this.transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
-                        }
-
-                        yield return res;                        
-                    } 
-
-                    int nextState = this.transitions[lower].StateIndex;
-                    int nextLower = this.stateStarts[nextState];
-                    int nextUpper = this.transitions.GetUpperIndex(this.stateStarts, nextState);
-                    if (nextLower < nextUpper)
-                    {
-                        fromStack.Push(nextLower);
-                        toStack.Push(nextUpper);
-                    }                                                       
-                }
-                else
-                {                    
-                    toStack.Pop();
-                }
-            }
-        }        
-
-        /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
-        protected int GetTransitionIndex(int fromState, T symbol)
-        {
-            int lower = this.stateStarts[fromState];
-            int upper = this.transitions.GetUpperIndex(this.stateStarts, fromState);
-            return GetTransitionIndex(this.transitions, symbol, this.alphabet, this.comparer, lower, upper);
-        }
-
-        private static void ExtractAlphabet(
+        protected static void ExtractAlphabet(
             IEnumerable<IEnumerable<T>> sequences, 
             IComparer<T> comparer, 
             out T[] alphabet, 
@@ -253,12 +178,6 @@
             {
                 alphabetDictionary[alphabet[i]] = i;
             }
-        }        
-
-        private static int GetTransitionIndex(
-            IList<QSetTransition> transitions, T symbol, T[] alphabet, IComparer<T> comparer)
-        {
-            return GetTransitionIndex(transitions, symbol, alphabet, comparer, 0, transitions.Count);
         }
 
         private static int GetTransitionIndex(
@@ -307,6 +226,178 @@
             }
 
             return ~upper;
+        }
+
+        private IEnumerable<T[]> Enumerate(int fromState, Stack<int> fromStack = null)
+        {
+            fromStack = fromStack ?? new Stack<int>();
+            var toStack = new Stack<int>();
+            int lower = this.StateStarts[fromState];
+            int upper = this.Transitions.GetUpperIndex(this.StateStarts, fromState);
+            fromStack.Push(lower);
+            toStack.Push(upper);
+
+            while (fromStack.Count > 0)
+            {
+                lower = fromStack.Pop();
+                upper = toStack.Peek();
+
+                if (lower < upper)
+                {
+                    fromStack.Push(lower + 1);
+
+                    if (this.Transitions[lower].IsFinal)
+                    {
+                        var tmp = new int[fromStack.Count];
+                        fromStack.CopyTo(tmp, 0);
+                        var res = new T[fromStack.Count];
+                        for (int i = 0; i < res.Length; i++)
+                        {
+                            res[i] = this.Alphabet[this.Transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
+                        }
+
+                        yield return res;
+                    }
+
+                    int nextState = this.Transitions[lower].StateIndex;
+                    int nextLower = this.StateStarts[nextState];
+                    int nextUpper = this.Transitions.GetUpperIndex(this.StateStarts, nextState);
+                    if (nextLower < nextUpper)
+                    {
+                        fromStack.Push(nextLower);
+                        toStack.Push(nextUpper);
+                    }
+                }
+                else
+                {
+                    toStack.Pop();
+                }
+            }
+        }
+
+        private MergeList GetMergeList()
+        {
+            var merge = new MergeList(this.StateStarts.Length, this.Transitions.Length);
+            for (int i = 0; i < this.Transitions.Length; i++)
+            {
+                merge.Add(i, this.Transitions[i].StateIndex);
+            }
+
+            return merge;
+        }
+
+        /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
+        private int GetTransitionIndex(int fromState, T symbol)
+        {
+            int lower = this.StateStarts[fromState];
+            int upper = this.Transitions.GetUpperIndex(this.StateStarts, fromState);
+            return GetTransitionIndex(this.Transitions, symbol, this.Alphabet, this.Comparer, lower, upper);
+        }
+
+        private void Minimize()
+        {
+            var registered = new Dictionary<StateSignature, int>(new StateSignatureEqualityComparer());
+            var mergeList = this.GetMergeList();
+            this.Register(this.RootState, registered, mergeList);
+
+            var registeredArray = registered.ToArray();
+            var oldToNewStates = Enumerable.Range(0, registered.Count)
+                                           .ToDictionary(i => registeredArray[i].Value, i => i);
+            this.Transitions = new QSetTransition[registered.Sum(r => r.Key.Transitions.Length)];
+            this.StateStarts = new int[registered.Count];
+            for (int i = 0, transIndex = 0; i < this.StateStarts.Length; i++)
+            {
+                var old = registeredArray[i];
+                for (int j = 0; j < old.Key.Transitions.Length; j++)
+                {
+                    var oldTr = old.Key.Transitions[j];
+                    this.Transitions[transIndex + j] = new QSetTransition(
+                        oldTr.AlphabetIndex, oldToNewStates[oldTr.StateIndex], oldTr.IsFinal);
+                }
+
+                this.StateStarts[i] = transIndex;
+                transIndex += old.Key.Transitions.Length;
+            }
+
+            this.RootState = oldToNewStates[this.RootState];
+        }
+
+        private int Register(int state, Dictionary<StateSignature, int> registered, MergeList mergeList)
+        {
+            int lower = this.StateStarts[state];
+            int upper = this.Transitions.GetUpperIndex(this.StateStarts, state);
+            int registeredState;
+
+            for (int i = lower; i < upper; i++)
+            {
+                int sj = this.Transitions[i].StateIndex;
+                registeredState = this.Register(sj, registered, mergeList);
+                if (registeredState >= 0)
+                {
+                    // state sj has to be substituted with registeredState                    
+                    foreach (var t in mergeList.GetTransitionIndexes(sj))
+                    {
+                        var transition = this.Transitions[t];
+                        this.Transitions[t] = new QSetTransition(
+                            transition.AlphabetIndex, registeredState, transition.IsFinal);
+                    }
+
+                    mergeList.Merge(registeredState, sj);
+                }
+            }
+
+            var sigTransitions = new QSetTransition[upper - lower];
+            for (int i = lower; i < upper; i++)
+            {
+                sigTransitions[i - lower] = this.Transitions[i];
+            }
+
+            var signature = new StateSignature(sigTransitions);
+            if (registered.TryGetValue(signature, out registeredState))
+            {
+                return registeredState;
+            }
+
+            registered.Add(signature, state);
+            return -1;
+        }
+
+        private bool TrySend(int fromState, T input, out int transitionIndex)
+        {
+            transitionIndex = this.GetTransitionIndex(fromState, input);
+            if (transitionIndex >= 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TrySendSequence(
+            int fromState, IEnumerable<T> sequence, out QSetTransition transition, Stack<int> nextTransitions = null)
+        {
+            int currentState = fromState;
+            transition = default(QSetTransition);
+
+            foreach (var element in sequence)
+            {
+                int transitionIndex;
+                if (this.TrySend(currentState, element, out transitionIndex))
+                {
+                    currentState = this.Transitions[transitionIndex].StateIndex;
+
+                    if (nextTransitions != null)
+                    {
+                        nextTransitions.Push(transitionIndex + 1);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

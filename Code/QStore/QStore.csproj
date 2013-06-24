@@ -43,7 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comparers\StateSignatureEqualityComparer.cs" />
     <Compile Include="Extensions\IListExtensions.cs" />
+    <Compile Include="IIndexedSequenceSet.cs" />
+    <Compile Include="MergeList.cs" />
+    <Compile Include="QIndexedSet.cs" />
     <Compile Include="Structs\AlignedPair.cs" />
     <Compile Include="Structs\QSetTransition.cs" />
     <Compile Include="ISequenceMap.cs" />
@@ -53,7 +57,9 @@
     <Compile Include="QMap.cs" />
     <Compile Include="QSet.cs" />
     <Compile Include="QStringSet.cs" />
+    <Compile Include="Structs\StateSignature.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
