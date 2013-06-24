@@ -1,5 +1,6 @@
 ﻿namespace QStore
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -10,75 +11,98 @@
     public class QSet<T> : ISequenceSet<T>, IEnumerable<IEnumerable<T>>
     {
         private T[] alphabet;
+        
+        private IComparer<T> comparer;
 
-        private int[] lowerTransitionIndexes;
+        private int rootState;
 
-        private int start;
+        private int[] stateStarts;
 
-        // TODO: think of serialization.        
-        private IComparer<T> symbolComparer;
+        private QSetTransition[] transitions;        
 
-        private SequenceSetTransition[] transitions;
-
-        public static QSet<T> Create(
-            IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, IEqualityComparer<T> equalityComparer)
+        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
         {
-            var sequencesArray = sequences as T[][] ?? sequences.Select(s => s.ToArray()).ToArray();
-            var alphabet = ExtractAlphabet(sequencesArray, comparer, equalityComparer);
-            var alphabetDict = alphabet.Select((a, i) => new KeyValuePair<T, int>(a, i))
-                                       .ToDictionary(p => p.Key, p => p.Value, equalityComparer);
+            // avoid multiple enumeration
+            var seqArray = sequences as T[][] ?? sequences.Select(s => s.ToArray()).ToArray();
 
-            var transitions = new List<List<SequenceSetTransition>>(alphabet.Length)
-            {
-                new List<SequenceSetTransition>()
-            };
+            T[] alphabet;
+            SortedDictionary<T, int> alphabetDict;
+            ExtractAlphabet(seqArray, comparer, out alphabet, out alphabetDict);
 
-            foreach (var sequence in sequencesArray)
+            // outer list represents states, inner lists represent transitions from this state
+            // State1 -------> State2 -------> ...... -------> StateN
+            // |               |
+            // a->State2       b->State3
+            // |               |
+            // d->State5       e->State4,final
+            // |
+            // z->StateN,final
+            // capacity is set to alphabet.Length just to avoid few initial resizings
+            var transitions = new List<List<QSetTransition>>(alphabet.Length) { new List<QSetTransition>() };
+
+            foreach (var sequence in seqArray)
             {
-                int curState = -1, nextState = 0, transitionIndex = -1;
-                foreach (var element in sequence)
+                int nextState = 0, transitionIndex = -1;
+                List<QSetTransition> currentStateTransitions = null;
+                foreach (var symbol in sequence)
                 {
-                    curState = nextState;
-                    transitionIndex = GetTransitionIndex(
-                        transitions[curState], element, alphabet, comparer, 0, transitions[curState].Count);
-                    if (transitionIndex < 0)
+                    currentStateTransitions = transitions[nextState];
+                    transitionIndex = GetTransitionIndex(currentStateTransitions, symbol, alphabet, comparer);
+                    if (transitionIndex >= 0)
                     {
-                        transitionIndex = ~transitionIndex;
-
-                        // Int32 alphabetIndex = alphabet.OptimalSearch(element);
-                        int alphabetIndex = alphabetDict[element];
-
-                        // add new state
-                        nextState = transitions.Count;
-                        transitions.Add(new List<SequenceSetTransition>());
-
-                        // add transition from current state to new state                                                
-                        var newTransition = new SequenceSetTransition(alphabetIndex, nextState, false);
-                        transitions[curState].Insert(transitionIndex, newTransition);
+                        // transition from currentState by symbol already exists
+                        nextState = currentStateTransitions[transitionIndex].StateIndex;
                     }
                     else
                     {
-                        nextState = transitions[curState][transitionIndex].StateIndex;
+                        // transition from currentState by symbol doesn't exist
+                        transitionIndex = ~transitionIndex;
+
+                        // find alphabetIndex for symbol
+                        int alphabetIndex = alphabetDict[symbol];
+
+                        // add new state
+                        nextState = transitions.Count;
+                        transitions.Add(new List<QSetTransition>());
+
+                        // add transition from current state to new state                                                
+                        var newTransition = new QSetTransition(alphabetIndex, nextState, false);
+
+                        // I know this Insert in the middle of the List<> doesn't look very clever,
+                        // but I tried SortedDictionary and LinkedList approach: they are slower in practice
+                        currentStateTransitions.Insert(transitionIndex, newTransition);
                     }
                 }
+                
+                if (currentStateTransitions == null)
+                {
+                    throw new ArgumentException("Empty sequences are not allowed!");
+                }
 
-                var tmp = transitions[curState][transitionIndex];
-                transitions[curState][transitionIndex] = new SequenceSetTransition(
-                    tmp.AlphabetIndex, tmp.StateIndex, true);
-            }
+                if (currentStateTransitions[transitionIndex].IsFinal)
+                {
+                    throw new ArgumentException(
+                        string.Format(
+                            "An element with Key = \"{0}\" already exists.",
+                            string.Concat(sequence.Select(e => e.ToString()))));
+                }
+                
+                // mark last transition in this sequence as final
+                currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
+            }        
 
             var result = new QSet<T>
             {
-                symbolComparer = comparer, 
+                comparer = comparer, 
                 alphabet = alphabet, 
-                start = 0, 
-                lowerTransitionIndexes = new int[transitions.Count], 
-                transitions = new SequenceSetTransition[transitions.Sum(s => s.Count)]
+                rootState = 0, 
+                stateStarts = new int[transitions.Count], 
+                transitions = new QSetTransition[transitions.Sum(s => s.Count)]
             };
 
             for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
             {
-                result.lowerTransitionIndexes[i] = transitionIndex;
+                result.stateStarts[i] = transitionIndex;
                 for (int j = 0; j < transitions[i].Count; j++, transitionIndex++)
                 {
                     result.transitions[transitionIndex] = transitions[i][j];
@@ -86,13 +110,7 @@
             }
 
             return result;
-        }
-
-        public static T[] ExtractAlphabet(
-            IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer, IEqualityComparer<T> equalityComparer)
-        {
-            return sequences.SelectMany(s => s).Distinct(equalityComparer).OrderBy(a => a, comparer).ToArray();
-        }
+        }        
 
         public bool Contains(IEnumerable<T> sequence)
         {
@@ -111,7 +129,7 @@
 
         public IEnumerator<IEnumerable<T>> GetEnumerator()
         {
-            return this.Enumerate(this.start).GetEnumerator();
+            return this.Enumerate(this.rootState).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -119,13 +137,12 @@
             return this.GetEnumerator();
         }
 
-        // TODO: check if "int" is enough
-        public int GetIndex(IEnumerable<T> sequence)
+        public long GetIndex(IEnumerable<T> sequence)
         {
             throw new System.NotImplementedException();
         }
 
-        internal bool TrySend(int fromState, T input, out SequenceSetTransition transition)
+        internal bool TrySend(int fromState, T input, out QSetTransition transition)
         {
             int transitionIndex = this.GetTransitionIndex(fromState, input);
             if (transitionIndex >= 0)
@@ -134,14 +151,14 @@
                 return true;
             }
 
-            transition = default(SequenceSetTransition);
+            transition = default(QSetTransition);
             return false;
         }
 
-        internal bool TrySend(int fromState, IEnumerable<T> inputSequence, out SequenceSetTransition transition)
+        internal bool TrySend(int fromState, IEnumerable<T> inputSequence, out QSetTransition transition)
         {
             int currentState = fromState;
-            transition = default(SequenceSetTransition);
+            transition = default(QSetTransition);
             foreach (var input in inputSequence)
             {
                 if (this.TrySend(currentState, input, out transition))
@@ -155,49 +172,107 @@
             }
 
             return true;
-        }
+        }        
 
-        protected IEnumerable<IEnumerable<T>> Enumerate(int fromState)
-        {
-            int lower = this.lowerTransitionIndexes[fromState];
-            int upper = this.transitions.GetUpperIndex(this.lowerTransitionIndexes, fromState);
+        protected IEnumerable<T[]> Enumerate(int fromState, Stack<int> fromStack = null)
+        {            
+            fromStack = fromStack ?? new Stack<int>();
+            var toStack = new Stack<int>();
+            int lower = this.stateStarts[fromState];
+            int upper = this.transitions.GetUpperIndex(this.stateStarts, fromState);
+            fromStack.Push(lower);
+            toStack.Push(upper);
 
-            for (int i = lower; i < upper; i++)
+            while (fromStack.Count > 0)
             {
-                var tr = this.transitions[i];
-                T element = this.alphabet[tr.AlphabetIndex];
-                if (tr.IsFinal)
-                {
-                    yield return new[] { element };
-                }
+                lower = fromStack.Pop();
+                upper = toStack.Peek();                
 
-                foreach (var w in this.Enumerate(tr.StateIndex).Select(w => w.Prepend(element)))
+                if (lower < upper)
                 {
-                    yield return w;
+                    fromStack.Push(lower + 1);
+
+                    if (this.transitions[lower].IsFinal)
+                    {
+                        var tmp = new int[fromStack.Count];
+                        fromStack.CopyTo(tmp, 0);
+                        var res = new T[fromStack.Count];
+                        for (int i = 0; i < res.Length; i++)
+                        {
+                            res[i] = this.alphabet[this.transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
+                        }
+
+                        yield return res;                        
+                    } 
+
+                    int nextState = this.transitions[lower].StateIndex;
+                    int nextLower = this.stateStarts[nextState];
+                    int nextUpper = this.transitions.GetUpperIndex(this.stateStarts, nextState);
+                    if (nextLower < nextUpper)
+                    {
+                        fromStack.Push(nextLower);
+                        toStack.Push(nextUpper);
+                    }                                                       
+                }
+                else
+                {                    
+                    toStack.Pop();
                 }
             }
-        }
+        }        
 
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
-        protected int GetTransitionIndex(int fromState, T input)
+        protected int GetTransitionIndex(int fromState, T symbol)
         {
-            int lower = this.lowerTransitionIndexes[fromState];
-            int upper = this.transitions.GetUpperIndex(this.lowerTransitionIndexes, fromState);
-            return GetTransitionIndex(this.transitions, input, this.alphabet, this.symbolComparer, lower, upper);
+            int lower = this.stateStarts[fromState];
+            int upper = this.transitions.GetUpperIndex(this.stateStarts, fromState);
+            return GetTransitionIndex(this.transitions, symbol, this.alphabet, this.comparer, lower, upper);
+        }
+
+        private static void ExtractAlphabet(
+            IEnumerable<IEnumerable<T>> sequences, 
+            IComparer<T> comparer, 
+            out T[] alphabet, 
+            out SortedDictionary<T, int> alphabetDictionary)
+        {
+            alphabetDictionary = new SortedDictionary<T, int>(comparer);
+            foreach (var sequence in sequences)
+            {
+                foreach (T element in sequence)
+                {
+                    if (!alphabetDictionary.ContainsKey(element))
+                    {
+                        alphabetDictionary.Add(element, 0);
+                    }
+                }
+            }
+
+            alphabet = alphabetDictionary.Keys.ToArray();
+
+            for (int i = 0; i < alphabet.Length; i++)
+            {
+                alphabetDictionary[alphabet[i]] = i;
+            }
+        }        
+
+        private static int GetTransitionIndex(
+            IList<QSetTransition> transitions, T symbol, T[] alphabet, IComparer<T> comparer)
+        {
+            return GetTransitionIndex(transitions, symbol, alphabet, comparer, 0, transitions.Count);
         }
 
         private static int GetTransitionIndex(
-            IList<SequenceSetTransition> transitions, T input, T[] alphabet, IComparer<T> comparer, int lower, int upper)
+            IList<QSetTransition> transitions, T symbol, T[] alphabet, IComparer<T> comparer, int lower, int upper)
         {
             const int BinarySearchThreshold = 5;
             if (upper - lower >= BinarySearchThreshold)
             {
-                // Binary search
+                // binary search
                 upper--;
                 while (lower <= upper)
                 {
                     int middle = (lower + upper) / 2;
-                    int comparisonResult = comparer.Compare(alphabet[transitions[middle].AlphabetIndex], input);
+                    int comparisonResult = comparer.Compare(alphabet[transitions[middle].AlphabetIndex], symbol);
                     if (comparisonResult == 0)
                     {
                         return middle;
@@ -216,10 +291,10 @@
                 return ~lower;
             }
 
-            // Linear search
+            // linear search
             for (int i = lower; i < upper; i++)
             {
-                int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], input);
+                int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], symbol);
                 if (comp == 0)
                 {
                     return i;

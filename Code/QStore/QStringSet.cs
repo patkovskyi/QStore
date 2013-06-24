@@ -13,10 +13,10 @@
         {
         }
 
-        public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer, IEqualityComparer<char> equalityComparer)
+        public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return new QStringSet() { set = QSet<char>.Create(strings, comparer, equalityComparer) };
-        }
+            return new QStringSet { set = QSet<char>.Create(strings, comparer) };
+        }   
 
         public bool Contains(IEnumerable<char> sequence)
         {
@@ -53,7 +53,7 @@
             return this.GetEnumerator();
         }
 
-        public int GetIndex(IEnumerable<char> sequence)
+        public long GetIndex(IEnumerable<char> sequence)
         {
             throw new NotImplementedException();
         }

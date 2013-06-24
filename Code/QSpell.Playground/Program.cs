@@ -64,9 +64,20 @@ namespace QSpell.Playground
             Console.WriteLine("ConcatStrings: {0}", watch.Elapsed);
         }
 
+        private static void Shuffle(string originalPath, string outputPath, Encoding encoding)
+        {            
+            var r = new Random();
+            File.WriteAllLines(
+                outputPath,
+                File.ReadAllLines(originalPath, encoding).OrderBy(line => r.Next()).ToArray(),
+                encoding);
+        }
+
         static void Main(string[] args)
         {
-            TestStringConversion();
+            Shuffle("Zaliznyak-baseforms-1251.txt", "Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251));
+            Shuffle("Zaliznyak-1251.txt", "Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
+            //TestStringConversion();
             //var before = GC.GetTotalMemory(true);
             //var pairs = new AlignedPair<int, byte>[1000];
             //var after = GC.GetTotalMemory(true);

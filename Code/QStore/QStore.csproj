@@ -43,10 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\IListExtensions.cs" />
     <Compile Include="Structs\AlignedPair.cs" />
-    <Compile Include="Structs\SequenceSetTransition.cs" />
+    <Compile Include="Structs\QSetTransition.cs" />
     <Compile Include="ISequenceMap.cs" />
     <Compile Include="ISequenceSet.cs" />
     <Compile Include="IStringSet.cs" />

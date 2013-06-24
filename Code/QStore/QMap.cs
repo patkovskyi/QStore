@@ -25,7 +25,7 @@
             return this.GetEnumerator();
         }
 
-        public int GetIndex(IEnumerable<TKey> sequence)
+        public long GetIndex(IEnumerable<TKey> sequence)
         {
             throw new System.NotImplementedException();
         }

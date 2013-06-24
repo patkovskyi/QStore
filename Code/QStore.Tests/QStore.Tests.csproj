@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Comparers\NullComparer.cs" />
     <Compile Include="Comparers\SequenceComparer.cs" />
+    <Compile Include="Helpers\ExceptionAssert.cs" />
     <Compile Include="QStringSetTests\CreateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
