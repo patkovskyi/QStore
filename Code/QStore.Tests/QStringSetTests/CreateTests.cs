@@ -34,6 +34,13 @@ namespace QStore.Tests.QStringSetTests
         }
 
         [TestMethod]
+        [DeploymentItem(TestData.BaseformsDeployedPath)]
+        public void CreateBaseforms()
+        {
+            CreateTestHelper(File.ReadAllLines(TestData.BaseformsDeployedPath, TestData.Encoding));
+        }
+
+        [TestMethod]
         public void CreateSimple1()
         {
             CreateTestHelper("aa", "ab", "ac", "abc");
@@ -43,29 +50,6 @@ namespace QStore.Tests.QStringSetTests
         public void CreateSimple2()
         {
             CreateTestHelper("one", "two", "three", "four", "five");
-        }                
-
-        [TestMethod]
-        [DeploymentItem(TestData.BaseformsDeployedPath)]
-        public void CreateBaseforms()
-        {
-            CreateTestHelper(File.ReadAllLines(TestData.BaseformsDeployedPath, TestData.Encoding));
-        }
-
-        [TestMethod]
-        [DeploymentItem(TestData.ZaliznyakSolutionPath)]
-        public void CreateZaliznyak()
-        {
-            CreateTestHelper(File.ReadAllLines(TestData.ZaliznyakDeployedPath, TestData.Encoding));
-        }        
-
-        [TestMethod]
-        public void CreateTestEmptySequenceException()
-        {
-            var e =
-                ExceptionAssert.Throws<ArgumentException>(
-                    () => QStringSet.Create(new[] { "a", string.Empty, "ab" }, Comparer<char>.Default));
-            Assert.AreEqual(e.Message, "Empty sequences are not allowed!");
         }
 
         [TestMethod]
@@ -74,7 +58,23 @@ namespace QStore.Tests.QStringSetTests
             var e =
                 ExceptionAssert.Throws<ArgumentException>(
                     () => QStringSet.Create(new[] { "ab", "a", "ab" }, Comparer<char>.Default));
-            Assert.AreEqual(e.Message, "An element with Key = \"ab\" already exists.");
+            Assert.AreEqual(string.Format(ErrorMessages.DuplicateKey, "ab"), e.Message);
+        }
+
+        [TestMethod]
+        public void CreateTestEmptySequenceException()
+        {
+            var e =
+                ExceptionAssert.Throws<ArgumentException>(
+                    () => QStringSet.Create(new[] { "a", string.Empty, "ab" }, Comparer<char>.Default));
+            Assert.AreEqual(ErrorMessages.EmptySequencesAreNotSupported, e.Message);
+        }
+
+        [TestMethod]
+        [DeploymentItem(TestData.ZaliznyakSolutionPath)]
+        public void CreateZaliznyak()
+        {
+            CreateTestHelper(File.ReadAllLines(TestData.ZaliznyakDeployedPath, TestData.Encoding));
         }
     }
 }
