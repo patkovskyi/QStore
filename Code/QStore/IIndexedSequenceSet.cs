@@ -4,7 +4,7 @@
 
     public interface IIndexedSequenceSet<T> : ISequenceSet<T>
     {
-        IEnumerable<T> GetByIndex(int index);
+        List<T> GetByIndex(long index);
 
         long GetIndex(IEnumerable<T> sequence);
     }
