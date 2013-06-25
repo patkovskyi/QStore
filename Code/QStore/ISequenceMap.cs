@@ -7,7 +7,7 @@
         bool Contains(IEnumerable<TKey> sequence);
 
         IEnumerable<KeyValuePair<IEnumerable<TKey>, TValue>> GetByPrefix(IEnumerable<TKey> prefix);
-        
+
         long GetIndex(IEnumerable<TKey> sequence);
 
         IEnumerable<TKey> GetKeyByIndex(int index);

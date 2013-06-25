@@ -17,12 +17,12 @@
 
         public List<T> GetByIndex(long index)
         {
-            if (index >= this.Count)
+            if (index < 0 || index >= this.Count)
             {
-                throw new ArgumentException(string.Format(ErrorMessages.IndexOutOfRange, index, this.Count), "index");
+                throw new IndexOutOfRangeException(string.Format(ErrorMessages.IndexOutOfRange, index, this.Count));
             }
 
-            var result = new List<T>();            
+            var result = new List<T>();
             var nextTransition = new QSetTransition(0, this.RootState, false);
             while (index > 0 || !nextTransition.IsFinal)
             {
@@ -35,12 +35,12 @@
                 {
                     nextTransitionIndex = (~nextTransitionIndex) - 1;
                 }
-                
+
                 index -= nextTransition.IsFinal ? 1 : 0;
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 nextTransition = this.Transitions[nextTransitionIndex];
-                result.Add(this.Alphabet[nextTransition.AlphabetIndex]);                
+                result.Add(this.Alphabet[nextTransition.AlphabetIndex]);
             }
 
             return result;
@@ -67,7 +67,7 @@
                     currentState = transition.StateIndex;
                 }
                 else
-                {                    
+                {
                     return ~(lexicographicIndex + ~transitionIndex);
                 }
             }

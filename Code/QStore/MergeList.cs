@@ -27,14 +27,14 @@
             this.transitions[toState].Add(transition);
         }
 
-        internal void Merge(int stateToKeep, int stateToRemove)
-        {                        
-            this.transitions[stateToRemove] = null;
-        }
-
         internal List<int> GetTransitionIndexes(int toState)
         {
             return this.transitions[toState];
+        }
+
+        internal void Merge(int stateToKeep, int stateToRemove)
+        {
+            this.transitions[stateToRemove] = null;
         }
     }
 }

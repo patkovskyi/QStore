@@ -6,9 +6,9 @@
     using QStore.Structs;
 
     internal class StateSignatureEqualityComparer : IEqualityComparer<StateSignature>
-    {      
+    {
         public bool Equals(StateSignature x, StateSignature y)
-        {            
+        {
             return StructuralComparisons.StructuralEqualityComparer.Equals(x.Transitions, y.Transitions);
         }
 
@@ -25,6 +25,7 @@
                     hash = (hash * 23) + obj.Transitions[i].AlphabetIndex;
                     hash = (hash * 23) + obj.Transitions[i].StateIndex;
                 }
+
                 return hash;
             }
         }

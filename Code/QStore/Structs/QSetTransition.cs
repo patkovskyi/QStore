@@ -29,11 +29,11 @@
             {
                 return (this.alphabetIndex & -2147483648) != 0;
             }
-        }               
+        }
 
         internal QSetTransition MakeFinal()
         {
-            return new QSetTransition(AlphabetIndex, StateIndex, true);
+            return new QSetTransition(this.AlphabetIndex, this.StateIndex, true);
         }
     }
 }

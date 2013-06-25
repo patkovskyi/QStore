@@ -2,6 +2,6 @@
 {
     public interface IIndexedStringSet : IIndexedSequenceSet<char>
     {
-        new string GetByIndex(long index);        
+        new string GetByIndex(long index);
     }
 }

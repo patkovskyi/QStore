@@ -16,12 +16,12 @@
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
             return new QStringSet { set = QSet<char>.Create(strings, comparer) };
-        }   
+        }
 
         public bool Contains(IEnumerable<char> sequence)
         {
             throw new NotImplementedException();
-        }             
+        }
 
         public IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
         {
