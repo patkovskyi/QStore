@@ -23,10 +23,10 @@ namespace QStore.Tests.QStringSetTests
             Console.WriteLine(@"QStringSet.Create() took {0}", watch.Elapsed);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
-            watch.Restart();
-            var a = target.GetByPrefix("abc");
+            watch.Restart();            
             var actual = target.ToArray();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
+            Assert.AreEqual(strings.Length, target.Count);
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }
 

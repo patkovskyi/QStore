@@ -31,6 +31,17 @@
         }
 
         [TestMethod]
+        public void GetIndexNegative()
+        {
+            var target = QIndexedStringSet.Create(new[] { "ba", "bc" }, Comparer<char>.Default);
+            Assert.AreEqual(~0, target.GetIndex("aa"));
+            Assert.AreEqual(~1, target.GetIndex("baa"));
+            Assert.AreEqual(~1, target.GetIndex("bb"));
+            Assert.AreEqual(~2, target.GetIndex("bca"));
+            Assert.AreEqual(~2, target.GetIndex("bd"));            
+        }
+
+        [TestMethod]
         public void GetIndexEmptySequence()
         {
             var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);

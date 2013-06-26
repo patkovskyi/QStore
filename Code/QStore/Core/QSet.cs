@@ -32,6 +32,11 @@
 
         public bool Contains(IEnumerable<T> sequence)
         {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException("sequence");
+            }
+
             QSetTransition transition;
             if (this.TrySendSequence(this.RootState, sequence, out transition))
             {
@@ -43,6 +48,11 @@
 
         public IEnumerable<T[]> GetByPrefix(IEnumerable<T> prefix)
         {
+            if (prefix == null)
+            {
+                throw new ArgumentNullException("prefix");
+            }
+
             QSetTransition transition;
             var fromStack = new Stack<int>();
             if (this.TrySendSequence(this.RootState, prefix, out transition, fromStack))
@@ -62,16 +72,24 @@
         {
             return this.GetEnumerator();
         }
-
+        
         protected static TSet Create<TSet>(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
             where TSet : QSet<T>, new()
         {
-            // avoid multiple enumeration
-            var seqArray = sequences as T[][] ?? sequences.Select(s => s.ToArray()).ToArray();
+            if (sequences == null)
+            {
+                throw new ArgumentNullException("sequences");
+            }
 
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+
+            // ReSharper disable PossibleMultipleEnumeration
             T[] alphabet;
             SortedDictionary<T, int> alphabetDict;
-            ExtractAlphabet(seqArray, comparer, out alphabet, out alphabetDict);
+            ExtractAlphabet(sequences, comparer, out alphabet, out alphabetDict);
 
             // outer list represents states, inner lists represent transitions from this state
             // State1 -------> State2 -------> ...... -------> StateN
@@ -84,7 +102,8 @@
             // capacity is set to alphabet.Length just to avoid few initial resizings
             var transitions = new List<List<QSetTransition>>(alphabet.Length) { new List<QSetTransition>() };
 
-            foreach (var sequence in seqArray)
+            long sequenceCounter = 0;
+            foreach (var sequence in sequences)
             {
                 int nextState = 0, transitionIndex = -1;
                 List<QSetTransition> currentStateTransitions = null;
@@ -132,6 +151,7 @@
 
                 // mark last transition in this sequence as final
                 currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
+                ++sequenceCounter;
             }
 
             var result = new TSet
@@ -141,7 +161,7 @@
                 RootState = 0, 
                 StateStarts = new int[transitions.Count], 
                 Transitions = new QSetTransition[transitions.Sum(s => s.Count)], 
-                Count = seqArray.Length
+                Count = sequenceCounter
             };
 
             for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
@@ -155,8 +175,9 @@
 
             result.Minimize();
             return result;
+            // ReSharper restore PossibleMultipleEnumeration
         }
-
+        
         protected IEnumerable<T[]> Enumerate(int fromState, Stack<int> fromStack = null)
         {
             fromStack = fromStack ?? new Stack<int>();
@@ -304,7 +325,8 @@
             }
 
             // linear search
-            for (int i = lower; i < upper; i++)
+            int i;
+            for (i = lower; i < upper; i++)
             {
                 int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], symbol);
                 if (comp == 0)
@@ -318,7 +340,7 @@
                 }
             }
 
-            return ~upper;
+            return ~i;
         }
 
         private MergeList GetMergeList()

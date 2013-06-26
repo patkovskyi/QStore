@@ -46,6 +46,11 @@
 
         public IEnumerable<KeyValuePair<T[], long>> GetByPrefixWithIndex(IEnumerable<T> prefix)
         {
+            if (prefix == null)
+            {
+                throw new ArgumentNullException("prefix");
+            }
+
             QSetTransition transition;
             var fromStack = new Stack<int>();
             if (this.TrySendSequence(this.RootState, prefix, out transition, fromStack))
@@ -68,13 +73,20 @@
             }
 
             int currentState = this.RootState;
+            long pathsAfterThisChoice = this.Count;
             long lexicographicIndex = 0;
 
             foreach (var element in sequence)
             {
+                int upper = this.Transitions.GetUpperIndex(this.StateStarts, currentState);
                 int transitionIndex;
                 if (this.TrySend(currentState, element, out transitionIndex))
                 {
+                    if (transitionIndex + 1 < upper)
+                    {
+                        pathsAfterThisChoice = this.PathsLeft[transitionIndex + 1];
+                    }    
+                
                     var transition = this.Transitions[transitionIndex];
                     lexicographicIndex += transition.IsFinal ? 1 : 0;
                     lexicographicIndex += this.PathsLeft[transitionIndex];
@@ -82,7 +94,9 @@
                 }
                 else
                 {
-                    return ~(lexicographicIndex + ~transitionIndex);
+                    return ~transitionIndex < upper
+                               ? ~(lexicographicIndex + this.PathsLeft[~transitionIndex])
+                               : ~pathsAfterThisChoice;
                 }
             }
 

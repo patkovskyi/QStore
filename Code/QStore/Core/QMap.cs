@@ -1,5 +1,6 @@
 ﻿namespace QStore.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -34,6 +35,21 @@
 
                 this.Values[index] = value;
             }
+        }
+
+        public static QMap<TKey, TValue> Create(IEnumerable<TKey> keySequences, IComparer<TKey> comparer)
+        {
+            if (keySequences == null)
+            {
+                throw new ArgumentNullException("keySequences");
+            }
+
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+
+            return Create(keySequences, comparer);
         }
 
         public new KeyValuePair<TKey[], TValue> GetByIndex(long index)
