@@ -1,9 +1,9 @@
-﻿namespace QStore.Comparers
+﻿namespace QStore.Core.Comparers
 {
     using System.Collections;
     using System.Collections.Generic;
 
-    using QStore.Structs;
+    using QStore.Core.Structs;
 
     internal class StateSignatureEqualityComparer : IEqualityComparer<StateSignature>
     {

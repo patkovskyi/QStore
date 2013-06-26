@@ -43,28 +43,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Comparers\StateSignatureEqualityComparer.cs" />
+    <Compile Include="Core\Comparers\StateSignatureEqualityComparer.cs" />
     <Compile Include="ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Extensions\IListExtensions.cs" />
-    <Compile Include="IIndexedSequenceSet.cs" />
-    <Compile Include="IIndexedStringSet.cs" />
-    <Compile Include="MergeList.cs" />
-    <Compile Include="QIndexedSet.cs" />
-    <Compile Include="QIndexedStringSet.cs" />
-    <Compile Include="Structs\AlignedPair.cs" />
-    <Compile Include="Structs\QSetTransition.cs" />
-    <Compile Include="ISequenceMap.cs" />
-    <Compile Include="ISequenceSet.cs" />
-    <Compile Include="IStringSet.cs" />
+    <Compile Include="Core\Extensions\IListExtensions.cs" />
+    <Compile Include="Core\Interfaces\IIndexedSequenceSet.cs" />
+    <Compile Include="Strings\Interfaces\IIndexedStringSet.cs" />
+    <Compile Include="Core\Minimization\MergeList.cs" />
+    <Compile Include="Core\QIndexedSet.cs" />
+    <Compile Include="Strings\QIndexedStringSet.cs" />
+    <Compile Include="Core\Structs\QSetTransition.cs" />
+    <Compile Include="Core\Interfaces\ISequenceMap.cs" />
+    <Compile Include="Core\Interfaces\ISequenceSet.cs" />
+    <Compile Include="Strings\Interfaces\IStringMap.cs" />
+    <Compile Include="Strings\Interfaces\IStringSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QMap.cs" />
-    <Compile Include="QSet.cs" />
-    <Compile Include="QStringSet.cs" />
-    <Compile Include="Structs\StateSignature.cs" />
+    <Compile Include="Core\QMap.cs" />
+    <Compile Include="Core\QSet.cs" />
+    <Compile Include="Strings\QStringMap.cs" />
+    <Compile Include="Strings\QStringSet.cs" />
+    <Compile Include="Core\Structs\StateSignature.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ErrorMessages.resx">
@@ -72,6 +73,7 @@
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

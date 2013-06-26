@@ -1,15 +1,17 @@
-﻿namespace QStore
+﻿namespace QStore.Core
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
-    using QStore.Comparers;
-    using QStore.Extensions;
-    using QStore.Structs;
+    using QStore.Core.Comparers;
+    using QStore.Core.Extensions;
+    using QStore.Core.Interfaces;
+    using QStore.Core.Minimization;
+    using QStore.Core.Structs;
 
-    public class QSet<T> : ISequenceSet<T>, IEnumerable<T[]>
+    public class QSet<T> : ISequenceSet<T>
     {
         protected internal T[] Alphabet;
 
@@ -39,7 +41,7 @@
             return false;
         }
 
-        public IEnumerable<IEnumerable<T>> GetByPrefix(IEnumerable<T> prefix)
+        public IEnumerable<T[]> GetByPrefix(IEnumerable<T> prefix)
         {
             QSetTransition transition;
             var fromStack = new Stack<int>();
@@ -48,7 +50,7 @@
                 return this.Enumerate(transition.StateIndex, fromStack);
             }
 
-            return Enumerable.Empty<IEnumerable<T>>();
+            return Enumerable.Empty<T[]>();
         }
 
         public IEnumerator<T[]> GetEnumerator()
@@ -213,6 +215,38 @@
             return false;
         }
 
+        protected bool TrySendSequence(
+            int fromState, IEnumerable<T> sequence, out QSetTransition transition, Stack<int> nextTransitions = null)
+        {
+            if (sequence == null)
+            {
+                throw new ArgumentNullException("sequence");
+            }
+
+            int currentState = fromState;
+            transition = default(QSetTransition);
+
+            foreach (var element in sequence)
+            {
+                int transitionIndex;
+                if (this.TrySend(currentState, element, out transitionIndex))
+                {
+                    currentState = this.Transitions[transitionIndex].StateIndex;
+
+                    if (nextTransitions != null)
+                    {
+                        nextTransitions.Push(transitionIndex + 1);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private static void ExtractAlphabet(
             IEnumerable<IEnumerable<T>> sequences, 
             IComparer<T> comparer, 
@@ -372,38 +406,6 @@
 
             registered.Add(signature, state);
             return -1;
-        }
-
-        private bool TrySendSequence(
-            int fromState, IEnumerable<T> sequence, out QSetTransition transition, Stack<int> nextTransitions = null)
-        {
-            if (sequence == null)
-            {
-                throw new ArgumentNullException("sequence");
-            }
-
-            int currentState = fromState;
-            transition = default(QSetTransition);
-
-            foreach (var element in sequence)
-            {
-                int transitionIndex;
-                if (this.TrySend(currentState, element, out transitionIndex))
-                {
-                    currentState = this.Transitions[transitionIndex].StateIndex;
-
-                    if (nextTransitions != null)
-                    {
-                        nextTransitions.Push(transitionIndex + 1);
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

@@ -6,6 +6,7 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+    using QStore.Strings;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 

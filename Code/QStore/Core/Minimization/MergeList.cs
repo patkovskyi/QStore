@@ -1,4 +1,4 @@
-﻿namespace QStore
+﻿namespace QStore.Core.Minimization
 {
     using System.Collections.Generic;
 

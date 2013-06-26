@@ -8,6 +8,7 @@ namespace QStore.Tests.QStringSetTests
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+    using QStore.Strings;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 
@@ -23,7 +24,8 @@ namespace QStore.Tests.QStringSetTests
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
             watch.Restart();
-            var actual = target.ToArray();
+            var a = target.GetByPrefix("abc");
+            var actual = target.ToArray<string>();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }

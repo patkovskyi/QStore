@@ -1,10 +1,12 @@
-﻿namespace QStore
+﻿namespace QStore.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
-    using QStore.Extensions;
-    using QStore.Structs;
+    using QStore.Core.Extensions;
+    using QStore.Core.Interfaces;
+    using QStore.Core.Structs;
 
     public class QIndexedSet<T> : QSet<T>, IIndexedSequenceSet<T>
     {
@@ -44,6 +46,22 @@
             }
 
             return result;
+        }
+
+        public IEnumerable<KeyValuePair<T[], long>> GetByPrefixWithIndex(IEnumerable<T> prefix)
+        {
+            QSetTransition transition;
+            var fromStack = new Stack<int>();
+            if (this.TrySendSequence(this.RootState, prefix, out transition, fromStack))
+            {
+                long index =
+                    fromStack.Select(i => this.PathsLeft[i - 1] + (this.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
+                return
+                    this.Enumerate(transition.StateIndex, fromStack)
+                        .Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
+            }
+
+            return Enumerable.Empty<KeyValuePair<T[], long>>();
         }
 
         public long GetIndex(IEnumerable<T> sequence)

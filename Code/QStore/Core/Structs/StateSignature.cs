@@ -1,4 +1,4 @@
-﻿namespace QStore.Structs
+﻿namespace QStore.Core.Structs
 {
     internal class StateSignature
     {
