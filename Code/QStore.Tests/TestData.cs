@@ -3,7 +3,7 @@
     using System.Text;
 
     public class TestData
-    {        
+    {
         public const string ZaliznyakSolutionPath = @"..\TestData\Zaliznyak-1251.txt";
 
         public const string ZaliznyakDeployedPath = @"Zaliznyak-1251.txt";

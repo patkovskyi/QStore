@@ -25,7 +25,7 @@ namespace QStore.Tests.QStringSetTests
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
             watch.Restart();
             var a = target.GetByPrefix("abc");
-            var actual = target.ToArray<string>();
+            var actual = target.ToArray();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }

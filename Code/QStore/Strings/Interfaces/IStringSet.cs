@@ -4,7 +4,7 @@
 
     using QStore.Core.Interfaces;
 
-    public interface IStringSet : ISequenceSet<char>, IEnumerable<string>
+    public interface IStringSet : ISequenceSet<char>
     {
         new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix);
     }

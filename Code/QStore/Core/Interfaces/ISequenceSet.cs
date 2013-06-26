@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public interface ISequenceSet<T> : IEnumerable<T[]>
+    public interface ISequenceSet<T>
     {
         bool Contains(IEnumerable<T> sequence);
 

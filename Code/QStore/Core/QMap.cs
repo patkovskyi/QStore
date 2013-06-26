@@ -15,13 +15,24 @@
         {
             get
             {
-                TValue value;
-                if (this.TryGetValue(sequence, out value))
+                long index = this.GetIndex(sequence);
+                if (index < 0)
                 {
-                    return value;
+                    throw new KeyNotFoundException();
                 }
 
-                throw new KeyNotFoundException();
+                return this.Values[index];
+            }
+
+            set
+            {
+                long index = this.GetIndex(sequence);
+                if (index < 0)
+                {
+                    throw new KeyNotFoundException();
+                }
+
+                this.Values[index] = value;
             }
         }
 
@@ -53,6 +64,12 @@
         public TValue GetValueByIndex(long index)
         {
             return this.Values[index];
+        }
+
+        public void SetValueByIndex(long index, TValue value)
+        {
+            this.ThrowIfIndexIsOutOfRange(index);
+            this.Values[index] = value;
         }
 
         public bool TryGetValue(IEnumerable<TKey> key, out TValue value)

@@ -31,15 +31,11 @@
         }
 
         [TestMethod]
-        public void GetIndexSimple1()
+        public void GetIndexEmptySequence()
         {
-            GetIndexTestHelper("aa", "ab", "ac", "abc");
-        }
-
-        [TestMethod]
-        public void GetIndexSimple2()
-        {
-            GetIndexTestHelper("one", "two", "three", "four", "five");
+            var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
+            var e = ExceptionAssert.Throws<ArgumentException>(() => target.GetIndex(string.Empty));
+            Assert.AreEqual(ErrorMessages.EmptySequencesAreNotSupported, e.Message);
         }
 
         [TestMethod]
@@ -52,11 +48,15 @@
         }
 
         [TestMethod]
-        public void GetIndexEmptySequence()
+        public void GetIndexSimple1()
         {
-            var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
-            var e = ExceptionAssert.Throws<ArgumentException>(() => target.GetIndex(string.Empty));
-            Assert.AreEqual(ErrorMessages.EmptySequencesAreNotSupported, e.Message);
+            GetIndexTestHelper("aa", "ab", "ac", "abc");
+        }
+
+        [TestMethod]
+        public void GetIndexSimple2()
+        {
+            GetIndexTestHelper("one", "two", "three", "four", "five");
         }
     }
 }

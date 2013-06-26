@@ -11,7 +11,7 @@
     using QStore.Core.Minimization;
     using QStore.Core.Structs;
 
-    public class QSet<T> : ISequenceSet<T>
+    public class QSet<T> : ISequenceSet<T>, IEnumerable<T[]>
     {
         protected internal T[] Alphabet;
 

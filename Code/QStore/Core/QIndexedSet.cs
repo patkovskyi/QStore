@@ -19,11 +19,7 @@
 
         public List<T> GetByIndex(long index)
         {
-            if (index < 0 || index >= this.Count)
-            {
-                throw new IndexOutOfRangeException(string.Format(ErrorMessages.IndexOutOfRange, index, this.Count));
-            }
-
+            this.ThrowIfIndexIsOutOfRange(index);
             var result = new List<T>();
             var nextTransition = new QSetTransition(0, this.RootState, false);
             while (index > 0 || !nextTransition.IsFinal)
@@ -107,6 +103,14 @@
             var pathsFromState = new int[indexedSet.StateStarts.Length];
             indexedSet.CountPaths(indexedSet.RootState, pathsFromState);
             return indexedSet;
+        }
+
+        protected void ThrowIfIndexIsOutOfRange(long index)
+        {
+            if (index < 0 || index >= this.Count)
+            {
+                throw new IndexOutOfRangeException(string.Format(ErrorMessages.IndexOutOfRange, index, this.Count));
+            }
         }
 
         private void CountPaths(int fromState, int[] pathsFromState)
