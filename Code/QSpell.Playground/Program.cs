@@ -75,8 +75,11 @@ namespace QSpell.Playground
 
         static void Main(string[] args)
         {
-            Shuffle("Zaliznyak-baseforms-1251.txt", "Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251));
-            Shuffle("Zaliznyak-1251.txt", "Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
+            var tester = PerformanceTester.Create("Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
+            tester.TestVsSortedDictionary();
+
+            //Shuffle("Zaliznyak-baseforms-1251.txt", "Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251));
+            //Shuffle("Zaliznyak-1251.txt", "Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
             //TestStringConversion();
             //var before = GC.GetTotalMemory(true);
             //var pairs = new AlignedPair<int, byte>[1000];

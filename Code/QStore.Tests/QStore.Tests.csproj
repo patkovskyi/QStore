@@ -56,6 +56,7 @@
     <Compile Include="Helpers\ExceptionAssert.cs" />
     <Compile Include="QIndexedStringSetTests\GetByIndexTests.cs" />
     <Compile Include="QIndexedStringSetTests\GetIndexTests.cs" />
+    <Compile Include="QStringMapTests\IndexerTests.cs" />
     <Compile Include="QStringSetTests\CreateTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData.cs" />

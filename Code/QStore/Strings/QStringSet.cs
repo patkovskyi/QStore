@@ -10,7 +10,7 @@
     {
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return QSet<char>.Create<QStringSet>(strings, comparer);
+            return QSet<char>.Create<QStringSet>(strings, comparer);            
         }
 
         public new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)

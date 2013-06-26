@@ -8,6 +8,13 @@
 
     public class QStringMap<TValue> : QMap<char, TValue>, IStringMap<TValue>, IEnumerable<KeyValuePair<string, TValue>>
     {
+        public static QStringMap<TValue> Create(IEnumerable<string> sequences, IComparer<char> comparer)
+        {
+            var map = QIndexedSet<char>.Create<QStringMap<TValue>>(sequences, comparer);
+            map.Values = new TValue[map.Count];
+            return map;
+        }
+
         public new KeyValuePair<string, TValue> GetByIndex(long index)
         {
             var basePair = base.GetByIndex(index);

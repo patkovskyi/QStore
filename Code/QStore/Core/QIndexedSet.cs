@@ -17,6 +17,7 @@
             return QIndexedSet<T>.Create<QIndexedSet<T>>(sequences, comparer);
         }
 
+        // TODO: fix this List type
         public List<T> GetByIndex(long index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
