@@ -58,7 +58,12 @@
             {
                 long index =
                     fromStack.Select(i => this.PathsLeft[i - 1] + (this.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
-                index += fromStack.Count > 0 && this.RootTransition.IsFinal ? 1 : 0;
+                if (fromStack.Count > 0)
+                {
+                    index += this.RootTransition.IsFinal ? 1 : 0;
+                    index -= transition.IsFinal ? 1 : 0;
+                }
+
                 return this.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
             }
 

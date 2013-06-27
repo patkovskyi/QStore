@@ -64,6 +64,20 @@
         public void GetByIndexEmptySequence()
         {
             GetByIndexTestHelper("one", "two", string.Empty);
-        }
+        }        
+
+        //[TestMethod]
+        //public void GetByIndexCanBeLong()
+        //{
+        //    var printableChars = new List<char>();
+        //    for (int i = char.MinValue; i <= char.MaxValue; i++)
+        //    {
+        //        char c = Convert.ToChar(i);
+        //        if (!char.IsControl(c))
+        //        {
+        //            printableChars.Add(c);
+        //        }
+        //    }
+        //}
     }
 }
