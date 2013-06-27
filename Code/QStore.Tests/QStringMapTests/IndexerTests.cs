@@ -10,11 +10,8 @@
     [TestClass]
     public class IndexerTests
     {
-        [TestMethod]
-        [DeploymentItem(TestData.BaseformsDeployedPath)]
-        public void BaseformsIndexerTest()
+        public static void IndexerTestHelper(IComparer<char> comparer, params string[] words)
         {
-            var words = File.ReadAllLines(TestData.BaseformsDeployedPath, TestData.Encoding);
             var map = QStringMap<int>.Create(words, Comparer<char>.Default);
             foreach (var word in words)
             {
@@ -25,6 +22,24 @@
             {
                 Assert.AreEqual(word.GetHashCode(), map[word]);
             }
+        }
+
+        public static void IndexerTestHelper(params string[] strings)
+        {
+            IndexerTestHelper(Comparer<char>.Default, strings);
+        }
+
+        [TestMethod]
+        [DeploymentItem(TestData.BaseformsDeployedPath)]
+        public void IndexerBaseforms()
+        {
+            IndexerTestHelper(File.ReadAllLines(TestData.BaseformsDeployedPath, TestData.Encoding));
+        }
+
+        [TestMethod]
+        public void IndexerEmptySequence()
+        {
+            IndexerTestHelper("a", "ab", string.Empty);
         }
     }
 }
