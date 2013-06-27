@@ -59,5 +59,11 @@
         {
             GetByIndexTestHelper("one", "two", "three", "four", "five");
         }
+
+        [TestMethod]
+        public void GetByIndexEmptySequence()
+        {
+            GetByIndexTestHelper("one", "two", string.Empty);
+        }
     }
 }

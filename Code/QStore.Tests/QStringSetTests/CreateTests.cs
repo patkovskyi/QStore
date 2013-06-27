@@ -23,7 +23,7 @@ namespace QStore.Tests.QStringSetTests
             Console.WriteLine(@"QStringSet.Create() took {0}", watch.Elapsed);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
-            watch.Restart();            
+            watch.Restart();
             var actual = target.ToArray();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
             Assert.AreEqual(strings.Length, target.Count);
@@ -55,6 +55,15 @@ namespace QStore.Tests.QStringSetTests
         }
 
         [TestMethod]
+        public void CreateTestDuplicateEmptyKeyException()
+        {
+            var e =
+                ExceptionAssert.Throws<ArgumentException>(
+                    () => QStringSet.Create(new[] { string.Empty, "ab", string.Empty, "ab" }, Comparer<char>.Default));
+            Assert.AreEqual(string.Format(ErrorMessages.DuplicateKey, string.Empty), e.Message);
+        }
+
+        [TestMethod]
         public void CreateTestDuplicateKeyException()
         {
             var e =
@@ -64,12 +73,9 @@ namespace QStore.Tests.QStringSetTests
         }
 
         [TestMethod]
-        public void CreateTestEmptySequenceException()
+        public void CreateTestEmptySequence()
         {
-            var e =
-                ExceptionAssert.Throws<ArgumentException>(
-                    () => QStringSet.Create(new[] { "a", string.Empty, "ab" }, Comparer<char>.Default));
-            Assert.AreEqual(ErrorMessages.EmptySequencesAreNotSupported, e.Message);
+            CreateTestHelper("aa", string.Empty, "ab");
         }
 
         [TestMethod]

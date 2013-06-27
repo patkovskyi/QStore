@@ -22,20 +22,20 @@
         {
             this.ThrowIfIndexIsOutOfRange(index);
             var result = new List<T>();
-            var nextTransition = new QSetTransition(0, this.RootState, false);
+            var nextTransition = this.RootTransition;
             while (index > 0 || !nextTransition.IsFinal)
             {
                 int lower = this.StateStarts[nextTransition.StateIndex];
                 int upper = this.Transitions.GetUpperIndex(this.StateStarts, nextTransition.StateIndex);
-
+                index -= nextTransition.IsFinal ? 1 : 0;
+                
                 // TODO: fix this (int) cast
                 int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, (int)index);
                 if (nextTransitionIndex < 0)
                 {
                     nextTransitionIndex = (~nextTransitionIndex) - 1;
                 }
-
-                index -= nextTransition.IsFinal ? 1 : 0;
+                
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 nextTransition = this.Transitions[nextTransitionIndex];
@@ -54,13 +54,11 @@
 
             QSetTransition transition;
             var fromStack = new Stack<int>();
-            if (this.TrySendSequence(this.RootState, prefix, out transition, fromStack))
+            if (this.TrySendSequence(this.RootTransition, prefix, out transition, fromStack))
             {
                 long index =
                     fromStack.Select(i => this.PathsLeft[i - 1] + (this.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
-                return
-                    this.Enumerate(transition.StateIndex, fromStack)
-                        .Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
+                return this.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
             }
 
             return Enumerable.Empty<KeyValuePair<T[], long>>();
@@ -73,9 +71,9 @@
                 throw new ArgumentNullException("sequence");
             }
 
-            int currentState = this.RootState;
+            int currentState = this.RootTransition.StateIndex;
             long pathsAfterThisChoice = this.Count;
-            long lexicographicIndex = 0;
+            long lexicographicIndex = this.RootTransition.IsFinal ? 1 : 0;
 
             foreach (var element in sequence)
             {
@@ -86,8 +84,8 @@
                     if (transitionIndex + 1 < upper)
                     {
                         pathsAfterThisChoice = this.PathsLeft[transitionIndex + 1];
-                    }    
-                
+                    }
+
                     var transition = this.Transitions[transitionIndex];
                     lexicographicIndex += transition.IsFinal ? 1 : 0;
                     lexicographicIndex += this.PathsLeft[transitionIndex];
@@ -101,11 +99,6 @@
                 }
             }
 
-            if (currentState == this.RootState)
-            {
-                throw new ArgumentException(ErrorMessages.EmptySequencesAreNotSupported);
-            }
-
             // we added one extra for last final transition
             return lexicographicIndex - 1;
         }
@@ -116,7 +109,8 @@
             var indexedSet = QSet<T>.Create<TIndexedSet>(sequences, comparer);
             indexedSet.PathsLeft = new int[indexedSet.Transitions.Length];
             var pathsFromState = new int[indexedSet.StateStarts.Length];
-            indexedSet.CountPaths(indexedSet.RootState, pathsFromState);
+            indexedSet.CountPaths(indexedSet.RootTransition.StateIndex, pathsFromState);
+            indexedSet.Count += indexedSet.RootTransition.IsFinal ? 1 : 0;
             return indexedSet;
         }
 

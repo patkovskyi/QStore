@@ -10,7 +10,7 @@
     {
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return QSet<char>.Create<QStringSet>(strings, comparer);            
+            return QSet<char>.Create<QStringSet>(strings, comparer);
         }
 
         public new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
@@ -20,7 +20,7 @@
 
         public new IEnumerator<string> GetEnumerator()
         {
-            return this.Enumerate(this.RootState).Select(s => new string(s.ToArray())).GetEnumerator();
+            return this.Enumerate(this.RootTransition).Select(s => new string(s.ToArray())).GetEnumerator();
         }
     }
 }

@@ -32,7 +32,7 @@
         public new IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
         {
             return
-                this.Enumerate(this.RootState)
+                this.Enumerate(this.RootTransition)
                     .Select((key, i) => new KeyValuePair<string, TValue>(new string(key), this.Values[i]))
                     .GetEnumerator();
         }

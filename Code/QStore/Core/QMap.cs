@@ -67,7 +67,7 @@
         public new IEnumerator<KeyValuePair<TKey[], TValue>> GetEnumerator()
         {
             return
-                this.Enumerate(this.RootState)
+                this.Enumerate(this.RootTransition)
                     .Select((key, i) => new KeyValuePair<TKey[], TValue>(key, this.Values[i]))
                     .GetEnumerator();
         }
