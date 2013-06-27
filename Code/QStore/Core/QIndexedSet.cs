@@ -28,14 +28,14 @@
                 int lower = this.StateStarts[nextTransition.StateIndex];
                 int upper = this.Transitions.GetUpperIndex(this.StateStarts, nextTransition.StateIndex);
                 index -= nextTransition.IsFinal ? 1 : 0;
-                
+
                 // TODO: fix this (int) cast
                 int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, (int)index);
                 if (nextTransitionIndex < 0)
                 {
                     nextTransitionIndex = (~nextTransitionIndex) - 1;
                 }
-                
+
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 nextTransition = this.Transitions[nextTransitionIndex];
@@ -58,6 +58,7 @@
             {
                 long index =
                     fromStack.Select(i => this.PathsLeft[i - 1] + (this.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
+                index += fromStack.Count > 0 && this.RootTransition.IsFinal ? 1 : 0;
                 return this.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
             }
 
