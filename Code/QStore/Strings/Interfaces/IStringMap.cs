@@ -6,10 +6,12 @@
 
     public interface IStringMap<TValue> : ISequenceMap<char, TValue>
     {
-        new KeyValuePair<string, TValue> GetByIndex(long index);
+        new KeyValuePair<string, TValue> GetByIndex(int index);
 
         new IEnumerable<KeyValuePair<string, TValue>> GetByPrefixWithValue(IEnumerable<char> prefix);
 
-        new string GetKeyByIndex(long index);
+        new string GetKeyByIndex(int index);
+
+        new IEnumerable<KeyValuePair<string, TValue>> GetWithValue();
     }
 }

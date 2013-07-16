@@ -6,15 +6,17 @@
     {
         TValue this[IEnumerable<TKey> key] { get; set; }
 
-        new KeyValuePair<TKey[], TValue> GetByIndex(long index);
+        new KeyValuePair<TKey[], TValue> GetByIndex(int index);
 
         IEnumerable<KeyValuePair<TKey[], TValue>> GetByPrefixWithValue(IEnumerable<TKey> prefix);
 
-        List<TKey> GetKeyByIndex(long index);
+        TKey[] GetKeyByIndex(int index);
 
-        TValue GetValueByIndex(long index);
+        TValue GetValueByIndex(int index);
 
-        void SetValueByIndex(long index, TValue value);
+        IEnumerable<KeyValuePair<TKey[], TValue>> GetWithValue();
+
+        void SetValueByIndex(int index, TValue value);
 
         bool TryGetValue(IEnumerable<TKey> key, out TValue value);
     }

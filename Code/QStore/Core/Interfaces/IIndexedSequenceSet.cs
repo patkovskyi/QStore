@@ -4,10 +4,12 @@
 
     public interface IIndexedSequenceSet<T> : ISequenceSet<T>
     {
-        List<T> GetByIndex(long index);
+        T[] GetByIndex(int index);
 
-        IEnumerable<KeyValuePair<T[], long>> GetByPrefixWithIndex(IEnumerable<T> prefix);
+        IEnumerable<KeyValuePair<T[], int>> GetByPrefixWithIndex(IEnumerable<T> prefix);
 
-        long GetIndex(IEnumerable<T> sequence);
+        int GetIndex(IEnumerable<T> sequence);
+
+        IEnumerable<KeyValuePair<T[], int>> GetWithIndex();
     }
 }

@@ -23,8 +23,8 @@ namespace QStore.Tests.QStringSetTests
             Console.WriteLine(@"QStringSet.Create() took {0}", watch.Elapsed);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
-            watch.Restart();
-            var actual = target.ToArray();
+            watch.Restart();           
+            string[] actual = target.ToArray<string>();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
             Assert.AreEqual(strings.Length, target.Count);
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);

@@ -17,11 +17,10 @@
             return QIndexedSet<T>.Create<QIndexedSet<T>>(sequences, comparer);
         }
 
-        // TODO: fix this List type
-        public List<T> GetByIndex(long index)
+        public T[] GetByIndex(int index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
-            var result = new List<T>();
+            var list = new List<T>();
             var nextTransition = this.RootTransition;
             while (index > 0 || !nextTransition.IsFinal)
             {
@@ -29,8 +28,7 @@
                 int upper = this.Transitions.GetUpperIndex(this.StateStarts, nextTransition.StateIndex);
                 index -= nextTransition.IsFinal ? 1 : 0;
 
-                // TODO: fix this (int) cast
-                int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, (int)index);
+                int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, index);
                 if (nextTransitionIndex < 0)
                 {
                     nextTransitionIndex = (~nextTransitionIndex) - 1;
@@ -39,13 +37,15 @@
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 nextTransition = this.Transitions[nextTransitionIndex];
-                result.Add(this.Alphabet[nextTransition.AlphabetIndex]);
+                list.Add(this.Alphabet[nextTransition.AlphabetIndex]);
             }
 
+            var result = new T[list.Count];
+            list.CopyTo(result);
             return result;
         }
 
-        public IEnumerable<KeyValuePair<T[], long>> GetByPrefixWithIndex(IEnumerable<T> prefix)
+        public IEnumerable<KeyValuePair<T[], int>> GetByPrefixWithIndex(IEnumerable<T> prefix)
         {
             if (prefix == null)
             {
@@ -56,7 +56,7 @@
             var fromStack = new Stack<int>();
             if (this.TrySendSequence(this.RootTransition, prefix, out transition, fromStack))
             {
-                long index =
+                int index =
                     fromStack.Select(i => this.PathsLeft[i - 1] + (this.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
                 if (fromStack.Count > 0)
                 {
@@ -64,13 +64,13 @@
                     index -= transition.IsFinal ? 1 : 0;
                 }
 
-                return this.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], long>(s, i + index));
+                return this.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], int>(s, i + index));
             }
 
-            return Enumerable.Empty<KeyValuePair<T[], long>>();
+            return Enumerable.Empty<KeyValuePair<T[], int>>();
         }
 
-        public long GetIndex(IEnumerable<T> sequence)
+        public int GetIndex(IEnumerable<T> sequence)
         {
             if (sequence == null)
             {
@@ -78,8 +78,8 @@
             }
 
             int currentState = this.RootTransition.StateIndex;
-            long pathsAfterThisChoice = this.Count;
-            long lexicographicIndex = this.RootTransition.IsFinal ? 1 : 0;
+            int pathsAfterThisChoice = this.Count;
+            int lexicographicIndex = this.RootTransition.IsFinal ? 1 : 0;
 
             foreach (var element in sequence)
             {
@@ -109,6 +109,11 @@
             return lexicographicIndex - 1;
         }
 
+        public IEnumerable<KeyValuePair<T[], int>> GetWithIndex()
+        {
+            return this.Enumerate(this.RootTransition).Select((s, i) => new KeyValuePair<T[], int>(s, i));
+        }
+
         protected static new TIndexedSet Create<TIndexedSet>(
             IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer) where TIndexedSet : QIndexedSet<T>, new()
         {
@@ -120,7 +125,7 @@
             return indexedSet;
         }
 
-        protected void ThrowIfIndexIsOutOfRange(long index)
+        protected void ThrowIfIndexIsOutOfRange(int index)
         {
             if (index < 0 || index >= this.Count)
             {

@@ -23,7 +23,7 @@
 
         protected internal QSetTransition[] Transitions;
 
-        public long Count { get; protected internal set; }
+        public int Count { get; protected internal set; }
 
         public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
         {
@@ -103,7 +103,7 @@
             var rootTransition = default(QSetTransition);
             var transitions = new List<List<QSetTransition>>(alphabet.Length) { new List<QSetTransition>() };
 
-            long sequenceCounter = 0;
+            int sequenceCounter = 0;
             foreach (var sequence in sequences)
             {
                 int nextState = 0, transitionIndex = -1;
@@ -320,14 +320,14 @@
         private static int GetTransitionIndex(
             IList<QSetTransition> transitions, T symbol, T[] alphabet, IComparer<T> comparer, int lower, int upper)
         {
-            const int BinarySearchThreshold = 5;
+            const int BinarySearchThreshold = 1;
             if (upper - lower >= BinarySearchThreshold)
             {
                 // binary search
                 upper--;
                 while (lower <= upper)
                 {
-                    int middle = (lower + upper) / 2;
+                    int middle = lower + ((upper - lower) >> 1);
                     int comparisonResult = comparer.Compare(alphabet[transitions[middle].AlphabetIndex], symbol);
                     if (comparisonResult == 0)
                     {

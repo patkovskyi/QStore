@@ -6,7 +6,7 @@
     using QStore.Core;
     using QStore.Strings.Interfaces;
 
-    public class QStringSet : QSet<char>, IStringSet
+    public class QStringSet : QSet<char>, IStringSet, IEnumerable<string>
     {
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {

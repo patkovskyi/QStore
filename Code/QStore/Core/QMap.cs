@@ -6,9 +6,7 @@
 
     using QStore.Core.Interfaces;
 
-    public class QMap<TKey, TValue> : QIndexedSet<TKey>, 
-                                      ISequenceMap<TKey, TValue>, 
-                                      IEnumerable<KeyValuePair<TKey[], TValue>>
+    public class QMap<TKey, TValue> : QIndexedSet<TKey>, ISequenceMap<TKey, TValue>
     {
         protected internal TValue[] Values;
 
@@ -16,7 +14,7 @@
         {
             get
             {
-                long index = this.GetIndex(sequence);
+                int index = this.GetIndex(sequence);
                 if (index < 0)
                 {
                     throw new KeyNotFoundException();
@@ -27,7 +25,7 @@
 
             set
             {
-                long index = this.GetIndex(sequence);
+                int index = this.GetIndex(sequence);
                 if (index < 0)
                 {
                     throw new KeyNotFoundException();
@@ -52,7 +50,7 @@
             return Create(keySequences, comparer);
         }
 
-        public new KeyValuePair<TKey[], TValue> GetByIndex(long index)
+        public new KeyValuePair<TKey[], TValue> GetByIndex(int index)
         {
             return new KeyValuePair<TKey[], TValue>(base.GetByIndex(index).ToArray(), this.Values[index]);
         }
@@ -64,25 +62,24 @@
                     .Select(p => new KeyValuePair<TKey[], TValue>(p.Key, this.Values[p.Value]));
         }
 
-        public new IEnumerator<KeyValuePair<TKey[], TValue>> GetEnumerator()
-        {
-            return
-                this.Enumerate(this.RootTransition)
-                    .Select((key, i) => new KeyValuePair<TKey[], TValue>(key, this.Values[i]))
-                    .GetEnumerator();
-        }
-
-        public List<TKey> GetKeyByIndex(long index)
+        public TKey[] GetKeyByIndex(int index)
         {
             return base.GetByIndex(index);
         }
 
-        public TValue GetValueByIndex(long index)
+        public TValue GetValueByIndex(int index)
         {
             return this.Values[index];
         }
 
-        public void SetValueByIndex(long index, TValue value)
+        public IEnumerable<KeyValuePair<TKey[], TValue>> GetWithValue()
+        {
+            return
+                this.Enumerate(this.RootTransition)
+                    .Select((key, i) => new KeyValuePair<TKey[], TValue>(key, this.Values[i]));
+        }
+
+        public void SetValueByIndex(int index, TValue value)
         {
             this.ThrowIfIndexIsOutOfRange(index);
             this.Values[index] = value;
@@ -90,7 +87,7 @@
 
         public bool TryGetValue(IEnumerable<TKey> key, out TValue value)
         {
-            long index = this.GetIndex(key);
+            int index = this.GetIndex(key);
             if (index < 0)
             {
                 value = default(TValue);

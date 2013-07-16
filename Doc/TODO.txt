@@ -1,1 +1,0 @@
-- Test if we can handle more sequences thant Int32.MaxValue, change GetByIndex and GetIndex signatures if needed.

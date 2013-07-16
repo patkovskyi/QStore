@@ -19,11 +19,16 @@
 
         private SortedList<string, int> sortedList;
 
+        private QStringSet set;
+
+        private HashSet<string> hashSet;
+
         private string[] words;
 
         public static PerformanceTester Create(string fromFile, Encoding encoding)
         {
             var tester = new PerformanceTester { words = File.ReadAllLines(fromFile, encoding) };            
+            // tester.InitSet();
             return tester;
         }
 
@@ -81,6 +86,44 @@
             Console.WriteLine(@"              Map time for {0} words: {1} ms", words.Length, stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return x;
+        }
+
+        private void InitSet()
+        {
+            if (this.set == null)
+            {
+                Console.WriteLine(@"Initializing QStringSet with {0} elements.", words.Length);
+                var stopwatch = new Stopwatch();
+                long memoryBefore = GetCurrentUsedMemory();
+                stopwatch.Start();
+
+                this.set = QStringSet.Create(words, Comparer<char>.Default);
+
+                stopwatch.Stop();
+                long memoryAfter = GetCurrentUsedMemory();
+                Console.WriteLine(@"Memory delta: {0:+#;-#} bytes", memoryAfter - memoryBefore);
+                Console.WriteLine(@"Elapsed time:  {0} ms", stopwatch.ElapsedMilliseconds);
+                Console.WriteLine();
+            }
+        }
+
+        private void InitHashSet()
+        {
+            if (this.hashSet == null)
+            {
+                Console.WriteLine(@"Initializing HashSet<int> with {0} elements.", words.Length);
+                var stopwatch = new Stopwatch();
+                long memoryBefore = GetCurrentUsedMemory();
+                stopwatch.Start();
+
+                this.hashSet = new HashSet<string>(words, StringComparer.Ordinal);                
+
+                stopwatch.Stop();
+                long memoryAfter = GetCurrentUsedMemory();
+                Console.WriteLine(@"Memory delta: {0:+#;-#} bytes", memoryAfter - memoryBefore);
+                Console.WriteLine(@"Elapsed time:  {0} ms", stopwatch.ElapsedMilliseconds);
+                Console.WriteLine();
+            }
         }
 
         private void InitMap()
