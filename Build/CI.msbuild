@@ -34,7 +34,7 @@
     <Copy DestinationFolder="$(StyleCopReportDir)" SourceFiles="@(StyleCopResources)"></Copy>
 
     <!-- Create a collection of files to scan -->
-    <CreateItem Include="$(SolutionDir)\QStore*\*.cs">
+    <CreateItem Include="$(SolutionDir)\QStore*\*.cs" Exclude="$(SolutionDir)\QStore.Playground\*.cs">
       <Output TaskParameter="Include" ItemName="StyleCopFiles" />
     </CreateItem>
 
