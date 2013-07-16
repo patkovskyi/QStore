@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <SolutionDir>$(MSBuildProjectDirectory)\..\Code</SolutionDir>
-    <SolutionFile>$(SolutionDir)\QSpell.sln</SolutionFile>
+    <SolutionFile>$(SolutionDir)\QStore.sln</SolutionFile>
     <ArtifactsDir>$(MSBuildProjectDirectory)\Artifacts</ArtifactsDir>
     <StyleCopSettingsFile>$(SolutionDir)\Settings.StyleCop</StyleCopSettingsFile>
     <StyleCopReportDir>$(ArtifactsDir)\StyleCopReport</StyleCopReportDir>
