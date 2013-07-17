@@ -18,7 +18,7 @@
         public new KeyValuePair<string, TValue> GetByIndex(int index)
         {
             var basePair = base.GetByIndex(index);
-            return new KeyValuePair<string, TValue>(new string(basePair.Key.ToArray()), this.Values[index]);
+            return new KeyValuePair<string, TValue>(new string(basePair.Key), this.Values[index]);
         }
 
         public new IEnumerable<KeyValuePair<string, TValue>> GetByPrefixWithValue(IEnumerable<char> prefix)

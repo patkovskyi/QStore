@@ -15,12 +15,12 @@
 
         public new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
         {
-            return base.GetByPrefix(prefix).Select(s => new string(s.ToArray()));
+            return base.GetByPrefix(prefix).Select(s => new string(s));
         }
 
         public new IEnumerator<string> GetEnumerator()
         {
-            return this.Enumerate(this.RootTransition).Select(s => new string(s.ToArray())).GetEnumerator();
+            return this.Enumerate(this.RootTransition).Select(s => new string(s)).GetEnumerator();
         }
     }
 }

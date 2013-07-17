@@ -52,7 +52,7 @@
 
         public new KeyValuePair<TKey[], TValue> GetByIndex(int index)
         {
-            return new KeyValuePair<TKey[], TValue>(base.GetByIndex(index).ToArray(), this.Values[index]);
+            return new KeyValuePair<TKey[], TValue>(base.GetByIndex(index), this.Values[index]);
         }
 
         public IEnumerable<KeyValuePair<TKey[], TValue>> GetByPrefixWithValue(IEnumerable<TKey> prefix)
