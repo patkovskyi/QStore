@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build; StyleCop" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets"/>
+
+  <UsingTask TaskName="MSBuild.Community.Tasks.XmlRead" AssemblyFile="MSBuildCommunityTasks\MSBuild.Community.Tasks.dll" />
+  <UsingTask TaskName="StyleCopTask" AssemblyFile="StyleCop 4.7\StyleCop.dll" />
+
+  <PropertyGroup>
+    <SolutionDir>$(MSBuildProjectDirectory)\..\Code</SolutionDir>
+    <SolutionFile>$(SolutionDir)\QStore.sln</SolutionFile>
+    <ArtifactsDir>$(MSBuildProjectDirectory)\Artifacts</ArtifactsDir>
+    <StyleCopSettingsFile>$(SolutionDir)\Settings.StyleCop</StyleCopSettingsFile>
+    <StyleCopReportDir>$(ArtifactsDir)\StyleCopReport</StyleCopReportDir>
+    <StyleCopReportXml>$(StyleCopReportDir)\StyleCopReport.xml</StyleCopReportXml>
+    <StyleCopReportHtml>$(StyleCopReportDir)\StyleCopReport.html</StyleCopReportHtml>
+    <OutputPath>$(ArtifactsDir)\bin</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(SolutionFile)"/>
+  </ItemGroup>
+
+  <Target Name="Build">  
+    <TeamCityProgressMessage Text="Compiling solution" />
+    <MSBuild Projects="@(Compile)" Properties="OutputPath=$(OutputPath);Configuration=Release"/>
+  </Target>
+
+  <Target Name="StyleCop">
+    <TeamCityProgressMessage Text="Running StyleCop" />
+    <!-- Copy resource files for html report -->
+    <CreateItem Include="BuildReports\StyleCop\Resources\*.*">
+      <Output TaskParameter="Include" ItemName="StyleCopResources" />
+    </CreateItem>
+    <Copy DestinationFolder="$(StyleCopReportDir)" SourceFiles="@(StyleCopResources)"></Copy>
+
+    <!-- Create a collection of files to scan -->
+    <CreateItem Include="$(SolutionDir)\QStore*\*.cs" Exclude="$(SolutionDir)\QStore.Playground\*.cs">
+      <Output TaskParameter="Include" ItemName="StyleCopFiles" />
+    </CreateItem>
+
+    <StyleCopTask
+      ProjectFullPath="$(MSBuildProjectFile)"
+      SourceFiles="@(StyleCopFiles)"
+      ForceFullAnalysis="true"
+      TreatErrorsAsWarnings="true"
+      OverrideSettingsFile="$(SolutionDir)\Settings.StyleCop"
+      OutputFile="$(StyleCopReportXml)"
+      CacheResults="true" />
+
+    <XslTransformation
+      OutputPaths="$(StyleCopReportHtml)"
+      XmlInputPaths="$(StyleCopReportXml)"
+      XslInputPath="BuildReports\StyleCop\StyleCop.xslt" />
+
+    <XmlRead XPath="count(//Violation)" XmlFileName="$(StyleCopReportXml)">
+      <Output TaskParameter="Value" PropertyName="StyleCopViolations" />
+    </XmlRead>
+		
+	<TeamCitySetStatus Status="FAILURE" Text="{build.status.text}; StyleCop violations: $(StyleCopViolations)" Condition="$(StyleCopViolations) > 0" />
+
+	<!--Uncomment if you want to fail right after violation was found (without actually running tests)-->
+    <!--<Error Condition="$(StyleCopViolations) > 0" Text="StyleCop found $(StyleCopViolations) broken rules!" />-->
+  </Target>
+</Project>

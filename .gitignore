@@ -42,6 +42,7 @@ local.properties
 *.sln.docstates
 
 # Build results
+Artifacts/
 [Dd]ebug/
 [Rr]elease/
 *_i.c
@@ -103,7 +104,7 @@ sql
 TestResults
 *.Cache
 ClientBin
-stylecop.*
+stylecop.cache
 ~$*
 *.dbmdl
 Generated_Code #added for RIA/Silverlight projects
@@ -137,7 +138,6 @@ Desktop.ini
 *.egg
 *.egg-info
 dist
-build
 eggs
 parts
 bin
