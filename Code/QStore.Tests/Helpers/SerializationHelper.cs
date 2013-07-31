@@ -1,5 +1,7 @@
 ﻿namespace QStore.Tests.Helpers
 {
+    using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -18,7 +20,11 @@
             using (var ms = new MemoryStream(data))
             {
                 var formatter = new BinaryFormatter();
-                return (T)formatter.Deserialize(ms);
+                var watch = new Stopwatch();
+                watch.Start();
+                var obj = (T)formatter.Deserialize(ms);
+                Console.WriteLine(@"Binary deserialize: {0} ms", watch.ElapsedMilliseconds);
+                return obj;
             }
         }
 
@@ -36,8 +42,13 @@
             using (var ms = new MemoryStream())
             {
                 var formatter = new BinaryFormatter();
+                var watch = new Stopwatch();
+                watch.Start();
                 formatter.Serialize(ms, obj);
-                return ms.ToArray();
+                Console.WriteLine(@"Binary serialize: {0} ms", watch.ElapsedMilliseconds);
+                var bytes = ms.ToArray();
+                Console.WriteLine(@"Binary footprint: {0} bytes", bytes.Length);
+                return bytes;
             }
         }
 
@@ -47,7 +58,11 @@
             using (var reader = new BsonReader(ms))
             {
                 var serializer = new JsonSerializer();
-                return serializer.Deserialize<T>(reader);
+                var watch = new Stopwatch();
+                watch.Start();
+                var obj = serializer.Deserialize<T>(reader);
+                Console.WriteLine(@"Bson deserialize: {0} ms", watch.ElapsedMilliseconds);
+                return obj;
             }
         }
 
@@ -66,8 +81,13 @@
             using (var writer = new BsonWriter(ms))
             {
                 var serializer = new JsonSerializer();
+                var watch = new Stopwatch();
+                watch.Start();
                 serializer.Serialize(writer, obj);
-                return ms.ToArray();
+                Console.WriteLine(@"Bson serialize: {0} ms", watch.ElapsedMilliseconds);
+                var bytes = ms.ToArray();
+                Console.WriteLine(@"Bson footprint: {0} bytes", bytes.Length);
+                return bytes;
             }
         }
 
@@ -76,7 +96,11 @@
             using (var stream = new MemoryStream(data))
             {
                 var deserializer = new DataContractSerializer(typeof(T));
-                return (T)deserializer.ReadObject(stream);
+                var watch = new Stopwatch();
+                watch.Start();
+                var obj = (T)deserializer.ReadObject(stream);
+                Console.WriteLine(@"DataContract deserialize: {0}ms", watch.ElapsedMilliseconds);
+                return obj;
             }
         }
 
@@ -94,8 +118,13 @@
             using (var ms = new MemoryStream())
             {
                 var serializer = new DataContractSerializer(obj.GetType());
+                var watch = new Stopwatch();
+                watch.Start();
                 serializer.WriteObject(ms, obj);
-                return ms.ToArray();
+                Console.WriteLine(@"DataContract serialize: {0} ms", watch.ElapsedMilliseconds);
+                var bytes = ms.ToArray();
+                Console.WriteLine(@"DataContract footprint: {0} bytes", bytes.Length);
+                return bytes;
             }
         }
 
@@ -103,7 +132,11 @@
         {
             using (var ms = new MemoryStream(data))
             {
-                return Serializer.Deserialize<T>(ms);
+                var watch = new Stopwatch();
+                watch.Start();
+                var obj = Serializer.Deserialize<T>(ms);
+                Console.WriteLine(@"Proto deserialize: {0} ms", watch.ElapsedMilliseconds);
+                return obj;
             }
         }
 
@@ -120,8 +153,13 @@
         {
             using (var ms = new MemoryStream())
             {
+                var watch = new Stopwatch();
+                watch.Start();
                 Serializer.Serialize(ms, obj);
-                return ms.ToArray();
+                Console.WriteLine(@"Proto serialize: {0} ms", watch.ElapsedMilliseconds);
+                var bytes = ms.ToArray();
+                Console.WriteLine(@"Proto footprint: {0} bytes", bytes.Length);
+                return bytes;
             }
         }
     }

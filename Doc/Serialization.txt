@@ -1,0 +1,15 @@
+Binary serialize: 159 ms
+Binary footprint: 2,843,058 bytes
+Binary deserialize: 239 ms
+
+Bson serialize: 702 ms
+Bson footprint: 7,813,347 bytes
+Bson deserialize: 248 ms
+
+DataContract serialize: 271 ms
+DataContract footprint: 16,688,519 bytes
+DataContract deserialize: 561ms
+
+Proto serialize: 78 ms
+Proto footprint: 2,051,925 bytes
+Proto deserialize: 30 ms
