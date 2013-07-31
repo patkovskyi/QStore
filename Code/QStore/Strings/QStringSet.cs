@@ -1,26 +1,58 @@
 ﻿namespace QStore.Strings
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Runtime.Serialization;
 
     using QStore.Core;
     using QStore.Strings.Interfaces;
 
-    public class QStringSet : QSet<char>, IStringSet, IEnumerable<string>
+    [DataContract]
+    [Serializable]
+    public class QStringSet : IStringSet
     {
+        [DataMember(Order = 1)]
+        public QSet<char> Set { get; protected set; }
+
+        public int Count
+        {
+            get
+            {
+                return this.Set.Count;
+            }
+        }
+
+        public IComparer<char> Comparer
+        {
+            get
+            {
+                return this.Set.Comparer;
+            }
+        }
+
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return QSet<char>.Create<QStringSet>(strings, comparer);
+            return new QStringSet { Set = QSet<char>.Create(strings, comparer) };
         }
 
-        public new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix)
+        public bool Contains(IEnumerable<char> sequence)
         {
-            return base.GetByPrefix(prefix).Select(s => new string(s));
+            return this.Set.Contains(sequence);
         }
 
-        public new IEnumerator<string> GetEnumerator()
+        public IEnumerable<string> Enumerate()
         {
-            return this.Enumerate(this.RootTransition).Select(s => new string(s)).GetEnumerator();
+            return this.Set.Enumerate().Wrap();
+        }
+
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
+        {
+            return this.Set.EnumerateByPrefix(prefix).Wrap();
+        }
+
+        public void SetComparer(IComparer<char> comparer)
+        {
+            this.Set.SetComparer(comparer);
         }
     }
 }

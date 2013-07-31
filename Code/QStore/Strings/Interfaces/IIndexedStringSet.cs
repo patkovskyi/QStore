@@ -2,14 +2,14 @@
 {
     using System.Collections.Generic;
 
-    using QStore.Core.Interfaces;
-
-    public interface IIndexedStringSet : IIndexedSequenceSet<char>
+    public interface IIndexedStringSet : IStringSet
     {
-        new string GetByIndex(int index);
+        IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix);
 
-        new IEnumerable<KeyValuePair<string, int>> GetByPrefixWithIndex(IEnumerable<char> prefix);
+        IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex();
 
-        new IEnumerable<KeyValuePair<string, int>> GetWithIndex();
+        string GetByIndex(int index);
+
+        int GetIndex(IEnumerable<char> sequence);
     }
 }

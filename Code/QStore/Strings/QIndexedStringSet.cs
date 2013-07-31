@@ -1,37 +1,78 @@
 ﻿namespace QStore.Strings
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Runtime.Serialization;
 
     using QStore.Core;
     using QStore.Strings.Interfaces;
 
-    public class QIndexedStringSet : QIndexedSet<char>, IIndexedStringSet
+    [DataContract]
+    [Serializable]
+    public class QIndexedStringSet : IIndexedStringSet
     {
+        [DataMember(Order = 1)]
+        public QIndexedSet<char> IndexedSet { get; protected set; }
+
+        public int Count
+        {
+            get
+            {
+                return this.IndexedSet.Count;
+            }
+        }
+
+        public IComparer<char> Comparer
+        {
+            get
+            {
+                return this.IndexedSet.Comparer;
+            }
+        }
+
         public static QIndexedStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return QIndexedSet<char>.Create<QIndexedStringSet>(strings, comparer);
+            return new QIndexedStringSet { IndexedSet = QIndexedSet<char>.Create(strings, comparer) };
         }
 
-        public new string GetByIndex(int index)
+        public bool Contains(IEnumerable<char> sequence)
         {
-            return new string(base.GetByIndex(index));
+            return this.IndexedSet.Contains(sequence);
         }
 
-        public new IEnumerable<KeyValuePair<string, int>> GetByPrefixWithIndex(IEnumerable<char> prefix)
+        public IEnumerable<string> Enumerate()
         {
-            return
-                base.GetByPrefixWithIndex(prefix).Select(p => new KeyValuePair<string, int>(new string(p.Key), p.Value));
+            return this.IndexedSet.Enumerate().Wrap();
         }
 
-        public new IEnumerator<string> GetEnumerator()
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
-            return this.Enumerate(this.RootTransition).Select(s => new string(s)).GetEnumerator();
+            return this.IndexedSet.EnumerateByPrefix(prefix).Wrap();
         }
 
-        public new IEnumerable<KeyValuePair<string, int>> GetWithIndex()
+        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
         {
-            return this.Enumerate(this.RootTransition).Select((s, i) => new KeyValuePair<string, int>(new string(s), i));
+            return this.IndexedSet.EnumerateByPrefixWithIndex(prefix).Wrap();
+        }
+
+        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
+        {
+            return this.IndexedSet.EnumerateWithIndex().Wrap();
+        }
+
+        public string GetByIndex(int index)
+        {
+            return this.IndexedSet.GetByIndex(index).Wrap();
+        }
+
+        public int GetIndex(IEnumerable<char> sequence)
+        {
+            return this.IndexedSet.GetIndex(sequence);
+        }
+
+        public void SetComparer(IComparer<char> comparer)
+        {
+            this.IndexedSet.SetComparer(comparer);
         }
     }
 }

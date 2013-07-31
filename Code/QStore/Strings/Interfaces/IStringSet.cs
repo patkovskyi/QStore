@@ -2,10 +2,22 @@
 {
     using System.Collections.Generic;
 
-    using QStore.Core.Interfaces;
-
-    public interface IStringSet : ISequenceSet<char>
+    public interface IStringSet
     {
-        new IEnumerable<string> GetByPrefix(IEnumerable<char> prefix);
+        int Count { get; }
+
+        IComparer<char> Comparer { get; }
+
+        bool Contains(IEnumerable<char> sequence);
+
+        IEnumerable<string> Enumerate();
+
+        IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix);
+
+        /// <summary>
+        /// Call this only after deserialization. Setting wrong comparer will make your structure act wrong.        
+        /// </summary>
+        /// <param name="comparer">Comparer used when structure was initially created.</param>
+        void SetComparer(IComparer<char> comparer);
     }
 }

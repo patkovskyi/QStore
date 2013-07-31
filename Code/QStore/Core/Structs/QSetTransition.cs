@@ -1,12 +1,19 @@
 ﻿namespace QStore.Core.Structs
 {
+    using System;
+    using System.Runtime.Serialization;
+
+    [DataContract]
+    [Serializable]
     public struct QSetTransition
     {
+        [DataMember(Order = 1)]
         internal readonly int StateIndex;
 
         /// <summary>
         /// Highest (32-nd) bit stands for IsFinal.
         /// </summary>
+        [DataMember(Order = 2)]
         private readonly int alphabetIndex;
 
         public QSetTransition(int alphabetIndex, int stateIndex, bool isFinal)

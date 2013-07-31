@@ -2,16 +2,20 @@
 {
     using System.Collections.Generic;
 
-    using QStore.Core.Interfaces;
-
-    public interface IStringMap<TValue> : ISequenceMap<char, TValue>
+    public interface IStringMap<TValue> : IIndexedStringSet
     {
-        new KeyValuePair<string, TValue> GetByIndex(int index);
+        TValue[] Values { get; }
 
-        new IEnumerable<KeyValuePair<string, TValue>> GetByPrefixWithValue(IEnumerable<char> prefix);
+        TValue this[IEnumerable<char> key] { get; set; }
 
-        new string GetKeyByIndex(int index);
+        IEnumerable<KeyValuePair<string, TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix);
 
-        new IEnumerable<KeyValuePair<string, TValue>> GetWithValue();
+        IEnumerable<KeyValuePair<string, TValue>> EnumerateWithValue();
+
+        KeyValuePair<string, TValue> GetByIndexWithValue(int index);
+
+        string GetKeyByIndex(int index);
+
+        bool TryGetValue(IEnumerable<char> key, out TValue value);
     }
 }

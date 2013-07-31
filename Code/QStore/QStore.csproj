@@ -36,11 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Comparers\StateSignatureEqualityComparer.cs" />
@@ -66,6 +62,7 @@
     <Compile Include="Strings\QStringMap.cs" />
     <Compile Include="Strings\QStringSet.cs" />
     <Compile Include="Core\Structs\StateSignature.cs" />
+    <Compile Include="Strings\Wrappers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ErrorMessages.resx">

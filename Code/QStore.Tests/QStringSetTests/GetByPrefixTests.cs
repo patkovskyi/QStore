@@ -21,7 +21,7 @@
                        .OrderBy(s => s, sequenceComparer)
                        .ToArray();
 
-            var actual = target.GetByPrefix(prefix).ToArray();
+            var actual = target.EnumerateByPrefix(prefix).ToArray();
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }
 

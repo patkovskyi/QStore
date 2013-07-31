@@ -1,51 +1,124 @@
 ﻿namespace QStore.Strings
 {
+    using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Runtime.Serialization;
 
     using QStore.Core;
     using QStore.Strings.Interfaces;
 
-    public class QStringMap<TValue> : QMap<char, TValue>, IStringMap<TValue>
+    [DataContract]
+    [Serializable]
+    public class QStringMap<TValue> : IStringMap<TValue>
     {
+        [DataMember(Order = 1)]
+        public QMap<char, TValue> Map { get; protected set; }
+
+        public int Count
+        {
+            get
+            {
+                return this.Map.Count;
+            }
+        }
+
+        public IComparer<char> Comparer
+        {
+            get
+            {
+                return this.Map.Comparer;
+            }
+        }
+
+        public TValue[] Values
+        {
+            get
+            {
+                return this.Map.Values;
+            }
+        }
+
+        public TValue this[IEnumerable<char> key]
+        {
+            get
+            {
+                return this.Map[key];
+            }
+
+            set
+            {
+                this.Map[key] = value;
+            }
+        }
+
         public static QStringMap<TValue> Create(IEnumerable<string> sequences, IComparer<char> comparer)
         {
-            var map = QIndexedSet<char>.Create<QStringMap<TValue>>(sequences, comparer);
-            map.Values = new TValue[map.Count];
-            return map;
+            return new QStringMap<TValue> { Map = QMap<char, TValue>.Create(sequences, comparer) };
         }
 
-        public new KeyValuePair<string, TValue> GetByIndex(int index)
+        public bool Contains(IEnumerable<char> sequence)
         {
-            var basePair = base.GetByIndex(index);
-            return new KeyValuePair<string, TValue>(new string(basePair.Key), this.Values[index]);
+            return this.Map.Contains(sequence);
         }
 
-        public new IEnumerable<KeyValuePair<string, TValue>> GetByPrefixWithValue(IEnumerable<char> prefix)
+        public IEnumerable<string> Enumerate()
         {
-            return
-                this.GetByPrefixWithIndex(prefix)
-                    .Select(p => new KeyValuePair<string, TValue>(new string(p.Key), this.Values[p.Value]));
+            return this.Map.Enumerate().Wrap();
         }
 
-        public new IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
-            return
-                this.Enumerate(this.RootTransition)
-                    .Select((key, i) => new KeyValuePair<string, TValue>(new string(key), this.Values[i]))
-                    .GetEnumerator();
+            return this.Map.EnumerateByPrefix(prefix).Wrap();
         }
 
-        public new string GetKeyByIndex(int index)
+        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
         {
-            return new string(base.GetKeyByIndex(index));
+            return this.Map.EnumerateByPrefixWithIndex(prefix).Wrap();
         }
 
-        public new IEnumerable<KeyValuePair<string, TValue>> GetWithValue()
+        public IEnumerable<KeyValuePair<string, TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix)
         {
-            return
-                this.Enumerate(this.RootTransition)
-                    .Select((s, i) => new KeyValuePair<string, TValue>(new string(s), this.Values[i]));
+            return this.Map.EnumerateByPrefixWithValue(prefix).Wrap();
+        }
+
+        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
+        {
+            return this.Map.EnumerateWithIndex().Wrap();
+        }
+
+        public IEnumerable<KeyValuePair<string, TValue>> EnumerateWithValue()
+        {
+            return this.Map.EnumerateWithValue().Wrap();
+        }
+
+        public string GetByIndex(int index)
+        {
+            return this.Map.GetByIndex(index).Wrap();
+        }
+
+        public KeyValuePair<string, TValue> GetByIndexWithValue(int index)
+        {
+            return this.Map.GetByIndexWithValue(index).Wrap();
+        }
+
+        public int GetIndex(IEnumerable<char> sequence)
+        {
+            return this.Map.GetIndex(sequence);
+        }
+
+        public string GetKeyByIndex(int index)
+        {
+            return this.Map.GetKeyByIndex(index).Wrap();
+        }
+
+        public void SetComparer(IComparer<char> comparer)
+        {
+            this.Map.SetComparer(comparer);
+        }
+
+        public bool TryGetValue(IEnumerable<char> key, out TValue value)
+        {
+            return this.Map.TryGetValue(key, out value);
         }
     }
 }

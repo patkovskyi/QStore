@@ -28,7 +28,7 @@
                      .Select(s => new KeyValuePair<string, int>(s, s.GetHashCode()))
                      .ToArray();
 
-            var actual = map.GetByPrefixWithValue(prefix).ToArray();
+            var actual = map.EnumerateByPrefixWithValue(prefix).ToArray();
             CollectionAssert.AreEqual(expected, actual);
         }
 

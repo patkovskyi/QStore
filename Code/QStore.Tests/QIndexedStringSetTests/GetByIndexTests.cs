@@ -31,6 +31,12 @@
         }
 
         [TestMethod]
+        public void GetByIndexEmptySequence()
+        {
+            GetByIndexTestHelper("one", "two", string.Empty);
+        }
+
+        [TestMethod]
         public void GetByIndexOutOfRangeException1()
         {
             const int BadIndex = -1;
@@ -59,11 +65,5 @@
         {
             GetByIndexTestHelper("one", "two", "three", "four", "five");
         }
-
-        [TestMethod]
-        public void GetByIndexEmptySequence()
-        {
-            GetByIndexTestHelper("one", "two", string.Empty);
-        }        
     }
 }

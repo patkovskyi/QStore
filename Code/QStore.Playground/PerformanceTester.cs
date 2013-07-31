@@ -13,97 +13,108 @@
     {
         private Dictionary<string, int> dictionary;
 
+        private HashSet<string> hashSet;
+
         private QStringMap<int> map;
+
+        private QStringSet set;
 
         private SortedDictionary<string, int> sortedDictionary;
 
         private SortedList<string, int> sortedList;
 
-        private QStringSet set;
-
-        private HashSet<string> hashSet;
-
         private string[] words;
 
         public static PerformanceTester Create(string fromFile, Encoding encoding)
         {
-            var tester = new PerformanceTester { words = File.ReadAllLines(fromFile, encoding) };            
+            var tester = new PerformanceTester { words = File.ReadAllLines(fromFile, encoding) };
             // tester.InitSet();
             return tester;
         }
 
         public int TestVsDictionary()
-        {            
-            InitMap();
-            InitDictionary();
+        {
+            this.InitMap();
+            this.InitDictionary();
 
             Console.WriteLine(@"Testing map vs dictionary");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             int x = 0;
-            foreach (var word in words)
+            foreach (var word in this.words)
             {
-                x = dictionary[word];
-            }            
-            stopwatch.Stop();
-            Console.WriteLine(@"Dictionary time for {0} words: {1} ms", words.Length, stopwatch.ElapsedMilliseconds);
-
-            stopwatch.Restart();
-            foreach (var word in words)
-            {
-                x = map[word];
+                x = this.dictionary[word];
             }
             stopwatch.Stop();
-            Console.WriteLine(@"       Map time for {0} words: {1} ms", words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine(
+                @"Dictionary time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+
+            stopwatch.Restart();
+            foreach (var word in this.words)
+            {
+                x = this.map[word];
+            }
+            stopwatch.Stop();
+            Console.WriteLine(
+                @"       Map time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return x;
         }
 
         public int TestVsSortedDictionary()
         {
-            InitMap();
-            InitSortedDictionary();
+            this.InitMap();
+            this.InitSortedDictionary();
 
             Console.WriteLine(@"Testing map vs sorted dictionary");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             int x = 0;
-            foreach (var word in words)
+            foreach (var word in this.words)
             {
-                x = sortedDictionary[word];
+                x = this.sortedDictionary[word];
             }
             stopwatch.Stop();
-            Console.WriteLine(@"Sorted dictionary time for {0} words: {1} ms", words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine(
+                @"Sorted dictionary time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
 
             stopwatch.Restart();
-            foreach (var word in words)
+            foreach (var word in this.words)
             {
-                x = map[word];
+                x = this.map[word];
             }
             stopwatch.Stop();
-            Console.WriteLine(@"              Map time for {0} words: {1} ms", words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine(
+                @"              Map time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return x;
         }
 
-        private void InitSet()
+        private static long GetCurrentUsedMemory()
         {
-            if (this.set == null)
+            GC.Collect();
+            GC.WaitForFullGCComplete();
+            GC.WaitForPendingFinalizers();
+            return GC.GetTotalMemory(true);
+        }
+
+        private void InitDictionary()
+        {
+            if (this.dictionary == null)
             {
-                Console.WriteLine(@"Initializing QStringSet with {0} elements.", words.Length);
+                Console.WriteLine(@"Initializing Dictionary<string, int> with {0} elements.", this.words.Length);
                 var stopwatch = new Stopwatch();
                 long memoryBefore = GetCurrentUsedMemory();
                 stopwatch.Start();
 
-                this.set = QStringSet.Create(words, Comparer<char>.Default);
+                this.dictionary = this.words.ToDictionary(w => w, w => w.GetHashCode());
 
                 stopwatch.Stop();
                 long memoryAfter = GetCurrentUsedMemory();
                 Console.WriteLine(@"Memory delta: {0:+#;-#} bytes", memoryAfter - memoryBefore);
                 Console.WriteLine(@"Elapsed time:  {0} ms", stopwatch.ElapsedMilliseconds);
-                Console.WriteLine();
             }
         }
 
@@ -111,12 +122,12 @@
         {
             if (this.hashSet == null)
             {
-                Console.WriteLine(@"Initializing HashSet<int> with {0} elements.", words.Length);
+                Console.WriteLine(@"Initializing HashSet<int> with {0} elements.", this.words.Length);
                 var stopwatch = new Stopwatch();
                 long memoryBefore = GetCurrentUsedMemory();
                 stopwatch.Start();
 
-                this.hashSet = new HashSet<string>(words, StringComparer.Ordinal);                
+                this.hashSet = new HashSet<string>(this.words, StringComparer.Ordinal);
 
                 stopwatch.Stop();
                 long memoryAfter = GetCurrentUsedMemory();
@@ -128,17 +139,17 @@
 
         private void InitMap()
         {
-            if (map == null)
+            if (this.map == null)
             {
-                Console.WriteLine(@"Initializing QStringMap<int> with {0} elements.", words.Length);
+                Console.WriteLine(@"Initializing QStringMap<int> with {0} elements.", this.words.Length);
                 var stopwatch = new Stopwatch();
                 long memoryBefore = GetCurrentUsedMemory();
-                stopwatch.Start();                
+                stopwatch.Start();
 
-                map = QStringMap<int>.Create(words, Comparer<char>.Default);
-                foreach (var word in words)
+                this.map = QStringMap<int>.Create(this.words, Comparer<char>.Default);
+                foreach (var word in this.words)
                 {
-                    map[word] = word.GetHashCode();
+                    this.map[word] = word.GetHashCode();
                 }
 
                 stopwatch.Stop();
@@ -149,37 +160,38 @@
             }
         }
 
-        private void InitDictionary()
+        private void InitSet()
         {
-            if (dictionary == null)
+            if (this.set == null)
             {
-                Console.WriteLine(@"Initializing Dictionary<string, int> with {0} elements.", words.Length);
+                Console.WriteLine(@"Initializing QStringSet with {0} elements.", this.words.Length);
                 var stopwatch = new Stopwatch();
                 long memoryBefore = GetCurrentUsedMemory();
-                stopwatch.Start();                
+                stopwatch.Start();
 
-                dictionary = words.ToDictionary(w => w, w => w.GetHashCode());
+                this.set = QStringSet.Create(this.words, Comparer<char>.Default);
 
                 stopwatch.Stop();
                 long memoryAfter = GetCurrentUsedMemory();
                 Console.WriteLine(@"Memory delta: {0:+#;-#} bytes", memoryAfter - memoryBefore);
                 Console.WriteLine(@"Elapsed time:  {0} ms", stopwatch.ElapsedMilliseconds);
+                Console.WriteLine();
             }
         }
 
         private void InitSortedDictionary()
         {
-            if (sortedDictionary == null)
+            if (this.sortedDictionary == null)
             {
-                Console.WriteLine(@"Initializing SortedDictionary<string, int> with {0} elements.", words.Length);
+                Console.WriteLine(@"Initializing SortedDictionary<string, int> with {0} elements.", this.words.Length);
                 var stopwatch = new Stopwatch();
                 long memoryBefore = GetCurrentUsedMemory();
-                stopwatch.Start();               
+                stopwatch.Start();
 
-                sortedDictionary = new SortedDictionary<string, int>();
-                foreach (var word in words)
+                this.sortedDictionary = new SortedDictionary<string, int>();
+                foreach (var word in this.words)
                 {
-                    sortedDictionary.Add(word, word.GetHashCode());
+                    this.sortedDictionary.Add(word, word.GetHashCode());
                 }
 
                 stopwatch.Stop();
@@ -187,14 +199,6 @@
                 Console.WriteLine(@"Memory delta: {0:+#;-#} bytes", memoryAfter - memoryBefore);
                 Console.WriteLine(@"Elapsed time:  {0} ms", stopwatch.ElapsedMilliseconds);
             }
-        }
-
-        private static long GetCurrentUsedMemory()
-        {
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            GC.WaitForPendingFinalizers();
-            return GC.GetTotalMemory(true);
         }
     }
 }
