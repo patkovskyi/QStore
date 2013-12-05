@@ -3,17 +3,17 @@
     using System.IO;
 
     public static class ProtoHelper
-    {      
-        public static SimpleSet FromProto(byte[] protoBytes)
+    {
+        public static QSet FromProto(byte[] protoBytes)
         {
             using (var ms = new MemoryStream(protoBytes))
             {
-                var set = ProtoBuf.Serializer.Deserialize<SimpleSet>(ms);                
+                var set = ProtoBuf.Serializer.Deserialize<QSet>(ms);
                 return set;
             }
         }
 
-        public static byte[] ToProto(SimpleSet set)
+        public static byte[] ToProto(QSet set)
         {
             using (var ms = new MemoryStream())
             {

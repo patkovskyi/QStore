@@ -5,16 +5,16 @@
     using System.Xml.Serialization;
 
     [XmlType]
-    public class SimpleSet
+    public class QSet
     {        
         [XmlElement(Order = 1)]
-        internal QSetTransition RootTransition;
+        internal QTransition RootTransition;
 
         [XmlElement(Order = 2)]
         internal int[] StateStarts;
 
         [XmlElement(Order = 3)]
-        internal QSetTransition[] Transitions;
+        internal QTransition[] QTransitions;
 
         public IComparer<char> Comparer
         {
@@ -25,9 +25,9 @@
         }
 
         [XmlElement(Order = 5)]
-        private int WordCount { get; set; }
+        private int Count { get; set; }
 
-        public static SimpleSet Create(IEnumerable<string> keys)
+        public static QSet Create(IEnumerable<string> keys)
         {
             throw new NotImplementedException();
         }

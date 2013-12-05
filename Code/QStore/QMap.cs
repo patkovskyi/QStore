@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Xml.Serialization;
 
-    public class SimpleDictionary<T>
+    [XmlType]
+    public class QMap<T>
     {
         public T this[string key]
         {
@@ -18,7 +20,7 @@
             }
         }
 
-        public static SimpleDictionary<T> Create(IEnumerable<KeyValuePair<string, T>> keyValues)
+        public static QMap<T> Create(IEnumerable<KeyValuePair<string, T>> keyValues)
         {
             throw new NotImplementedException();
         }

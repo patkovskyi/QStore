@@ -3,7 +3,7 @@
     using System.Xml.Serialization;
 
     [XmlType]
-    public struct QSetTransition
+    internal struct QTransition
     {
         [XmlElement(Order = 3)]
         internal bool IsFinal;
