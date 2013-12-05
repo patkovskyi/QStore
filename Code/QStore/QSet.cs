@@ -6,22 +6,22 @@
 
     [XmlType]
     public class QSet
-    {        
+    {
+        [XmlElement(Order = 3)]
+        internal QTransition[] QTransitions;
+
         [XmlElement(Order = 1)]
         internal QTransition RootTransition;
 
         [XmlElement(Order = 2)]
         internal int[] StateStarts;
 
-        [XmlElement(Order = 3)]
-        internal QTransition[] QTransitions;
-
         public IComparer<char> Comparer
         {
             get
             {
                 return Comparer<char>.Default;
-            }            
+            }
         }
 
         [XmlElement(Order = 5)]
@@ -45,7 +45,7 @@
         public IEnumerable<string> GetByPrefix(IEnumerable<char> keyPrefix)
         {
             throw new NotImplementedException();
-        }        
+        }
 
         private void Minimize()
         {

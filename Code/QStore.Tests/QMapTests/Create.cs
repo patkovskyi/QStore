@@ -11,7 +11,7 @@
         [Test]
         public void NotImplemented()
         {
-            Assert.Throws<NotSupportedException>(
+            Assert.Throws<NotImplementedException>(
                 () => QMap<int>.Create(new[] { new KeyValuePair<string, int>("a", 0) }));
         }
     }
