@@ -42,6 +42,7 @@
     <Compile Include="SimpleDictionary.cs" />
     <Compile Include="SimpleSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QSetTransition.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
