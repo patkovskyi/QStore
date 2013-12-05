@@ -5,8 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QStore", "QStore\QStore.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QStore.Tests", "QStore.Tests\QStore.Tests.csproj", "{72D159FF-40BA-4E9C-AE83-00DD6854617B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QStore.Playground", "QStore.Playground\QStore.Playground.csproj", "{5FF4359A-3A69-4569-96D7-0354BBF98F40}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D47C1F10-FE3A-4843-8983-FB0986C72CAD}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -44,16 +42,6 @@ Global
 		{72D159FF-40BA-4E9C-AE83-00DD6854617B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{72D159FF-40BA-4E9C-AE83-00DD6854617B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{72D159FF-40BA-4E9C-AE83-00DD6854617B}.Release|x86.ActiveCfg = Release|Any CPU
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Debug|x86.ActiveCfg = Debug|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Debug|x86.Build.0 = Debug|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Release|Any CPU.ActiveCfg = Release|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Release|Mixed Platforms.Build.0 = Release|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Release|x86.ActiveCfg = Release|x86
-		{5FF4359A-3A69-4569-96D7-0354BBF98F40}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
