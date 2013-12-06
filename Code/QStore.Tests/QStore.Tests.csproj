@@ -63,12 +63,6 @@
     <Compile Include="QSetTests\Create.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QStore\QStore.csproj">
-      <Project>{BEAF3690-7763-4C78-B17E-E42CA312B1CC}</Project>
-      <Name>QStore</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\..\TestData\Zaliznyak-1251.txt">
       <Link>Zaliznyak-1251.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -81,7 +75,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\QStore\QStore.csproj">
+      <Project>{BEAF3690-7763-4C78-B17E-E42CA312B1CC}</Project>
+      <Name>QStore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
