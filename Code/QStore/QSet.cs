@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Xml.Serialization;
 
+    using QStore.Minimization;
+
     [XmlType]
     public class QSet
     {
@@ -148,33 +150,6 @@
             throw new NotImplementedException();
         }
 
-        private static void ExtractAlphabet(
-            IEnumerable<string> keys,
-            IComparer<char> comparer,
-            out char[] alphabet,
-            out SortedDictionary<char, int> alphabetDictionary)
-        {
-            alphabetDictionary = new SortedDictionary<char, int>(comparer);
-            foreach (var sequence in keys)
-            {
-                foreach (char element in sequence)
-                {
-                    if (!alphabetDictionary.ContainsKey(element))
-                    {
-                        alphabetDictionary.Add(element, 0);
-                    }
-                }
-            }
-
-            alphabet = new char[alphabetDictionary.Keys.Count];
-            alphabetDictionary.Keys.CopyTo(alphabet, 0);
-
-            for (int i = 0; i < alphabet.Length; i++)
-            {
-                alphabetDictionary[alphabet[i]] = i;
-            }
-        }
-
         private static int GetTransitionIndex(
             IList<QTransition> transitions,
             char symbol,
@@ -228,9 +203,84 @@
             return ~i;
         }
 
+        private MergeList GetMergeList()
+        {
+            var merge = new MergeList(this.StateStarts.Length, this.Transitions.Length);
+            for (int i = 0; i < this.Transitions.Length; i++)
+            {
+                merge.Add(i, this.Transitions[i].NextState);
+            }
+
+            return merge;
+        }
+
         private void Minimize()
         {
-            throw new NotImplementedException();
+            var registered = new Dictionary<StateSignature, int>(new StateSignatureEqualityComparer());
+            var mergeList = this.GetMergeList();
+            this.Register(this.RootTransition.NextState, registered, mergeList);
+            
+            var registeredArray = registered.ToArray();
+            var oldToNewStates = Enumerable.Range(0, registered.Count)
+                                           .ToDictionary(i => registeredArray[i].Value, i => i);
+            this.Transitions = new QSetTransition[registered.Sum(r => r.Key.Transitions.Length)];
+            this.StateStarts = new int[registered.Count];
+            for (int i = 0, transIndex = 0; i < this.StateStarts.Length; i++)
+            {
+                var old = registeredArray[i];
+                for (int j = 0; j < old.Key.Transitions.Length; j++)
+                {
+                    var oldTr = old.Key.Transitions[j];
+                    this.Transitions[transIndex + j] = new QSetTransition(
+                        oldTr.AlphabetIndex, oldToNewStates[oldTr.StateIndex], oldTr.IsFinal);
+                }
+
+                this.StateStarts[i] = transIndex;
+                transIndex += old.Key.Transitions.Length;
+            }
+
+            this.RootTransition = new QSetTransition(
+                0, oldToNewStates[this.RootTransition.StateIndex], this.RootTransition.IsFinal);
+        }
+
+        private int Register(int state, Dictionary<StateSignature, int> registered, MergeList mergeList)
+        {
+            int lower = this.StateStarts[state];
+            int upper = this.Transitions.GetUpperIndex(this.StateStarts, state);
+            int registeredState;
+
+            for (int i = lower; i < upper; i++)
+            {
+                int sj = this.Transitions[i].StateIndex;
+                registeredState = this.Register(sj, registered, mergeList);
+                if (registeredState >= 0)
+                {
+                    // state sj has to be substituted with registeredState                    
+                    foreach (var t in mergeList.GetTransitionIndexes(sj))
+                    {
+                        var transition = this.Transitions[t];
+                        this.Transitions[t] = new QSetTransition(
+                            transition.AlphabetIndex, registeredState, transition.IsFinal);
+                    }
+
+                    mergeList.Merge(registeredState, sj);
+                }
+            }
+
+            var sigTransitions = new QSetTransition[upper - lower];
+            for (int i = lower; i < upper; i++)
+            {
+                sigTransitions[i - lower] = this.Transitions[i];
+            }
+
+            var signature = new StateSignature(sigTransitions);
+            if (registered.TryGetValue(signature, out registeredState))
+            {
+                return registeredState;
+            }
+
+            registered.Add(signature, state);
+            return -1;
         }
     }
 }

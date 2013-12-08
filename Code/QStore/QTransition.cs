@@ -1,18 +1,19 @@
 ﻿namespace QStore
 {
+    using System.Runtime.InteropServices;
     using System.Xml.Serialization;
 
-    [XmlType]
-    internal struct QTransition
+    [XmlType]    
+    public struct QTransition
     {
-        [XmlElement(Order = 3)]
-        internal bool IsFinal;
-
-        [XmlElement(Order = 1)]
+        [XmlElement(Order = 1)]        
         internal int NextState;
 
-        [XmlElement(Order = 2)]
+        [XmlElement(Order = 2)]        
         internal char Symbol;
+
+        [XmlElement(Order = 3)]        
+        internal bool IsFinal;              
 
         public QTransition(char symbol, int nextState, bool isFinal)
         {
