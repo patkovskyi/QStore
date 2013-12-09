@@ -12,7 +12,7 @@
     public class QIndexedStringSet : IIndexedStringSet
     {
         [DataMember(Order = 1)]
-        public QIndexedSet<char> IndexedSet { get; protected set; }
+        public QIndexedSet IndexedSet { get; protected set; }
 
         public int Count
         {
@@ -32,7 +32,7 @@
 
         public static QIndexedStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return new QIndexedStringSet { IndexedSet = QIndexedSet<char>.Create(strings, comparer) };
+            return new QIndexedStringSet { IndexedSet = QIndexedSet.Create(strings, comparer) };
         }
 
         public bool Contains(IEnumerable<char> sequence)

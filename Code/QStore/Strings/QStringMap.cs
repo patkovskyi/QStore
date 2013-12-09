@@ -12,7 +12,7 @@
     public class QStringMap<TValue> : IStringMap<TValue>
     {
         [DataMember(Order = 1)]
-        public QMap<char, TValue> Map { get; protected set; }
+        public QMap<TValue> Map { get; protected set; }
 
         public int Count
         {
@@ -53,7 +53,7 @@
 
         public static QStringMap<TValue> Create(IEnumerable<string> sequences, IComparer<char> comparer)
         {
-            return new QStringMap<TValue> { Map = QMap<char, TValue>.Create(sequences, comparer) };
+            return new QStringMap<TValue> { Map = QMap<TValue>.Create(sequences, comparer) };
         }
 
         public bool Contains(IEnumerable<char> sequence)

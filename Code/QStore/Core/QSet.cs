@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Runtime.Serialization;
 
@@ -13,13 +14,13 @@
 
     [DataContract]
     [Serializable]
-    public class QSet<T> : ISequenceSet<T>
+    public class QSet : ISequenceSet<char>
     {
         [DataMember(Order = 1)]
-        protected internal T[] Alphabet;
+        protected internal char[] Alphabet;
 
         [NonSerialized]
-        protected internal IComparer<T> ComparerField;
+        protected internal IComparer<char> ComparerField;
 
         [DataMember(Order = 2)]
         protected internal QSetTransition RootTransition;
@@ -30,7 +31,7 @@
         [DataMember(Order = 4)]
         protected internal QSetTransition[] Transitions;
 
-        public IComparer<T> Comparer
+        public IComparer<char> Comparer
         {
             get
             {
@@ -41,12 +42,12 @@
         [DataMember(Order = 5)]
         public int Count { get; protected internal set; }
 
-        public static QSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        public static QSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
         {
-            return Create<QSet<T>>(sequences, comparer);
+            return Create<QSet>(sequences, comparer);
         }
 
-        public bool Contains(IEnumerable<T> sequence)
+        public bool Contains(IEnumerable<char> sequence)
         {
             if (sequence == null)
             {
@@ -62,12 +63,12 @@
             return false;
         }
 
-        public IEnumerable<T[]> Enumerate()
+        public IEnumerable<char[]> Enumerate()
         {
             return this.Enumerate(this.RootTransition);
         }
 
-        public IEnumerable<T[]> EnumerateByPrefix(IEnumerable<T> prefix)
+        public IEnumerable<char[]> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             if (prefix == null)
             {
@@ -81,10 +82,10 @@
                 return this.Enumerate(transition, fromStack);
             }
 
-            return Enumerable.Empty<T[]>();
+            return Enumerable.Empty<char[]>();
         }
 
-        public void SetComparer(IComparer<T> comparer)
+        public void SetComparer(IComparer<char> comparer)
         {
             if (comparer == null)
             {
@@ -96,13 +97,13 @@
             // TODO: safety check?
         }
 
-        protected internal IEnumerable<T[]> Enumerate(QSetTransition fromTransition, Stack<int> fromStack = null)
+        protected internal IEnumerable<char[]> Enumerate(QSetTransition fromTransition, Stack<int> fromStack = null)
         {
             if (fromTransition.IsFinal)
             {
                 yield return
                     fromStack == null
-                        ? new T[0]
+                        ? new char[0]
                         : fromStack.Reverse()
                                    .Select(i => this.Alphabet[this.Transitions[i - 1].AlphabetIndex])
                                    .ToArray();
@@ -128,7 +129,7 @@
                     {
                         var tmp = new int[fromStack.Count];
                         fromStack.CopyTo(tmp, 0);
-                        var res = new T[fromStack.Count];
+                        var res = new char[fromStack.Count];
                         for (int i = 0; i < res.Length; i++)
                         {
                             res[i] = this.Alphabet[this.Transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
@@ -153,7 +154,7 @@
             }
         }
 
-        protected internal bool TrySend(int fromState, T input, out int transitionIndex)
+        protected internal bool TrySend(int fromState, char input, out int transitionIndex)
         {
             transitionIndex = this.GetTransitionIndex(fromState, input);
             if (transitionIndex >= 0)
@@ -166,7 +167,7 @@
 
         protected internal bool TrySendSequence(
             QSetTransition fromTransition,
-            IEnumerable<T> sequence,
+            IEnumerable<char> sequence,
             out QSetTransition transition,
             Stack<int> nextTransitions = null)
         {
@@ -198,8 +199,8 @@
             return true;
         }
 
-        protected static TSet Create<TSet>(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
-            where TSet : QSet<T>, new()
+        protected static TSet Create<TSet>(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+            where TSet : QSet, new()
         {
             if (sequences == null)
             {
@@ -212,8 +213,8 @@
             }
 
             // ReSharper disable PossibleMultipleEnumeration
-            T[] alphabet;
-            SortedDictionary<T, int> alphabetDict;
+            char[] alphabet;
+            SortedDictionary<char, int> alphabetDict;
             ExtractAlphabet(sequences, comparer, out alphabet, out alphabetDict);
 
             // outer list represents states, inner lists represent transitions from this state
@@ -280,7 +281,7 @@
                     if (currentStateTransitions[transitionIndex].IsFinal)
                     {
                         throw new ArgumentException(
-                            string.Format(ErrorMessages.DuplicateKey, string.Concat(sequence.Select(e => e.ToString()))));
+                            string.Format(ErrorMessages.DuplicateKey, string.Concat(sequence.Select(e => e.ToString(CultureInfo.InvariantCulture)))));
                     }
 
                     currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
@@ -315,15 +316,15 @@
         }
 
         private static void ExtractAlphabet(
-            IEnumerable<IEnumerable<T>> sequences,
-            IComparer<T> comparer,
-            out T[] alphabet,
-            out SortedDictionary<T, int> alphabetDictionary)
+            IEnumerable<IEnumerable<char>> sequences,
+            IComparer<char> comparer,
+            out char[] alphabet,
+            out SortedDictionary<char, int> alphabetDictionary)
         {
-            alphabetDictionary = new SortedDictionary<T, int>(comparer);
+            alphabetDictionary = new SortedDictionary<char, int>(comparer);
             foreach (var sequence in sequences)
             {
-                foreach (T element in sequence)
+                foreach (char element in sequence)
                 {
                     if (!alphabetDictionary.ContainsKey(element))
                     {
@@ -341,7 +342,7 @@
         }
 
         private static int GetTransitionIndex(
-            IList<QSetTransition> transitions, T symbol, T[] alphabet, IComparer<T> comparer, int lower, int upper)
+            IList<QSetTransition> transitions, char symbol, char[] alphabet, IComparer<char> comparer, int lower, int upper)
         {
             const int BinarySearchThreshold = 1;
             if (upper - lower >= BinarySearchThreshold)
@@ -401,7 +402,7 @@
         }
 
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
-        private int GetTransitionIndex(int fromState, T symbol)
+        private int GetTransitionIndex(int fromState, char symbol)
         {
             int lower = this.StateStarts[fromState];
             int upper = this.Transitions.GetUpperIndex(this.StateStarts, fromState);

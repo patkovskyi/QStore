@@ -12,7 +12,7 @@
     public class QStringSet : IStringSet
     {
         [DataMember(Order = 1)]
-        public QSet<char> Set { get; protected set; }
+        public QSet Set { get; protected set; }
 
         public int Count
         {
@@ -32,7 +32,7 @@
 
         public static QStringSet Create(IEnumerable<string> strings, IComparer<char> comparer)
         {
-            return new QStringSet { Set = QSet<char>.Create(strings, comparer) };
+            return new QStringSet { Set = QSet.Create(strings, comparer) };
         }
 
         public bool Contains(IEnumerable<char> sequence)

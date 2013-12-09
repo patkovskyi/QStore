@@ -11,13 +11,13 @@
 
     [DataContract]
     [Serializable]
-    public class QIndexedSet<T> : IIndexedSequenceSet<T>
+    public class QIndexedSet : IIndexedSequenceSet<char>
     {
         [DataMember(Order = 2)]
         protected internal int[] PathsLeft;
 
         [DataMember(Order = 1)]
-        protected internal QSet<T> Set;
+        protected internal QSet Set;
 
         public int Count
         {
@@ -27,7 +27,7 @@
             }
         }
 
-        public IComparer<T> Comparer
+        public IComparer<char> Comparer
         {
             get
             {
@@ -35,32 +35,32 @@
             }
         }
 
-        public static QIndexedSet<T> Create(IEnumerable<IEnumerable<T>> sequences, IComparer<T> comparer)
+        public static QIndexedSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
         {
-            var set = QSet<T>.Create(sequences, comparer);
-            var indexedSet = new QIndexedSet<T> { Set = set, PathsLeft = new int[set.Transitions.Length] };
+            var set = QSet.Create(sequences, comparer);
+            var indexedSet = new QIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
             var pathsFromState = new int[set.StateStarts.Length];
             indexedSet.CountPaths(set.RootTransition.StateIndex, pathsFromState);
             set.Count += set.RootTransition.IsFinal ? 1 : 0;
             return indexedSet;
         }
 
-        public bool Contains(IEnumerable<T> sequence)
+        public bool Contains(IEnumerable<char> sequence)
         {
             return this.Set.Contains(sequence);
         }
 
-        public IEnumerable<T[]> Enumerate()
+        public IEnumerable<char[]> Enumerate()
         {
             return this.Set.Enumerate(this.Set.RootTransition);
         }
 
-        public IEnumerable<T[]> EnumerateByPrefix(IEnumerable<T> prefix)
+        public IEnumerable<char[]> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             return this.Set.EnumerateByPrefix(prefix);
         }
 
-        public IEnumerable<KeyValuePair<T[], int>> EnumerateByPrefixWithIndex(IEnumerable<T> prefix)
+        public IEnumerable<KeyValuePair<char[], int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
         {
             if (prefix == null)
             {
@@ -80,21 +80,21 @@
                 }
 
                 return
-                    this.Set.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<T[], int>(s, i + index));
+                    this.Set.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<char[], int>(s, i + index));
             }
 
-            return Enumerable.Empty<KeyValuePair<T[], int>>();
+            return Enumerable.Empty<KeyValuePair<char[], int>>();
         }
 
-        public IEnumerable<KeyValuePair<T[], int>> EnumerateWithIndex()
+        public IEnumerable<KeyValuePair<char[], int>> EnumerateWithIndex()
         {
-            return this.Set.Enumerate(this.Set.RootTransition).Select((s, i) => new KeyValuePair<T[], int>(s, i));
+            return this.Set.Enumerate(this.Set.RootTransition).Select((s, i) => new KeyValuePair<char[], int>(s, i));
         }
 
-        public T[] GetByIndex(int index)
+        public char[] GetByIndex(int index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
-            var list = new List<T>();
+            var list = new List<char>();
             var nextTransition = this.Set.RootTransition;
             while (index > 0 || !nextTransition.IsFinal)
             {
@@ -114,12 +114,12 @@
                 list.Add(this.Set.Alphabet[nextTransition.AlphabetIndex]);
             }
 
-            var result = new T[list.Count];
+            var result = new char[list.Count];
             list.CopyTo(result);
             return result;
         }
 
-        public int GetIndex(IEnumerable<T> sequence)
+        public int GetIndex(IEnumerable<char> sequence)
         {
             if (sequence == null)
             {
@@ -158,7 +158,7 @@
             return lexicographicIndex - 1;
         }
 
-        public void SetComparer(IComparer<T> comparer)
+        public void SetComparer(IComparer<char> comparer)
         {
             this.Set.SetComparer(comparer);
         }

@@ -78,11 +78,13 @@ namespace QStore.Tests.QStringSetTests
             CreateTestHelper("aa", string.Empty, "ab");
         }
 
+#if !DEBUG
         [TestMethod]
         [DeploymentItem(TestData.ZaliznyakSolutionPath)]
         public void CreateZaliznyak()
         {
             CreateTestHelper(File.ReadAllLines(TestData.ZaliznyakDeployedPath, TestData.Encoding));
         }
+#endif
     }
 }
