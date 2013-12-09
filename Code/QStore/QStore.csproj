@@ -53,7 +53,6 @@
     <Compile Include="Core\QStringMap.cs" />
     <Compile Include="Core\QStringSet.cs" />
     <Compile Include="Core\Structs\StateSignature.cs" />
-    <Compile Include="Core\Wrappers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ErrorMessages.resx">
