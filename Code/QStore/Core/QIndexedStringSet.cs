@@ -10,13 +10,13 @@
 
     [DataContract]
     [Serializable]
-    public class QIndexedSet
+    public class QIndexedStringSet
     {
         [DataMember(Order = 2)]
         protected internal int[] PathsLeft;
 
         [DataMember(Order = 1)]
-        protected internal QSet Set;
+        protected internal QStringSet Set;
 
         public int Count
         {
@@ -34,10 +34,10 @@
             }
         }
 
-        public static QIndexedSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        public static QIndexedStringSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
         {
-            var set = QSet.Create(sequences, comparer);
-            var indexedSet = new QIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
+            var set = QStringSet.Create(sequences, comparer);
+            var indexedSet = new QIndexedStringSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
             var pathsFromState = new int[set.StateStarts.Length];
             indexedSet.CountPaths(set.RootTransition.StateIndex, pathsFromState);
             set.Count += set.RootTransition.IsFinal ? 1 : 0;
@@ -49,17 +49,17 @@
             return this.Set.Contains(sequence);
         }
 
-        public IEnumerable<char[]> Enumerate()
+        public IEnumerable<string> Enumerate()
         {
             return this.Set.Enumerate(this.Set.RootTransition);
         }
 
-        public IEnumerable<char[]> EnumerateByPrefix(IEnumerable<char> prefix)
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             return this.Set.EnumerateByPrefix(prefix);
         }
 
-        public IEnumerable<KeyValuePair<char[], int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
+        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
         {
             if (prefix == null)
             {
@@ -79,18 +79,18 @@
                 }
 
                 return
-                    this.Set.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<char[], int>(s, i + index));
+                    this.Set.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<string, int>(s, i + index));
             }
 
-            return Enumerable.Empty<KeyValuePair<char[], int>>();
+            return Enumerable.Empty<KeyValuePair<string, int>>();
         }
 
-        public IEnumerable<KeyValuePair<char[], int>> EnumerateWithIndex()
+        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
         {
-            return this.Set.Enumerate(this.Set.RootTransition).Select((s, i) => new KeyValuePair<char[], int>(s, i));
+            return this.Set.Enumerate(this.Set.RootTransition).Select((s, i) => new KeyValuePair<string, int>(s, i));
         }
 
-        public char[] GetByIndex(int index)
+        public string GetByIndex(int index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
             var list = new List<char>();
@@ -112,10 +112,8 @@
                 nextTransition = this.Set.Transitions[nextTransitionIndex];
                 list.Add(this.Set.Alphabet[nextTransition.AlphabetIndex]);
             }
-
-            var result = new char[list.Count];
-            list.CopyTo(result);
-            return result;
+                
+            return new string(list.ToArray());
         }
 
         public int GetIndex(IEnumerable<char> sequence)

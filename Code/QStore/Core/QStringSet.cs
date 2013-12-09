@@ -13,7 +13,7 @@
 
     [DataContract]
     [Serializable]
-    public class QSet
+    public class QStringSet
     {
         [DataMember(Order = 1)]
         protected internal char[] Alphabet;
@@ -41,9 +41,9 @@
         [DataMember(Order = 5)]
         public int Count { get; protected internal set; }
 
-        public static QSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        public static QStringSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
         {
-            return Create<QSet>(sequences, comparer);
+            return Create<QStringSet>(sequences, comparer);
         }
 
         public bool Contains(IEnumerable<char> sequence)
@@ -62,12 +62,12 @@
             return false;
         }
 
-        public IEnumerable<char[]> Enumerate()
+        public IEnumerable<string> Enumerate()
         {
             return this.Enumerate(this.RootTransition);
         }
 
-        public IEnumerable<char[]> EnumerateByPrefix(IEnumerable<char> prefix)
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             if (prefix == null)
             {
@@ -81,7 +81,7 @@
                 return this.Enumerate(transition, fromStack);
             }
 
-            return Enumerable.Empty<char[]>();
+            return Enumerable.Empty<string>();
         }
 
         public void SetComparer(IComparer<char> comparer)
@@ -96,16 +96,17 @@
             // TODO: safety check?
         }
 
-        protected internal IEnumerable<char[]> Enumerate(QSetTransition fromTransition, Stack<int> fromStack = null)
+        protected internal IEnumerable<string> Enumerate(QSetTransition fromTransition, Stack<int> fromStack = null)
         {
             if (fromTransition.IsFinal)
             {
                 yield return
                     fromStack == null
-                        ? new char[0]
-                        : fromStack.Reverse()
-                                   .Select(i => this.Alphabet[this.Transitions[i - 1].AlphabetIndex])
-                                   .ToArray();
+                        ? string.Empty
+                        : new string(
+                            fromStack.Reverse()
+                                .Select(i => this.Alphabet[this.Transitions[i - 1].AlphabetIndex])
+                                .ToArray());
             }
 
             fromStack = fromStack ?? new Stack<int>();
@@ -134,7 +135,7 @@
                             res[i] = this.Alphabet[this.Transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
                         }
 
-                        yield return res;
+                        yield return new string(res);
                     }
 
                     int nextState = this.Transitions[lower].StateIndex;
@@ -199,7 +200,7 @@
         }
 
         protected static TSet Create<TSet>(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
-            where TSet : QSet, new()
+            where TSet : QStringSet, new()
         {
             if (sequences == null)
             {

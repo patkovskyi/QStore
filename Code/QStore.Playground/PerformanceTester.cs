@@ -1,4 +1,4 @@
-﻿namespace QSpell.Playground
+﻿namespace QStore.Playground
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@
     using System.Linq;
     using System.Text;
 
-    using QStore.Strings;
+    using QStore.Core;
 
     public class PerformanceTester
     {

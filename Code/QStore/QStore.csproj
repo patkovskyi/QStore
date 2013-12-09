@@ -47,16 +47,13 @@
     </Compile>
     <Compile Include="Core\Extensions\IListExtensions.cs" />
     <Compile Include="Core\Minimization\MergeList.cs" />
-    <Compile Include="Core\QIndexedSet.cs" />
-    <Compile Include="Strings\QIndexedStringSet.cs" />
+    <Compile Include="Core\QIndexedStringSet.cs" />
     <Compile Include="Core\Structs\QSetTransition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\QMap.cs" />
-    <Compile Include="Core\QSet.cs" />
-    <Compile Include="Strings\QStringMap.cs" />
-    <Compile Include="Strings\QStringSet.cs" />
+    <Compile Include="Core\QStringMap.cs" />
+    <Compile Include="Core\QStringSet.cs" />
     <Compile Include="Core\Structs\StateSignature.cs" />
-    <Compile Include="Strings\Wrappers.cs" />
+    <Compile Include="Core\Wrappers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ErrorMessages.resx">

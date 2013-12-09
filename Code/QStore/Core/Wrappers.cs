@@ -1,4 +1,4 @@
-﻿namespace QStore.Strings
+﻿namespace QStore.Core
 {
     using System.Collections.Generic;
     using System.Linq;

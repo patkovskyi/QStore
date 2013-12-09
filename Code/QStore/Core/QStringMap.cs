@@ -7,10 +7,10 @@
 
     [DataContract]
     [Serializable]
-    public class QMap<TValue>
+    public class QStringMap<TValue>
     {
         [DataMember(Order = 1)]
-        protected internal QIndexedSet IndexedSet;
+        protected internal QIndexedStringSet StringIndexedSet;
 
         [DataMember(Order = 2)]
         public TValue[] Values { get; protected set; }
@@ -19,7 +19,7 @@
         {
             get
             {
-                return this.IndexedSet.Count;
+                return this.StringIndexedSet.Count;
             }
         }
 
@@ -27,7 +27,7 @@
         {
             get
             {
-                return this.IndexedSet.Comparer;
+                return this.StringIndexedSet.Comparer;
             }
         }
 
@@ -56,7 +56,7 @@
             }
         }
 
-        public static QMap<TValue> Create(IEnumerable<IEnumerable<char>> keySequences, IComparer<char> comparer)
+        public static QStringMap<TValue> Create(IEnumerable<IEnumerable<char>> keySequences, IComparer<char> comparer)
         {
             if (keySequences == null)
             {
@@ -68,70 +68,70 @@
                 throw new ArgumentNullException("comparer");
             }
 
-            var indexedSet = QIndexedSet.Create(keySequences, comparer);
-            return new QMap<TValue> { IndexedSet = indexedSet, Values = new TValue[indexedSet.Count] };
+            var indexedSet = QIndexedStringSet.Create(keySequences, comparer);
+            return new QStringMap<TValue> { StringIndexedSet = indexedSet, Values = new TValue[indexedSet.Count] };
         }
 
         public bool Contains(IEnumerable<char> sequence)
         {
-            return this.IndexedSet.Contains(sequence);
+            return this.StringIndexedSet.Contains(sequence);
         }
 
-        public IEnumerable<char[]> Enumerate()
+        public IEnumerable<string> Enumerate()
         {
-            return this.IndexedSet.Enumerate();
+            return this.StringIndexedSet.Enumerate();
         }
 
-        public IEnumerable<char[]> EnumerateByPrefix(IEnumerable<char> prefix)
+        public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
-            return this.IndexedSet.EnumerateByPrefix(prefix);
+            return this.StringIndexedSet.EnumerateByPrefix(prefix);
         }
 
-        public IEnumerable<KeyValuePair<char[], int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
+        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
         {
-            return this.IndexedSet.EnumerateByPrefixWithIndex(prefix);
+            return this.StringIndexedSet.EnumerateByPrefixWithIndex(prefix);
         }
 
-        public IEnumerable<KeyValuePair<char[], TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix)
+        public IEnumerable<KeyValuePair<string, TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix)
         {
             return
                 this.EnumerateByPrefixWithIndex(prefix)
-                    .Select(p => new KeyValuePair<char[], TValue>(p.Key, this.Values[p.Value]));
+                    .Select(p => new KeyValuePair<string, TValue>(p.Key, this.Values[p.Value]));
         }
 
-        public IEnumerable<KeyValuePair<char[], int>> EnumerateWithIndex()
+        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
         {
-            return this.IndexedSet.EnumerateWithIndex();
+            return this.StringIndexedSet.EnumerateWithIndex();
         }
 
-        public IEnumerable<KeyValuePair<char[], TValue>> EnumerateWithValue()
+        public IEnumerable<KeyValuePair<string, TValue>> EnumerateWithValue()
         {
-            return this.Enumerate().Select((key, i) => new KeyValuePair<char[], TValue>(key, this.Values[i]));
+            return this.Enumerate().Select((key, i) => new KeyValuePair<string, TValue>(key, this.Values[i]));
         }
 
-        public char[] GetByIndex(int index)
+        public string GetByIndex(int index)
         {
-            return this.IndexedSet.GetByIndex(index);
+            return this.StringIndexedSet.GetByIndex(index);
         }
 
-        public KeyValuePair<char[], TValue> GetByIndexWithValue(int index)
+        public KeyValuePair<string, TValue> GetByIndexWithValue(int index)
         {
-            return new KeyValuePair<char[], TValue>(this.IndexedSet.GetByIndex(index), this.Values[index]);
+            return new KeyValuePair<string, TValue>(this.StringIndexedSet.GetByIndex(index), this.Values[index]);
         }
 
         public int GetIndex(IEnumerable<char> sequence)
         {
-            return this.IndexedSet.GetIndex(sequence);
+            return this.StringIndexedSet.GetIndex(sequence);
         }
 
-        public char[] GetKeyByIndex(int index)
+        public string GetKeyByIndex(int index)
         {
-            return this.IndexedSet.GetByIndex(index);
+            return this.StringIndexedSet.GetByIndex(index);
         }
 
         public void SetComparer(IComparer<char> comparer)
         {
-            this.IndexedSet.SetComparer(comparer);
+            this.StringIndexedSet.SetComparer(comparer);
         }
 
         public bool TryGetValue(IEnumerable<char> key, out TValue value)
