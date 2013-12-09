@@ -5,11 +5,10 @@
     using System.Runtime.Serialization;
 
     using QStore.Core;
-    using QStore.Strings.Interfaces;
 
     [DataContract]
     [Serializable]
-    public class QStringMap<TValue> : IStringMap<TValue>
+    public class QStringMap<TValue>
     {
         [DataMember(Order = 1)]
         public QMap<TValue> Map { get; protected set; }

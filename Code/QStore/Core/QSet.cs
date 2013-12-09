@@ -8,13 +8,12 @@
 
     using QStore.Core.Comparers;
     using QStore.Core.Extensions;
-    using QStore.Core.Interfaces;
     using QStore.Core.Minimization;
     using QStore.Core.Structs;
 
     [DataContract]
     [Serializable]
-    public class QSet : ISequenceSet<char>
+    public class QSet
     {
         [DataMember(Order = 1)]
         protected internal char[] Alphabet;

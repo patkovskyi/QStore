@@ -6,12 +6,11 @@
     using System.Runtime.Serialization;
 
     using QStore.Core.Extensions;
-    using QStore.Core.Interfaces;
     using QStore.Core.Structs;
 
     [DataContract]
     [Serializable]
-    public class QIndexedSet : IIndexedSequenceSet<char>
+    public class QIndexedSet
     {
         [DataMember(Order = 2)]
         protected internal int[] PathsLeft;

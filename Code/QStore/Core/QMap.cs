@@ -5,11 +5,9 @@
     using System.Linq;
     using System.Runtime.Serialization;
 
-    using QStore.Core.Interfaces;
-
     [DataContract]
     [Serializable]
-    public class QMap<TValue> : ISequenceMap<char, TValue>
+    public class QMap<TValue>
     {
         [DataMember(Order = 1)]
         protected internal QIndexedSet IndexedSet;

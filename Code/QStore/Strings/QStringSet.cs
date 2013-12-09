@@ -5,11 +5,10 @@
     using System.Runtime.Serialization;
 
     using QStore.Core;
-    using QStore.Strings.Interfaces;
 
     [DataContract]
     [Serializable]
-    public class QStringSet : IStringSet
+    public class QStringSet
     {
         [DataMember(Order = 1)]
         public QSet Set { get; protected set; }

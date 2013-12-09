@@ -46,16 +46,10 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Core\Extensions\IListExtensions.cs" />
-    <Compile Include="Core\Interfaces\IIndexedSequenceSet.cs" />
-    <Compile Include="Strings\Interfaces\IIndexedStringSet.cs" />
     <Compile Include="Core\Minimization\MergeList.cs" />
     <Compile Include="Core\QIndexedSet.cs" />
     <Compile Include="Strings\QIndexedStringSet.cs" />
     <Compile Include="Core\Structs\QSetTransition.cs" />
-    <Compile Include="Core\Interfaces\ISequenceMap.cs" />
-    <Compile Include="Core\Interfaces\ISequenceSet.cs" />
-    <Compile Include="Strings\Interfaces\IStringMap.cs" />
-    <Compile Include="Strings\Interfaces\IStringSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QMap.cs" />
     <Compile Include="Core\QSet.cs" />

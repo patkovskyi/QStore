@@ -15,13 +15,15 @@
         public static void SerializationTestHelper(
             Func<QStringMap<int>, QStringMap<int>> serializationLoop, params string[] words)
         {
-            var map = QStringMap<int>.Create(words, new NonSerializableComparer<char>());
+            var comparer = new NonSerializableComparer<char>();
+            var map = QStringMap<int>.Create(words, comparer);
             foreach (var word in words)
             {
                 map[word] = word.GetHashCode();
             }
 
             map = serializationLoop(map);
+            map.SetComparer(comparer);
             Assert.AreEqual(words.Length, map.Count);
 
             foreach (var word in words)

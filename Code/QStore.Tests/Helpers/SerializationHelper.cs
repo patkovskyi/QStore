@@ -11,11 +11,9 @@
 
     using ProtoBuf;
 
-    using QStore.Strings.Interfaces;
-
     public static class SerializationHelper
     {
-        public static T BinaryDeserialize<T>(this byte[] data) where T : IStringSet
+        public static T BinaryDeserialize<T>(this byte[] data)
         {
             using (var ms = new MemoryStream(data))
             {
@@ -28,16 +26,14 @@
             }
         }
 
-        public static T BinaryLoop<T>(T map) where T : IStringSet
-        {
-            var comparer = map.Comparer;
+        public static T BinaryLoop<T>(T map)
+        {            
             var bytes = map.BinarySerialize();
-            map = bytes.BinaryDeserialize<T>();
-            map.SetComparer(comparer);
+            map = bytes.BinaryDeserialize<T>();            
             return map;
         }
 
-        public static byte[] BinarySerialize<T>(this T obj) where T : IStringSet
+        public static byte[] BinarySerialize<T>(this T obj)
         {
             using (var ms = new MemoryStream())
             {
@@ -52,7 +48,7 @@
             }
         }
 
-        public static T BsonDeserialize<T>(this byte[] data) where T : IStringSet
+        public static T BsonDeserialize<T>(this byte[] data)
         {
             using (var ms = new MemoryStream(data))
             using (var reader = new BsonReader(ms))
@@ -66,16 +62,14 @@
             }
         }
 
-        public static T BsonLoop<T>(T map) where T : IStringSet
-        {
-            var comparer = map.Comparer;
+        public static T BsonLoop<T>(T map)
+        {            
             var bytes = map.BsonSerialize();
-            map = bytes.BsonDeserialize<T>();
-            map.SetComparer(comparer);
+            map = bytes.BsonDeserialize<T>();            
             return map;
         }
 
-        public static byte[] BsonSerialize<T>(this T obj) where T : IStringSet
+        public static byte[] BsonSerialize<T>(this T obj)
         {
             using (var ms = new MemoryStream())
             using (var writer = new BsonWriter(ms))
@@ -91,7 +85,7 @@
             }
         }
 
-        public static T DataContractDeserialize<T>(this byte[] data) where T : IStringSet
+        public static T DataContractDeserialize<T>(this byte[] data)
         {
             using (var stream = new MemoryStream(data))
             {
@@ -104,16 +98,14 @@
             }
         }
 
-        public static T DataContractLoop<T>(T map) where T : IStringSet
-        {
-            var comparer = map.Comparer;
+        public static T DataContractLoop<T>(T map)
+        {            
             var bytes = map.DataContractSerialize();
-            map = bytes.DataContractDeserialize<T>();
-            map.SetComparer(comparer);
+            map = bytes.DataContractDeserialize<T>();            
             return map;
         }
 
-        public static byte[] DataContractSerialize<T>(this T obj) where T : IStringSet
+        public static byte[] DataContractSerialize<T>(this T obj)
         {
             using (var ms = new MemoryStream())
             {
@@ -128,7 +120,7 @@
             }
         }
 
-        public static T ProtoDeserialize<T>(this byte[] data) where T : IStringSet
+        public static T ProtoDeserialize<T>(this byte[] data)
         {
             using (var ms = new MemoryStream(data))
             {
@@ -140,16 +132,14 @@
             }
         }
 
-        public static T ProtoLoop<T>(T map) where T : IStringSet
-        {
-            var comparer = map.Comparer;
+        public static T ProtoLoop<T>(T map)
+        {            
             var bytes = map.ProtoSerialize();
-            map = bytes.ProtoDeserialize<T>();
-            map.SetComparer(comparer);
+            map = bytes.ProtoDeserialize<T>();            
             return map;
         }
 
-        public static byte[] ProtoSerialize<T>(this T obj) where T : IStringSet
+        public static byte[] ProtoSerialize<T>(this T obj)
         {
             using (var ms = new MemoryStream())
             {
