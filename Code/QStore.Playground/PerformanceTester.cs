@@ -7,8 +7,6 @@
     using System.Linq;
     using System.Text;
 
-    using QStore.Core;
-
     public class PerformanceTester
     {
         private Dictionary<string, int> dictionary;

@@ -1,11 +1,11 @@
-﻿namespace QStore.Core.Structs
+﻿namespace QStore.Structs
 {
     using System;
     using System.Runtime.Serialization;
 
     [DataContract]
     [Serializable]
-    public struct QSetTransition
+    public struct QTransition
     {
         [DataMember(Order = 1)]
         internal readonly int StateIndex;
@@ -16,7 +16,7 @@
         [DataMember(Order = 2)]
         private readonly int alphabetIndex;
 
-        public QSetTransition(int alphabetIndex, int stateIndex, bool isFinal)
+        public QTransition(int alphabetIndex, int stateIndex, bool isFinal)
         {
             this.alphabetIndex = (alphabetIndex & 2147483647) | (isFinal ? -2147483648 : 0);
             this.StateIndex = stateIndex;
@@ -38,9 +38,9 @@
             }
         }
 
-        internal QSetTransition MakeFinal()
+        internal QTransition MakeFinal()
         {
-            return new QSetTransition(this.AlphabetIndex, this.StateIndex, true);
+            return new QTransition(this.AlphabetIndex, this.StateIndex, true);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace QStore.Core
+﻿namespace QStore
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +10,7 @@
     public class QStringMap<TValue>
     {
         [DataMember(Order = 1)]
-        protected internal QIndexedStringSet StringIndexedSet;
+        protected internal QStringIndexedSet StringIndexedSet;
 
         [DataMember(Order = 2)]
         public TValue[] Values { get; protected set; }
@@ -68,7 +68,7 @@
                 throw new ArgumentNullException("comparer");
             }
 
-            var indexedSet = QIndexedStringSet.Create(keySequences, comparer);
+            var indexedSet = QStringIndexedSet.Create(keySequences, comparer);
             return new QStringMap<TValue> { StringIndexedSet = indexedSet, Values = new TValue[indexedSet.Count] };
         }
 

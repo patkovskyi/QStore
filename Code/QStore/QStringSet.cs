@@ -1,4 +1,4 @@
-﻿namespace QStore.Core
+﻿namespace QStore
 {
     using System;
     using System.Collections.Generic;
@@ -6,10 +6,10 @@
     using System.Linq;
     using System.Runtime.Serialization;
 
-    using QStore.Core.Comparers;
-    using QStore.Core.Extensions;
-    using QStore.Core.Minimization;
-    using QStore.Core.Structs;
+    using QStore.Comparers;
+    using QStore.Extensions;
+    using QStore.Minimization;
+    using QStore.Structs;
 
     [DataContract]
     [Serializable]
@@ -22,13 +22,13 @@
         protected internal IComparer<char> ComparerField;
 
         [DataMember(Order = 2)]
-        protected internal QSetTransition RootTransition;
+        protected internal QTransition RootTransition;
 
         [DataMember(Order = 3)]
         protected internal int[] StateStarts;
 
         [DataMember(Order = 4)]
-        protected internal QSetTransition[] Transitions;
+        protected internal QTransition[] Transitions;
 
         public IComparer<char> Comparer
         {
@@ -53,7 +53,7 @@
                 throw new ArgumentNullException("sequence");
             }
 
-            QSetTransition transition;
+            QTransition transition;
             if (this.TrySendSequence(this.RootTransition, sequence, out transition))
             {
                 return transition.IsFinal;
@@ -74,7 +74,7 @@
                 throw new ArgumentNullException("prefix");
             }
 
-            QSetTransition transition;
+            QTransition transition;
             var fromStack = new Stack<int>();
             if (this.TrySendSequence(this.RootTransition, prefix, out transition, fromStack))
             {
@@ -96,7 +96,7 @@
             // TODO: safety check?
         }
 
-        protected internal IEnumerable<string> Enumerate(QSetTransition fromTransition, Stack<int> fromStack = null)
+        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, Stack<int> fromStack = null)
         {
             if (fromTransition.IsFinal)
             {
@@ -166,9 +166,9 @@
         }
 
         protected internal bool TrySendSequence(
-            QSetTransition fromTransition,
+            QTransition fromTransition,
             IEnumerable<char> sequence,
-            out QSetTransition transition,
+            out QTransition transition,
             Stack<int> nextTransitions = null)
         {
             if (sequence == null)
@@ -226,14 +226,14 @@
             // |
             // z->StateN,final
             // capacity is set to alphabet.Length just to avoid few initial resizings
-            var rootTransition = default(QSetTransition);
-            var transitions = new List<List<QSetTransition>>(alphabet.Length) { new List<QSetTransition>() };
+            var rootTransition = default(QTransition);
+            var transitions = new List<List<QTransition>>(alphabet.Length) { new List<QTransition>() };
 
             int sequenceCounter = 0;
             foreach (var sequence in sequences)
             {
                 int nextState = 0, transitionIndex = -1;
-                List<QSetTransition> currentStateTransitions = null;
+                List<QTransition> currentStateTransitions = null;
                 foreach (var symbol in sequence)
                 {
                     currentStateTransitions = transitions[nextState];
@@ -254,10 +254,10 @@
 
                         // add new state
                         nextState = transitions.Count;
-                        transitions.Add(new List<QSetTransition>());
+                        transitions.Add(new List<QTransition>());
 
                         // add transition from current state to new state                                                
-                        var newTransition = new QSetTransition(alphabetIndex, nextState, false);
+                        var newTransition = new QTransition(alphabetIndex, nextState, false);
 
                         // I know this Insert in the middle of the List<> doesn't look very clever,
                         // but I tried SortedDictionary and LinkedList approach: they are slower in practice
@@ -271,7 +271,7 @@
                 {
                     if (rootTransition.IsFinal)
                     {
-                        throw new ArgumentException(string.Format(ErrorMessages.DuplicateKey, string.Empty));
+                        throw new ArgumentException(string.Format(Messages.DuplicateKey, string.Empty));
                     }
 
                     rootTransition = rootTransition.MakeFinal();
@@ -281,7 +281,7 @@
                     if (currentStateTransitions[transitionIndex].IsFinal)
                     {
                         throw new ArgumentException(
-                            string.Format(ErrorMessages.DuplicateKey, string.Concat(sequence.Select(e => e.ToString(CultureInfo.InvariantCulture)))));
+                            string.Format(Messages.DuplicateKey, string.Concat(sequence.Select(e => e.ToString(CultureInfo.InvariantCulture)))));
                     }
 
                     currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
@@ -296,7 +296,7 @@
                 Alphabet = alphabet,
                 RootTransition = rootTransition,
                 StateStarts = new int[transitions.Count],
-                Transitions = new QSetTransition[transitions.Sum(s => s.Count)],
+                Transitions = new QTransition[transitions.Sum(s => s.Count)],
                 Count = sequenceCounter
             };
 
@@ -342,7 +342,7 @@
         }
 
         private static int GetTransitionIndex(
-            IList<QSetTransition> transitions, char symbol, char[] alphabet, IComparer<char> comparer, int lower, int upper)
+            IList<QTransition> transitions, char symbol, char[] alphabet, IComparer<char> comparer, int lower, int upper)
         {
             const int BinarySearchThreshold = 1;
             if (upper - lower >= BinarySearchThreshold)
@@ -418,7 +418,7 @@
             var registeredArray = registered.ToArray();
             var oldToNewStates = Enumerable.Range(0, registered.Count)
                                            .ToDictionary(i => registeredArray[i].Value, i => i);
-            this.Transitions = new QSetTransition[registered.Sum(r => r.Key.Transitions.Length)];
+            this.Transitions = new QTransition[registered.Sum(r => r.Key.Transitions.Length)];
             this.StateStarts = new int[registered.Count];
             for (int i = 0, transIndex = 0; i < this.StateStarts.Length; i++)
             {
@@ -426,7 +426,7 @@
                 for (int j = 0; j < old.Key.Transitions.Length; j++)
                 {
                     var oldTr = old.Key.Transitions[j];
-                    this.Transitions[transIndex + j] = new QSetTransition(
+                    this.Transitions[transIndex + j] = new QTransition(
                         oldTr.AlphabetIndex, oldToNewStates[oldTr.StateIndex], oldTr.IsFinal);
                 }
 
@@ -434,7 +434,7 @@
                 transIndex += old.Key.Transitions.Length;
             }
 
-            this.RootTransition = new QSetTransition(
+            this.RootTransition = new QTransition(
                 0, oldToNewStates[this.RootTransition.StateIndex], this.RootTransition.IsFinal);
         }
 
@@ -454,7 +454,7 @@
                     foreach (var t in mergeList.GetTransitionIndexes(sj))
                     {
                         var transition = this.Transitions[t];
-                        this.Transitions[t] = new QSetTransition(
+                        this.Transitions[t] = new QTransition(
                             transition.AlphabetIndex, registeredState, transition.IsFinal);
                     }
 
@@ -462,7 +462,7 @@
                 }
             }
 
-            var sigTransitions = new QSetTransition[upper - lower];
+            var sigTransitions = new QTransition[upper - lower];
             for (int i = lower; i < upper; i++)
             {
                 sigTransitions[i - lower] = this.Transitions[i];

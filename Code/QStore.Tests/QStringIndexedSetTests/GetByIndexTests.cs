@@ -1,4 +1,4 @@
-﻿namespace QStore.Tests.QIndexedStringSetTests
+﻿namespace QStore.Tests.QStringIndexedSetTests
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using QStore.Core;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 
@@ -15,7 +14,7 @@
     {
         public static void GetByIndexTestHelper(IComparer<char> comparer, params string[] strings)
         {
-            var target = QIndexedStringSet.Create(strings, comparer);
+            var target = QStringIndexedSet.Create(strings, comparer);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
 
@@ -40,7 +39,7 @@
         public void GetByIndexOutOfRangeException1()
         {
             const int BadIndex = -1;
-            var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
+            var target = QStringIndexedSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
             var e = ExceptionAssert.Throws<IndexOutOfRangeException>(() => target.GetByIndex(BadIndex));
             Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.Count), e.Message);
         }
@@ -49,7 +48,7 @@
         public void GetByIndexOutOfRangeException2()
         {
             const int BadIndex = 3;
-            var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
+            var target = QStringIndexedSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
             var e = ExceptionAssert.Throws<IndexOutOfRangeException>(() => target.GetByIndex(BadIndex));
             Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.Count), e.Message);
         }

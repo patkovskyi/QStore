@@ -8,7 +8,6 @@ namespace QStore.Tests.QStringSetTests
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using QStore.Core;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 

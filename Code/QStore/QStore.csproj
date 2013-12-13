@@ -39,25 +39,25 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Comparers\StateSignatureEqualityComparer.cs" />
-    <Compile Include="ErrorMessages.Designer.cs">
+    <Compile Include="Comparers\StateSignatureEqualityComparer.cs" />
+    <Compile Include="Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ErrorMessages.resx</DependentUpon>
+      <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Core\Extensions\IListExtensions.cs" />
-    <Compile Include="Core\Minimization\MergeList.cs" />
-    <Compile Include="Core\QIndexedStringSet.cs" />
-    <Compile Include="Core\Structs\QSetTransition.cs" />
+    <Compile Include="Extensions\IListExtensions.cs" />
+    <Compile Include="Minimization\MergeList.cs" />
+    <Compile Include="QStringIndexedSet.cs" />
+    <Compile Include="Structs\QTransition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\QStringMap.cs" />
-    <Compile Include="Core\QStringSet.cs" />
-    <Compile Include="Core\Structs\StateSignature.cs" />
+    <Compile Include="QStringMap.cs" />
+    <Compile Include="QStringSet.cs" />
+    <Compile Include="Structs\StateSignature.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ErrorMessages.resx">
+    <EmbeddedResource Include="Messages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

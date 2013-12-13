@@ -1,4 +1,4 @@
-﻿namespace QStore.Tests.QIndexedStringSetTests
+﻿namespace QStore.Tests.QStringIndexedSetTests
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using QStore.Core;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 
@@ -15,7 +14,7 @@
     {
         public static void GetIndexTestHelper(IComparer<char> comparer, params string[] strings)
         {
-            var target = QIndexedStringSet.Create(strings, comparer);
+            var target = QStringIndexedSet.Create(strings, comparer);
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected = strings.OrderBy(s => s, sequenceComparer).ToArray();
 
@@ -39,7 +38,7 @@
         [TestMethod]
         public void GetIndexNegative()
         {
-            var target = QIndexedStringSet.Create(new[] { "ba", "bc" }, Comparer<char>.Default);
+            var target = QStringIndexedSet.Create(new[] { "ba", "bc" }, Comparer<char>.Default);
             Assert.AreEqual(~0, target.GetIndex(string.Empty));
             Assert.AreEqual(~0, target.GetIndex("aa"));
             Assert.AreEqual(~1, target.GetIndex("baa"));
@@ -52,7 +51,7 @@
         public void GetIndexNullSequence()
         {
             const string ParamName = "sequence";
-            var target = QIndexedStringSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
+            var target = QStringIndexedSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
             var e = ExceptionAssert.Throws<ArgumentNullException>(() => target.GetIndex(null));
             Assert.AreEqual(new ArgumentNullException(ParamName).Message, e.Message);
         }

@@ -1,4 +1,4 @@
-﻿namespace QStore.Core.Extensions
+﻿namespace QStore.Extensions
 {
     using System.Collections.Generic;
 

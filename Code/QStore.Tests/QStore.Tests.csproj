@@ -64,8 +64,8 @@
     </Compile>
     <Compile Include="Helpers\ExceptionAssert.cs" />
     <Compile Include="Helpers\SerializationHelper.cs" />
-    <Compile Include="QIndexedStringSetTests\GetByIndexTests.cs" />
-    <Compile Include="QIndexedStringSetTests\GetIndexTests.cs" />
+    <Compile Include="QStringIndexedSetTests\GetByIndexTests.cs" />
+    <Compile Include="QStringIndexedSetTests\GetIndexTests.cs" />
     <Compile Include="QStringMapTests\GetByPrefixWithValueTests.cs" />
     <Compile Include="QStringMapTests\IndexerTests.cs" />
     <Compile Include="QStringSetTests\CreateTests.cs" />

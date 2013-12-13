@@ -2,10 +2,11 @@
 {
     using System;
     using System.IO;
+    using System.Runtime.InteropServices;
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using QStore.Core;
+    using QStore.Structs;
     using QStore.Tests.Comparers;
     using QStore.Tests.Helpers;
 
@@ -30,6 +31,12 @@
             {
                 Assert.AreEqual(word.GetHashCode(), map[word]);
             }
+        }
+
+        [TestMethod]
+        public void HowMuchIsTheFish()
+        {
+            int size = Marshal.SizeOf(new QTransition());
         }
 
         [TestMethod]

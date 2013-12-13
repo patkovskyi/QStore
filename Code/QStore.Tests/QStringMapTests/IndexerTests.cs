@@ -5,8 +5,6 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using QStore.Core;
-
     [TestClass]
     public class IndexerTests
     {

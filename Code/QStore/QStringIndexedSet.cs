@@ -1,22 +1,22 @@
-﻿namespace QStore.Core
+﻿namespace QStore
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
 
-    using QStore.Core.Extensions;
-    using QStore.Core.Structs;
+    using QStore.Extensions;
+    using QStore.Structs;
 
     [DataContract]
     [Serializable]
-    public class QIndexedStringSet
+    public class QStringIndexedSet
     {
-        [DataMember(Order = 2)]
-        protected internal int[] PathsLeft;
-
         [DataMember(Order = 1)]
         protected internal QStringSet Set;
+
+        [DataMember(Order = 2)]
+        protected internal int[] PathsLeft;        
 
         public int Count
         {
@@ -34,10 +34,10 @@
             }
         }
 
-        public static QIndexedStringSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        public static QStringIndexedSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
         {
             var set = QStringSet.Create(sequences, comparer);
-            var indexedSet = new QIndexedStringSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
+            var indexedSet = new QStringIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
             var pathsFromState = new int[set.StateStarts.Length];
             indexedSet.CountPaths(set.RootTransition.StateIndex, pathsFromState);
             set.Count += set.RootTransition.IsFinal ? 1 : 0;
@@ -66,7 +66,7 @@
                 throw new ArgumentNullException("prefix");
             }
 
-            QSetTransition transition;
+            QTransition transition;
             var fromStack = new Stack<int>();
             if (this.Set.TrySendSequence(this.Set.RootTransition, prefix, out transition, fromStack))
             {
@@ -79,7 +79,8 @@
                 }
 
                 return
-                    this.Set.Enumerate(transition, fromStack).Select((s, i) => new KeyValuePair<string, int>(s, i + index));
+                    this.Set.Enumerate(transition, fromStack)
+                        .Select((s, i) => new KeyValuePair<string, int>(s, i + index));
             }
 
             return Enumerable.Empty<KeyValuePair<string, int>>();
@@ -112,7 +113,7 @@
                 nextTransition = this.Set.Transitions[nextTransitionIndex];
                 list.Add(this.Set.Alphabet[nextTransition.AlphabetIndex]);
             }
-                
+
             return new string(list.ToArray());
         }
 
@@ -146,8 +147,8 @@
                 else
                 {
                     return ~transitionIndex < upper
-                               ? ~(lexicographicIndex + this.PathsLeft[~transitionIndex])
-                               : ~pathsAfterThisChoice;
+                        ? ~(lexicographicIndex + this.PathsLeft[~transitionIndex])
+                        : ~pathsAfterThisChoice;
                 }
             }
 
@@ -164,7 +165,7 @@
         {
             if (index < 0 || index >= this.Set.Count)
             {
-                throw new IndexOutOfRangeException(string.Format(ErrorMessages.IndexOutOfRange, index, this.Set.Count));
+                throw new IndexOutOfRangeException(string.Format(Messages.IndexOutOfRange, index, this.Set.Count));
             }
         }
 
