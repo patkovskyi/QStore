@@ -13,8 +13,10 @@
     {
         private static void Main(string[] args)
         {
+            Console.WriteLine(DateTime.Now);
             var tester = PerformanceTester.Create("Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
-            tester.TestVsDictionary();
+            tester.TestVsHashSet();
+            // tester.TestVsDictionary();
             Console.ReadLine();
             //Shuffle("Zaliznyak-baseforms-1251.txt", "Zaliznyak-baseforms-1251.txt", Encoding.GetEncoding(1251));
             //Shuffle("Zaliznyak-1251.txt", "Zaliznyak-1251.txt", Encoding.GetEncoding(1251));

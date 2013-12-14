@@ -30,12 +30,43 @@
             return tester;
         }
 
+        public bool TestVsHashSet()
+        {
+            this.InitSet();
+            this.InitHashSet();
+
+            Console.WriteLine(@"Testing qset vs hashset");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            bool b = false;
+            for (int i = 0; i < words.Length; i++)
+            {
+                b ^= this.hashSet.Contains(words[i]);
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(
+                @"HashSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+
+            stopwatch.Restart();
+            for (int i = 0; i < words.Length; i++)
+            {
+                b ^= this.set.Contains(words[i]);
+            }
+            stopwatch.Stop();
+            Console.WriteLine(
+                @"   QSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine();
+            return b;
+        }
+
         public int TestVsDictionary()
         {
             this.InitMap();
             this.InitDictionary();
 
-            Console.WriteLine(@"Testing map vs dictionary");
+            Console.WriteLine(@"Testing qmap vs dictionary");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -65,7 +96,7 @@
             this.InitMap();
             this.InitSortedDictionary();
 
-            Console.WriteLine(@"Testing map vs sorted dictionary");
+            Console.WriteLine(@"Testing qmap vs sorted dictionary");
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();

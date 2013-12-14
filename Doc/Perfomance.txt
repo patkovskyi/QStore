@@ -1,0 +1,13 @@
+14.12.2013 18:58:15
+Initializing QStringSet with 1540819 elements.
+Memory delta: +1833380 bytes
+Elapsed time:  7478 ms
+
+Initializing HashSet<int> with 1540819 elements.
+Memory delta: +26789260 bytes
+Elapsed time:  228 ms
+
+Testing qset vs hashset
+HashSet time for 1540819 words: 233 ms
+   QSet time for 1540819 words: 1174 ms
+
