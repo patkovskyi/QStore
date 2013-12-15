@@ -34,7 +34,7 @@
             }
         }
 
-        public static QStringIndexedSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        public static QStringIndexedSet Create(IEnumerable<string> sequences, IComparer<char> comparer)
         {
             var set = QStringSet.Create(sequences, comparer);
             var indexedSet = new QStringIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
@@ -111,7 +111,7 @@
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 nextTransition = this.Set.Transitions[nextTransitionIndex];
-                list.Add(this.Set.Alphabet[nextTransition.AlphabetIndex]);
+                list.Add(nextTransition.Symbol);
             }
 
             return new string(list.ToArray());

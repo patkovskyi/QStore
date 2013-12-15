@@ -14,20 +14,17 @@
     [DataContract]
     [Serializable]
     public class QStringSet
-    {
-        [DataMember(Order = 1)]
-        protected internal char[] Alphabet;
-
+    {        
         [NonSerialized]
         protected internal IComparer<char> ComparerField;
 
-        [DataMember(Order = 2)]
+        [DataMember(Order = 1)]
         protected internal QTransition RootTransition;
 
-        [DataMember(Order = 3)]
+        [DataMember(Order = 2)]
         protected internal int[] StateStarts;
 
-        [DataMember(Order = 4)]
+        [DataMember(Order = 3)]
         protected internal QTransition[] Transitions;
 
         public IComparer<char> Comparer
@@ -38,10 +35,10 @@
             }
         }
 
-        [DataMember(Order = 5)]
+        [DataMember(Order = 4)]
         public int Count { get; protected internal set; }
 
-        public static QStringSet Create(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        public static QStringSet Create(IEnumerable<string> sequences, IComparer<char> comparer)
         {
             return Create<QStringSet>(sequences, comparer);
         }
@@ -105,7 +102,7 @@
                         ? string.Empty
                         : new string(
                             fromStack.Reverse()
-                                .Select(i => this.Alphabet[this.Transitions[i - 1].AlphabetIndex])
+                                .Select(i => this.Transitions[i - 1].Symbol)
                                 .ToArray());
             }
 
@@ -132,7 +129,7 @@
                         var res = new char[fromStack.Count];
                         for (int i = 0; i < res.Length; i++)
                         {
-                            res[i] = this.Alphabet[this.Transitions[tmp[res.Length - i - 1] - 1].AlphabetIndex];
+                            res[i] = this.Transitions[tmp[res.Length - i - 1] - 1].Symbol;
                         }
 
                         yield return new string(res);
@@ -199,7 +196,7 @@
             return true;
         }
 
-        protected static TSet Create<TSet>(IEnumerable<IEnumerable<char>> sequences, IComparer<char> comparer)
+        protected static TSet Create<TSet>(IEnumerable<string> sequences, IComparer<char> comparer)
             where TSet : QStringSet, new()
         {
             if (sequences == null)
@@ -210,12 +207,7 @@
             if (comparer == null)
             {
                 throw new ArgumentNullException("comparer");
-            }
-
-            // ReSharper disable PossibleMultipleEnumeration
-            char[] alphabet;
-            SortedDictionary<char, int> alphabetDict;
-            ExtractAlphabet(sequences, comparer, out alphabet, out alphabetDict);
+            }                        
 
             // outer list represents states, inner lists represent transitions from this state
             // State1 -------> State2 -------> ...... -------> StateN
@@ -227,7 +219,7 @@
             // z->StateN,final
             // capacity is set to alphabet.Length just to avoid few initial resizings
             var rootTransition = default(QTransition);
-            var transitions = new List<List<QTransition>>(alphabet.Length) { new List<QTransition>() };
+            var transitions = new List<List<QTransition>> { new List<QTransition>() };
 
             int sequenceCounter = 0;
             foreach (var sequence in sequences)
@@ -238,7 +230,7 @@
                 {
                     currentStateTransitions = transitions[nextState];
                     transitionIndex = GetTransitionIndex(
-                        currentStateTransitions, symbol, alphabet, comparer, 0, currentStateTransitions.Count);
+                        currentStateTransitions, symbol, comparer, 0, currentStateTransitions.Count);
                     if (transitionIndex >= 0)
                     {
                         // transition from currentState by symbol already exists
@@ -247,17 +239,14 @@
                     else
                     {
                         // transition from currentState by symbol doesn't exist
-                        transitionIndex = ~transitionIndex;
-
-                        // find alphabetIndex for symbol
-                        int alphabetIndex = alphabetDict[symbol];
+                        transitionIndex = ~transitionIndex;                        
 
                         // add new state
                         nextState = transitions.Count;
                         transitions.Add(new List<QTransition>());
 
                         // add transition from current state to new state                                                
-                        var newTransition = new QTransition(alphabetIndex, nextState, false);
+                        var newTransition = new QTransition(symbol, nextState, false);
 
                         // I know this Insert in the middle of the List<> doesn't look very clever,
                         // but I tried SortedDictionary and LinkedList approach: they are slower in practice
@@ -281,7 +270,7 @@
                     if (currentStateTransitions[transitionIndex].IsFinal)
                     {
                         throw new ArgumentException(
-                            string.Format(Messages.DuplicateKey, string.Concat(sequence.Select(e => e.ToString(CultureInfo.InvariantCulture)))));
+                            string.Format(Messages.DuplicateKey, sequence));
                     }
 
                     currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
@@ -292,8 +281,7 @@
 
             var result = new TSet
             {
-                ComparerField = comparer,
-                Alphabet = alphabet,
+                ComparerField = comparer,                
                 RootTransition = rootTransition,
                 StateStarts = new int[transitions.Count],
                 Transitions = new QTransition[transitions.Sum(s => s.Count)],
@@ -310,39 +298,11 @@
             }
 
             result.Minimize();
-            return result;
-
-            // ReSharper restore PossibleMultipleEnumeration
-        }
-
-        private static void ExtractAlphabet(
-            IEnumerable<IEnumerable<char>> sequences,
-            IComparer<char> comparer,
-            out char[] alphabet,
-            out SortedDictionary<char, int> alphabetDictionary)
-        {
-            alphabetDictionary = new SortedDictionary<char, int>(comparer);
-            foreach (var sequence in sequences)
-            {
-                foreach (char element in sequence)
-                {
-                    if (!alphabetDictionary.ContainsKey(element))
-                    {
-                        alphabetDictionary.Add(element, 0);
-                    }
-                }
-            }
-
-            alphabet = alphabetDictionary.Keys.ToArray();
-
-            for (int i = 0; i < alphabet.Length; i++)
-            {
-                alphabetDictionary[alphabet[i]] = i;
-            }
-        }
+            return result;            
+        }        
 
         private static int GetTransitionIndex(
-            IList<QTransition> transitions, char symbol, char[] alphabet, IComparer<char> comparer, int lower, int upper)
+            IList<QTransition> transitions, char symbol, IComparer<char> comparer, int lower, int upper)
         {
             const int BinarySearchThreshold = 1;
             if (upper - lower >= BinarySearchThreshold)
@@ -352,7 +312,7 @@
                 while (lower <= upper)
                 {
                     int middle = lower + ((upper - lower) >> 1);
-                    int comparisonResult = comparer.Compare(alphabet[transitions[middle].AlphabetIndex], symbol);
+                    int comparisonResult = comparer.Compare(transitions[middle].Symbol, symbol);
                     if (comparisonResult == 0)
                     {
                         return middle;
@@ -375,7 +335,7 @@
             int i;
             for (i = lower; i < upper; i++)
             {
-                int comp = comparer.Compare(alphabet[transitions[i].AlphabetIndex], symbol);
+                int comp = comparer.Compare(transitions[i].Symbol, symbol);
                 if (comp == 0)
                 {
                     return i;
@@ -406,7 +366,7 @@
         {
             int lower = this.StateStarts[fromState];
             int upper = this.Transitions.GetUpperIndex(this.StateStarts, fromState);
-            return GetTransitionIndex(this.Transitions, symbol, this.Alphabet, this.ComparerField, lower, upper);
+            return GetTransitionIndex(this.Transitions, symbol, this.ComparerField, lower, upper);
         }
 
         private void Minimize()
@@ -427,7 +387,9 @@
                 {
                     var oldTr = old.Key.Transitions[j];
                     this.Transitions[transIndex + j] = new QTransition(
-                        oldTr.AlphabetIndex, oldToNewStates[oldTr.StateIndex], oldTr.IsFinal);
+                        oldTr.Symbol,
+                        oldToNewStates[oldTr.StateIndex],
+                        oldTr.IsFinal);
                 }
 
                 this.StateStarts[i] = transIndex;
@@ -435,7 +397,9 @@
             }
 
             this.RootTransition = new QTransition(
-                0, oldToNewStates[this.RootTransition.StateIndex], this.RootTransition.IsFinal);
+                '\0',
+                oldToNewStates[this.RootTransition.StateIndex],
+                this.RootTransition.IsFinal);
         }
 
         private int Register(int state, Dictionary<StateSignature, int> registered, MergeList mergeList)
@@ -455,7 +419,7 @@
                     {
                         var transition = this.Transitions[t];
                         this.Transitions[t] = new QTransition(
-                            transition.AlphabetIndex, registeredState, transition.IsFinal);
+                            transition.Symbol, registeredState, transition.IsFinal);
                     }
 
                     mergeList.Merge(registeredState, sj);

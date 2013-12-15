@@ -22,7 +22,7 @@
                 for (int i = 0; i < obj.Transitions.Length; i++)
                 {
                     hash = (hash * 23) + (obj.Transitions[i].IsFinal ? 1 : 0);
-                    hash = (hash * 23) + obj.Transitions[i].AlphabetIndex;
+                    hash = (hash * 23) + obj.Transitions[i].Symbol;
                     hash = (hash * 23) + obj.Transitions[i].StateIndex;
                 }
 

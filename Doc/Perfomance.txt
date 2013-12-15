@@ -11,3 +11,17 @@ Testing qset vs hashset
 HashSet time for 1540819 words: 233 ms
    QSet time for 1540819 words: 1174 ms
 
+15.12.2013 12:12:09
+Initializing QStringSet with 1540819 elements.
+Memory delta: +1833388 bytes
+Elapsed time:  7183 ms
+
+Initializing HashSet<int> with 1540819 elements.
+Memory delta: +26789260 bytes
+Elapsed time:  226 ms
+
+Testing qset vs hashset
+HashSet time for 1540819 words: 235 ms
+   QSet time for 1540819 words: 1074 ms
+
+

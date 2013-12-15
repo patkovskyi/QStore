@@ -56,7 +56,7 @@
             }
         }
 
-        public static QStringMap<TValue> Create(IEnumerable<IEnumerable<char>> keySequences, IComparer<char> comparer)
+        public static QStringMap<TValue> Create(IEnumerable<string> keySequences, IComparer<char> comparer)
         {
             if (keySequences == null)
             {

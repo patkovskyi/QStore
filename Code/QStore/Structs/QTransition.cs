@@ -8,25 +8,25 @@
     public struct QTransition
     {
         [DataMember(Order = 1)]
-        internal readonly int StateIndex;
+        internal readonly char Symbol;
 
         /// <summary>
         /// Highest (32-nd) bit stands for IsFinal.
         /// </summary>
         [DataMember(Order = 2)]
-        private readonly int alphabetIndex;
+        private readonly int nextState;
 
-        public QTransition(int alphabetIndex, int stateIndex, bool isFinal)
+        public QTransition(char symbol, int nextState, bool isFinal)
         {
-            this.alphabetIndex = (alphabetIndex & 2147483647) | (isFinal ? -2147483648 : 0);
-            this.StateIndex = stateIndex;
+            this.Symbol = symbol;
+            this.nextState = (nextState & 2147483647) | (isFinal ? -2147483648 : 0);
         }
 
-        internal int AlphabetIndex
+        internal int StateIndex
         {
             get
             {
-                return this.alphabetIndex & 2147483647;
+                return this.nextState & 2147483647;
             }
         }
 
@@ -34,13 +34,13 @@
         {
             get
             {
-                return (this.alphabetIndex & -2147483648) != 0;
+                return (this.nextState & -2147483648) != 0;
             }
         }
 
         internal QTransition MakeFinal()
         {
-            return new QTransition(this.AlphabetIndex, this.StateIndex, true);
+            return new QTransition(this.Symbol, this.StateIndex, true);
         }
     }
 }
