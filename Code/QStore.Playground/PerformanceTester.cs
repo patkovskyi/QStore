@@ -23,11 +23,49 @@
 
         private string[] words;
 
+        private char[] alphabet;
+
         public static PerformanceTester Create(string fromFile, Encoding encoding)
         {
             var tester = new PerformanceTester { words = File.ReadAllLines(fromFile, encoding) };
+            tester.alphabet = tester.words.SelectMany(a => a).Distinct().ToArray();
             // tester.InitSet();
             return tester;
+        }
+
+        public bool TestPrefixSearchInSet()
+        {
+            this.InitSet();            
+
+            Console.WriteLine(@"Testing qset prefix search time (|alphabet|={0})", this.alphabet.Length);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            bool b = false;
+            for (int i = 0; i < alphabet.Length; i++)
+            {
+                var prefix = new string(alphabet[i], 1);
+                b ^= this.set.EnumerateByPrefix(prefix).ToArray().Length % 17 == 0;                
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(
+                @"1-symbol prefix search time in {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+
+            stopwatch.Restart();
+            for (int i = 0; i < alphabet.Length; i++)
+            {
+                for (int j = 0; j < alphabet.Length; j++)
+                {
+                    var prefix = new string(new[] { alphabet[i], alphabet[j] });
+                    b ^= this.set.EnumerateByPrefix(prefix).ToArray().Length % 17 == 0;
+                }
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(
+                @"2-symbol prefix search time in {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine();
+            return b;
         }
 
         public bool TestVsHashSet()

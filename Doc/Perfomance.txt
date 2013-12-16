@@ -24,4 +24,14 @@ Testing qset vs hashset
 HashSet time for 1540819 words: 235 ms
    QSet time for 1540819 words: 1074 ms
 
+17.12.2013 0:04:46
+Initializing QStringSet with 1540819 elements.
+Memory delta: +1833232 bytes
+Elapsed time:  7189 ms
+
+Testing qset prefix search time (|alphabet|=34)
+1-symbol prefix search time in 1540819 words: 888 ms
+2-symbol prefix search time in 1540819 words: 665 ms
+
+
 
