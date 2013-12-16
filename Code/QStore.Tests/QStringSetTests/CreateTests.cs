@@ -25,7 +25,7 @@ namespace QStore.Tests.QStringSetTests
             watch.Restart();
             string[] actual = target.Enumerate().ToArray();
             Console.WriteLine(@"QStringSet.ToArray() took {0}", watch.Elapsed);
-            Assert.AreEqual(strings.Length, target.Count);
+            Assert.AreEqual(strings.Length, target.WordCount);
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);
         }
 

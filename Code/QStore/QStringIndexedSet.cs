@@ -22,7 +22,7 @@
         {
             get
             {
-                return this.Set.Count;
+                return this.Set.WordCount;
             }
         }
 
@@ -40,7 +40,7 @@
             var indexedSet = new QStringIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
             var pathsFromState = new int[set.LowerBounds.Length];
             indexedSet.CountPaths(set.RootTransition.StateIndex, pathsFromState);
-            set.Count += set.RootTransition.IsFinal ? 1 : 0;
+            set.WordCount += set.RootTransition.IsFinal ? 1 : 0;
             return indexedSet;
         }
 
@@ -93,7 +93,7 @@
             }
 
             int currentState = this.Set.RootTransition.StateIndex;
-            int pathsAfterThisChoice = this.Set.Count;
+            int pathsAfterThisChoice = this.Set.WordCount;
             int lexicographicIndex = this.Set.RootTransition.IsFinal ? 1 : 0;
 
             foreach (var element in sequence)
@@ -131,9 +131,9 @@
 
         protected internal void ThrowIfIndexIsOutOfRange(int index)
         {
-            if (index < 0 || index >= this.Set.Count)
+            if (index < 0 || index >= this.Set.WordCount)
             {
-                throw new IndexOutOfRangeException(string.Format(Messages.IndexOutOfRange, index, this.Set.Count));
+                throw new IndexOutOfRangeException(string.Format(Messages.IndexOutOfRange, index, this.Set.WordCount));
             }
         }
 

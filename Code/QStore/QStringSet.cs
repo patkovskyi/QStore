@@ -35,13 +35,13 @@
         }
 
         [DataMember(Order = 4)]
-        public int Count { get; protected internal set; }
+        public int WordCount { get; protected internal set; }
 
-        public static QStringSet Create(IEnumerable<string> sequences, IComparer<char> comparer)
+        public static QStringSet Create(IEnumerable<string> words, IComparer<char> comparer)
         {
-            if (sequences == null)
+            if (words == null)
             {
-                throw new ArgumentNullException("sequences");
+                throw new ArgumentNullException("words");
             }
 
             if (comparer == null)
@@ -62,11 +62,11 @@
             var transitions = new List<List<QTransition>> { new List<QTransition>() };
 
             int sequenceCounter = 0;
-            foreach (var sequence in sequences)
+            foreach (var word in words)
             {
                 int nextState = 0, transitionIndex = -1;
                 List<QTransition> currentStateTransitions = null;
-                foreach (var symbol in sequence)
+                foreach (var symbol in word)
                 {
                     currentStateTransitions = transitions[nextState];
                     transitionIndex = currentStateTransitions.GetTransitionIndex(
@@ -97,7 +97,7 @@
                     }
                 }
 
-                // mark last transition in this sequence as final
+                // mark last transition in this word as final
                 // throw an exception if it's already final
                 if (currentStateTransitions == null)
                 {
@@ -112,7 +112,7 @@
                 {
                     if (currentStateTransitions[transitionIndex].IsFinal)
                     {
-                        throw new ArgumentException(string.Format(Messages.DuplicateKey, sequence));
+                        throw new ArgumentException(string.Format(Messages.DuplicateKey, word));
                     }
 
                     currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
@@ -127,7 +127,7 @@
                 RootTransition = rootTransition,
                 LowerBounds = new int[transitions.Count],
                 Transitions = new QTransition[transitions.Sum(s => s.Count)],
-                Count = sequenceCounter
+                WordCount = sequenceCounter
             };
 
             for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
@@ -143,15 +143,15 @@
             return result;
         }
 
-        public bool Contains(IEnumerable<char> sequence)
+        public bool Contains(IEnumerable<char> word)
         {
-            if (sequence == null)
+            if (word == null)
             {
-                throw new ArgumentNullException("sequence");
+                throw new ArgumentNullException("word");
             }
 
             QTransition transition;
-            if (this.TrySendSequence(this.RootTransition, sequence, out transition))
+            if (this.TrySendWord(this.RootTransition, word, out transition))
             {
                 return transition.IsFinal;
             }
@@ -171,11 +171,11 @@
                 throw new ArgumentNullException("prefix");
             }
 
-            QTransition transition;
-            var fromStack = new Stack<int>();
-            if (this.TrySendSequence(this.RootTransition, prefix, out transition, fromStack))
+            QTransition transitionAfterPrefix;
+            var prefixTransitionIndexChain = new Stack<int>();
+            if (this.TrySendWord(this.RootTransition, prefix, out transitionAfterPrefix, prefixTransitionIndexChain))
             {
-                return this.Enumerate(transition, fromStack);
+                return this.Enumerate(transitionAfterPrefix, prefixTransitionIndexChain);
             }
 
             return Enumerable.Empty<string>();
@@ -259,29 +259,29 @@
             return false;
         }
 
-        protected internal bool TrySendSequence(
+        protected internal bool TrySendWord(
             QTransition inTransition,
-            IEnumerable<char> sequence,
+            IEnumerable<char> word,
             out QTransition outTransition,
-            Stack<int> nextTransitions = null)
+            Stack<int> transitionIndexChain = null)
         {
-            if (sequence == null)
+            if (word == null)
             {
-                throw new ArgumentNullException("sequence");
+                throw new ArgumentNullException("word");
             }
 
             outTransition = inTransition;
 
-            foreach (var element in sequence)
+            foreach (var element in word)
             {
                 int transitionIndex;
                 if (this.TrySend(outTransition.StateIndex, element, out transitionIndex))
                 {
                     outTransition = this.Transitions[transitionIndex];
 
-                    if (nextTransitions != null)
+                    if (transitionIndexChain != null)
                     {
-                        nextTransitions.Push(transitionIndex + 1);
+                        transitionIndexChain.Push(transitionIndex + 1);
                     }
                 }
                 else
