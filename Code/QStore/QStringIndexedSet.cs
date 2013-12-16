@@ -38,7 +38,7 @@
         {
             var set = QStringSet.Create(sequences, comparer);
             var indexedSet = new QStringIndexedSet { Set = set, PathsLeft = new int[set.Transitions.Length] };
-            var pathsFromState = new int[set.StateStarts.Length];
+            var pathsFromState = new int[set.LowerBounds.Length];
             indexedSet.CountPaths(set.RootTransition.StateIndex, pathsFromState);
             set.Count += set.RootTransition.IsFinal ? 1 : 0;
             return indexedSet;
@@ -59,38 +59,6 @@
             return this.Set.EnumerateByPrefix(prefix);
         }
 
-        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
-        {
-            if (prefix == null)
-            {
-                throw new ArgumentNullException("prefix");
-            }
-
-            QTransition transition;
-            var fromStack = new Stack<int>();
-            if (this.Set.TrySendSequence(this.Set.RootTransition, prefix, out transition, fromStack))
-            {
-                int index =
-                    fromStack.Select(i => this.PathsLeft[i - 1] + (this.Set.Transitions[i - 1].IsFinal ? 1 : 0)).Sum();
-                if (fromStack.Count > 0)
-                {
-                    index += this.Set.RootTransition.IsFinal ? 1 : 0;
-                    index -= transition.IsFinal ? 1 : 0;
-                }
-
-                return
-                    this.Set.Enumerate(transition, fromStack)
-                        .Select((s, i) => new KeyValuePair<string, int>(s, i + index));
-            }
-
-            return Enumerable.Empty<KeyValuePair<string, int>>();
-        }
-
-        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
-        {
-            return this.Set.Enumerate(this.Set.RootTransition).Select((s, i) => new KeyValuePair<string, int>(s, i));
-        }
-
         public string GetByIndex(int index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
@@ -98,8 +66,8 @@
             var nextTransition = this.Set.RootTransition;
             while (index > 0 || !nextTransition.IsFinal)
             {
-                int lower = this.Set.StateStarts[nextTransition.StateIndex];
-                int upper = this.Set.Transitions.GetUpperIndex(this.Set.StateStarts, nextTransition.StateIndex);
+                int lower = this.Set.LowerBounds[nextTransition.StateIndex];
+                int upper = this.Set.Transitions.GetUpperBound(this.Set.LowerBounds, nextTransition.StateIndex);
                 index -= nextTransition.IsFinal ? 1 : 0;
 
                 int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, index);
@@ -130,7 +98,7 @@
 
             foreach (var element in sequence)
             {
-                int upper = this.Set.Transitions.GetUpperIndex(this.Set.StateStarts, currentState);
+                int upper = this.Set.Transitions.GetUpperBound(this.Set.LowerBounds, currentState);
                 int transitionIndex;
                 if (this.Set.TrySend(currentState, element, out transitionIndex))
                 {
@@ -171,8 +139,8 @@
 
         private void CountPaths(int fromState, int[] pathsFromState)
         {
-            int lower = this.Set.StateStarts[fromState];
-            int upper = this.Set.Transitions.GetUpperIndex(this.Set.StateStarts, fromState);
+            int lower = this.Set.LowerBounds[fromState];
+            int upper = this.Set.Transitions.GetUpperBound(this.Set.LowerBounds, fromState);
             int pathsLeftCounter = 0;
 
             for (int i = lower; i < upper; i++)

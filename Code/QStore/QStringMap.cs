@@ -85,25 +85,13 @@
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             return this.StringIndexedSet.EnumerateByPrefix(prefix);
-        }
-
-        public IEnumerable<KeyValuePair<string, int>> EnumerateByPrefixWithIndex(IEnumerable<char> prefix)
-        {
-            return this.StringIndexedSet.EnumerateByPrefixWithIndex(prefix);
-        }
+        }        
 
         public IEnumerable<KeyValuePair<string, TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix)
         {
-            return
-                this.EnumerateByPrefixWithIndex(prefix)
-                    .Select(p => new KeyValuePair<string, TValue>(p.Key, this.Values[p.Value]));
+            return this.EnumerateByPrefix(prefix).Select(p => new KeyValuePair<string, TValue>(p, this[p]));
         }
-
-        public IEnumerable<KeyValuePair<string, int>> EnumerateWithIndex()
-        {
-            return this.StringIndexedSet.EnumerateWithIndex();
-        }
-
+        
         public IEnumerable<KeyValuePair<string, TValue>> EnumerateWithValue()
         {
             return this.Enumerate().Select((key, i) => new KeyValuePair<string, TValue>(key, this.Values[i]));
