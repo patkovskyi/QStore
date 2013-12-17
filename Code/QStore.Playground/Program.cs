@@ -15,7 +15,7 @@
         {
             Console.WriteLine(DateTime.Now);
             var tester = PerformanceTester.Create("Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
-            // tester.TestVsHashSet();
+            tester.TestVsHashSet();
             tester.TestPrefixSearchInSet();
             // tester.TestVsDictionary();
             Console.ReadLine();

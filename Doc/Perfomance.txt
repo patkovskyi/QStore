@@ -1,3 +1,4 @@
+***MACBOOK***
 14.12.2013 18:58:15
 Initializing QStringSet with 1540819 elements.
 Memory delta: +1833380 bytes
@@ -32,6 +33,26 @@ Elapsed time:  7189 ms
 Testing qset prefix search time (|alphabet|=34)
 1-symbol prefix search time in 1540819 words: 888 ms
 2-symbol prefix search time in 1540819 words: 665 ms
+
+***DESKTOP***
+12/17/2013 11:40:59 AM
+Initializing QStringSet with 1540819 elements.
+Memory delta: +1833232 bytes
+Elapsed time:  7260 ms
+
+Initializing HashSet<int> with 1540819 elements.
+Memory delta: +26789260 bytes
+Elapsed time:  209 ms
+
+Testing qset vs hashset
+HashSet time for 1540819 words: 199 ms
+   QSet time for 1540819 words: 966 ms
+
+Testing qset prefix search time (|alphabet|=34)
+1-symbol prefix search time in 1540819 words: 1040 ms
+2-symbol prefix search time in 1540819 words: 763 ms
+
+
 
 
 

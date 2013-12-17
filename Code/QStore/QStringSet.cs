@@ -200,7 +200,7 @@
                 yield return
                     fromStack == null
                         ? string.Empty
-                        : new string(fromStack.Reverse().Select(i => this.Transitions[i - 1].Symbol).ToArray());
+                        : this.BuildString(fromStack);
             }
 
             fromStack = fromStack ?? new Stack<int>();
@@ -220,16 +220,8 @@
                     fromStack.Push(lower + 1);
 
                     if (this.Transitions[lower].IsFinal)
-                    {
-                        var tmp = new int[fromStack.Count];
-                        fromStack.CopyTo(tmp, 0);
-                        var res = new char[fromStack.Count];
-                        for (int i = 0; i < res.Length; i++)
-                        {
-                            res[i] = this.Transitions[tmp[res.Length - i - 1] - 1].Symbol;
-                        }
-
-                        yield return new string(res);
+                    {                        
+                        yield return this.BuildString(fromStack);
                     }
 
                     int nextState = this.Transitions[lower].StateIndex;
@@ -291,6 +283,19 @@
             }
 
             return true;
+        }
+
+        private string BuildString(Stack<int> transitionIndexStack)
+        {
+            var tmp = new int[transitionIndexStack.Count];
+            transitionIndexStack.CopyTo(tmp, 0);
+            var res = new char[transitionIndexStack.Count];
+            for (int i = 0; i < res.Length; i++)
+            {
+                res[i] = this.Transitions[tmp[res.Length - i - 1] - 1].Symbol;
+            }
+
+            return new string(res);
         }
 
         private MergeList GetMergeList()
