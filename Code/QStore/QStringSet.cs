@@ -162,7 +162,7 @@
 
         public IEnumerable<string> Enumerate()
         {
-            return this.Enumerate(this.RootTransition, new StringBuilder());
+            return this.Enumerate(this.RootTransition, string.Empty);
         }
 
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
@@ -171,12 +171,12 @@
             {
                 throw new ArgumentNullException("prefix");
             }
-
+            
+            var prefixStr = prefix as string ?? new string(prefix.ToArray());
             QTransition transitionAfterPrefix;
-            var prefixTransitionIndexChain = new StringBuilder();
-            if (this.TrySendWord(this.RootTransition, prefix, out transitionAfterPrefix, prefixTransitionIndexChain))
+            if (this.TrySendWord(this.RootTransition, prefixStr, out transitionAfterPrefix))
             {
-                return this.Enumerate(transitionAfterPrefix, prefixTransitionIndexChain);
+                return this.Enumerate(transitionAfterPrefix, prefixStr);
             }
 
             return Enumerable.Empty<string>();
@@ -194,13 +194,14 @@
             // TODO: safety check?
         }
 
-        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, StringBuilder prefix)
+        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, string prefix)
         {
             if (fromTransition.IsFinal)
             {
-                yield return prefix.ToString();
+                yield return prefix;
             }
 
+            var word = new StringBuilder(prefix);
             var lowerStack = new Stack<int>();
             var upperStack = new Stack<int>();
 
@@ -211,18 +212,18 @@
             upperStack.Push(upper);
 
             while (upperStack.Count > 0)
-            {                
+            {
                 lower = lowerStack.Pop();
                 upper = upperStack.Peek();
 
                 if (lower < upper)
                 {
                     fromTransition = this.Transitions[lower];
-                    prefix.Append(fromTransition.Symbol);
+                    word.Append(fromTransition.Symbol);
 
                     if (fromTransition.IsFinal)
                     {
-                        yield return prefix.ToString();
+                        yield return word.ToString();
                     }
 
                     int nextState = fromTransition.StateIndex;
@@ -231,19 +232,19 @@
 
                     lowerStack.Push(lower + 1);
                     lowerStack.Push(nextLower);
-                    upperStack.Push(nextUpper);                    
+                    upperStack.Push(nextUpper);
                 }
                 else
                 {
-                    if (prefix.Length > 0) prefix.Remove(prefix.Length - 1, 1);
                     upperStack.Pop();
+                    if (word.Length > 0) word.Remove(word.Length - 1, 1);
                 }
             }
         }
 
-        protected internal bool TrySend(int fromState, char symbol, out int outTransitionIndex)
+        protected internal bool TrySendSymbol(int inState, char symbol, out int outTransitionIndex)
         {
-            outTransitionIndex = this.GetTransitionIndex(fromState, symbol);
+            outTransitionIndex = this.GetTransitionIndex(inState, symbol);
             if (outTransitionIndex >= 0)
             {
                 return true;
@@ -255,27 +256,16 @@
         protected internal bool TrySendWord(
             QTransition inTransition,
             IEnumerable<char> word,
-            out QTransition outTransition,
-            StringBuilder transitionIndexChain = null)
+            out QTransition outTransition)
         {
-            if (word == null)
-            {
-                throw new ArgumentNullException("word");
-            }
-
             outTransition = inTransition;
 
             foreach (var element in word)
             {
                 int transitionIndex;
-                if (this.TrySend(outTransition.StateIndex, element, out transitionIndex))
+                if (this.TrySendSymbol(outTransition.StateIndex, element, out transitionIndex))
                 {
                     outTransition = this.Transitions[transitionIndex];
-
-                    if (transitionIndexChain != null)
-                    {
-                        transitionIndexChain.Append(this.Transitions[transitionIndex].Symbol);
-                    }
                 }
                 else
                 {
@@ -284,19 +274,6 @@
             }
 
             return true;
-        }
-
-        private string BuildString(Stack<int> transitionIndexStack)
-        {
-            var tmp = new int[transitionIndexStack.Count];
-            transitionIndexStack.CopyTo(tmp, 0);
-            var res = new char[transitionIndexStack.Count];
-            for (int i = 0; i < res.Length; i++)
-            {
-                res[i] = this.Transitions[tmp[res.Length - i - 1] - 1].Symbol;
-            }
-
-            return new string(res);
         }
 
         private MergeList GetMergeList()

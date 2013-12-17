@@ -52,7 +52,7 @@
 
         public IEnumerable<string> Enumerate()
         {
-            return this.Set.Enumerate(this.Set.RootTransition, new StringBuilder());
+            return this.Set.Enumerate(this.Set.RootTransition, string.Empty);
         }
 
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
@@ -101,7 +101,7 @@
             {
                 int upper = this.Set.Transitions.GetUpperBound(this.Set.LowerBounds, currentState);
                 int transitionIndex;
-                if (this.Set.TrySend(currentState, element, out transitionIndex))
+                if (this.Set.TrySendSymbol(currentState, element, out transitionIndex))
                 {
                     if (transitionIndex + 1 < upper)
                     {
