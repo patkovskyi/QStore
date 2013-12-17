@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
+    using System.Text;
 
     using QStore.Extensions;
     using QStore.Structs;
@@ -51,7 +52,7 @@
 
         public IEnumerable<string> Enumerate()
         {
-            return this.Set.Enumerate(this.Set.RootTransition);
+            return this.Set.Enumerate(this.Set.RootTransition, new StringBuilder());
         }
 
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)

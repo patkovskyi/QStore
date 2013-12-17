@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Serialization;
+    using System.Text;
 
     using QStore.Comparers;
     using QStore.Extensions;
@@ -161,7 +162,7 @@
 
         public IEnumerable<string> Enumerate()
         {
-            return this.Enumerate(this.RootTransition);
+            return this.Enumerate(this.RootTransition, new StringBuilder());
         }
 
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
@@ -172,7 +173,7 @@
             }
 
             QTransition transitionAfterPrefix;
-            var prefixTransitionIndexChain = new Stack<int>();
+            var prefixTransitionIndexChain = new StringBuilder();
             if (this.TrySendWord(this.RootTransition, prefix, out transitionAfterPrefix, prefixTransitionIndexChain))
             {
                 return this.Enumerate(transitionAfterPrefix, prefixTransitionIndexChain);
@@ -193,52 +194,47 @@
             // TODO: safety check?
         }
 
-        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, Stack<int> fromStack = null)
+        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, StringBuilder prefix)
         {
-            if (fromTransition.IsFinal)
-            {
-                yield return
-                    fromStack == null
-                        ? string.Empty
-                        : this.BuildString(fromStack);
-            }
+            var lowerStack = new Stack<int>();
+            var upperStack = new Stack<int>();
 
-            fromStack = fromStack ?? new Stack<int>();
-            var toStack = new Stack<int>();
             int lower = this.LowerBounds[fromTransition.StateIndex];
             int upper = this.Transitions.GetUpperBound(this.LowerBounds, fromTransition.StateIndex);
-            fromStack.Push(lower);
-            toStack.Push(upper);
 
-            while (toStack.Count > 0)
+            lowerStack.Push(lower);
+            upperStack.Push(upper);
+
+            while (upperStack.Count > 0)
             {
-                lower = fromStack.Pop();
-                upper = toStack.Peek();
+                if (fromTransition.IsFinal)
+                {
+                    yield return prefix.ToString();
+                }
+          
+                lower = lowerStack.Pop();
+                upper = upperStack.Peek();
 
                 if (lower < upper)
                 {
-                    fromStack.Push(lower + 1);
-
-                    if (this.Transitions[lower].IsFinal)
-                    {                        
-                        yield return this.BuildString(fromStack);
-                    }
-
-                    int nextState = this.Transitions[lower].StateIndex;
+                    fromTransition = this.Transitions[lower];
+                    prefix.Append(fromTransition.Symbol);
+                    
+                    int nextState = fromTransition.StateIndex;
                     int nextLower = this.LowerBounds[nextState];
                     int nextUpper = this.Transitions.GetUpperBound(this.LowerBounds, nextState);
-                    if (nextLower < nextUpper)
-                    {
-                        fromStack.Push(nextLower);
-                        toStack.Push(nextUpper);
-                    }
+
+                    lowerStack.Push(lower + 1);
+                    lowerStack.Push(nextLower);
+                    upperStack.Push(nextUpper);
                 }
                 else
                 {
-                    toStack.Pop();
+                    prefix.Remove(prefix.Length - 1, 1);
+                    upperStack.Pop();
                 }
             }
-        }
+        }        
 
         protected internal bool TrySend(int fromState, char symbol, out int outTransitionIndex)
         {
@@ -255,7 +251,7 @@
             QTransition inTransition,
             IEnumerable<char> word,
             out QTransition outTransition,
-            Stack<int> transitionIndexChain = null)
+            StringBuilder transitionIndexChain = null)
         {
             if (word == null)
             {
@@ -273,7 +269,7 @@
 
                     if (transitionIndexChain != null)
                     {
-                        transitionIndexChain.Push(transitionIndex + 1);
+                        transitionIndexChain.Append(this.Transitions[transitionIndex].Symbol);
                     }
                 }
                 else
