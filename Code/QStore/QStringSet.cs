@@ -18,10 +18,10 @@
         [NonSerialized]
         protected internal IComparer<char> ComparerField;
 
-        [DataMember(Order = 2)]
+        [DataMember(Order = 1)]
         protected internal int[] LowerBounds;
 
-        [DataMember(Order = 1)]
+        [DataMember(Order = 2)]
         protected internal QTransition RootTransition;
 
         [DataMember(Order = 3)]
@@ -196,6 +196,11 @@
 
         protected internal IEnumerable<string> Enumerate(QTransition fromTransition, StringBuilder prefix)
         {
+            if (fromTransition.IsFinal)
+            {
+                yield return prefix.ToString();
+            }
+
             var lowerStack = new Stack<int>();
             var upperStack = new Stack<int>();
 
@@ -206,12 +211,7 @@
             upperStack.Push(upper);
 
             while (upperStack.Count > 0)
-            {
-                if (fromTransition.IsFinal)
-                {
-                    yield return prefix.ToString();
-                }
-          
+            {                
                 lower = lowerStack.Pop();
                 upper = upperStack.Peek();
 
@@ -219,22 +219,27 @@
                 {
                     fromTransition = this.Transitions[lower];
                     prefix.Append(fromTransition.Symbol);
-                    
+
+                    if (fromTransition.IsFinal)
+                    {
+                        yield return prefix.ToString();
+                    }
+
                     int nextState = fromTransition.StateIndex;
                     int nextLower = this.LowerBounds[nextState];
                     int nextUpper = this.Transitions.GetUpperBound(this.LowerBounds, nextState);
 
                     lowerStack.Push(lower + 1);
                     lowerStack.Push(nextLower);
-                    upperStack.Push(nextUpper);
+                    upperStack.Push(nextUpper);                    
                 }
                 else
                 {
-                    prefix.Remove(prefix.Length - 1, 1);
+                    if (prefix.Length > 0) prefix.Remove(prefix.Length - 1, 1);
                     upperStack.Pop();
                 }
             }
-        }        
+        }
 
         protected internal bool TrySend(int fromState, char symbol, out int outTransitionIndex)
         {

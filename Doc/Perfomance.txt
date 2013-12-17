@@ -34,6 +34,10 @@ Testing qset prefix search time (|alphabet|=34)
 1-symbol prefix search time in 1540819 words: 888 ms
 2-symbol prefix search time in 1540819 words: 665 ms
 
+
+
+
+
 ***DESKTOP***
 12/17/2013 11:40:59 AM
 Initializing QStringSet with 1540819 elements.
@@ -53,6 +57,26 @@ Testing qset prefix search time (|alphabet|=34)
 2-symbol prefix search time in 1540819 words: 763 ms
 
 
+
+
+
+***MACBOOK*** - Enumerate with StringBuilder improved prefix search perfomance.
+17.12.2013 22:38:13
+Initializing QStringSet with 1540819 elements.
+Memory delta: +1833232 bytes
+Elapsed time:  7110 ms
+
+Initializing HashSet<int> with 1540819 elements.
+Memory delta: +26789260 bytes
+Elapsed time:  228 ms
+
+Testing qset vs hashset
+HashSet time for 1540819 words: 235 ms
+   QSet time for 1540819 words: 1098 ms
+
+Testing qset prefix search time (|alphabet|=34)
+1-symbol prefix search time in 1540819 words: 502 ms
+2-symbol prefix search time in 1540819 words: 478 ms
 
 
 
