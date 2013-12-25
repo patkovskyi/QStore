@@ -54,7 +54,9 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QStringIndexedSetTests\Serialization.cs" />
     <Compile Include="QStringSetTests\Contains.cs" />
+    <Compile Include="QStringSetTests\Serialization.cs" />
     <Compile Include="TestComparers\NonSerializableComparer.cs" />
     <Compile Include="TestComparers\NullComparer.cs" />
     <Compile Include="TestComparers\SequenceComparer.cs" />
@@ -67,11 +69,11 @@
     <Compile Include="TestHelpers\SerializationHelper.cs" />
     <Compile Include="QStringIndexedSetTests\GetByIndex.cs" />
     <Compile Include="QStringIndexedSetTests\GetIndex.cs" />
-    <Compile Include="QStringMapTests\GetByPrefixWithValue.cs" />
+    <Compile Include="QStringMapTests\EnumerateByPrefix.cs" />
     <Compile Include="QStringMapTests\Indexer.cs" />
     <Compile Include="QStringSetTests\Create.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QStringSetTests\GetByPrefix.cs" />
+    <Compile Include="QStringSetTests\EnumerateByPrefix.cs" />
     <Compile Include="QStringMapTests\Serialization.cs" />
     <Compile Include="TestData.cs" />
   </ItemGroup>
