@@ -7,13 +7,12 @@
     using System.Linq;
     using System.Text;
 
-    using QStore;
     using QStore.Playground;
 
     internal class Program
     {
         private static void Main(string[] args)
-        {            
+        {                        
             Console.WriteLine(DateTime.Now);
             var tester = PerformanceTester.Create("Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
             tester.TestVsHashSet();

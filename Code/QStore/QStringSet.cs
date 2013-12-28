@@ -27,6 +27,10 @@
         [DataMember(Order = 3)]
         protected internal QTransition[] Transitions;
 
+        private QStringSet()
+        {
+        }
+
         public IComparer<char> Comparer
         {
             get

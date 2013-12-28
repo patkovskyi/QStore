@@ -35,6 +35,10 @@
             }
         }
 
+        private QStringIndexedSet()
+        {        
+        }
+
         public static QStringIndexedSet Create(IEnumerable<string> sequences, IComparer<char> comparer)
         {
             var set = QStringSet.Create(sequences, comparer);
