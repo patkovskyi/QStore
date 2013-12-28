@@ -56,7 +56,9 @@
   <ItemGroup>
     <Compile Include="QStringIndexedSetTests\Serialization.cs" />
     <Compile Include="QStringSetTests\Contains.cs" />
+    <Compile Include="QStringSetTests\Predecessors.cs" />
     <Compile Include="QStringSetTests\Serialization.cs" />
+    <Compile Include="QStringSetTests\Successors.cs" />
     <Compile Include="TestComparers\NonSerializableComparer.cs" />
     <Compile Include="TestComparers\NullComparer.cs" />
     <Compile Include="TestComparers\SequenceComparer.cs" />

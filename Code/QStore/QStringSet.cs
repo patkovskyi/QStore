@@ -182,6 +182,16 @@
             return Enumerable.Empty<string>();
         }
 
+        public IEnumerable<string> Predecessors(IEnumerable<char> word)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> Successors(IEnumerable<char> word)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetComparer(IComparer<char> comparer)
         {
             if (comparer == null)
