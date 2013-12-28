@@ -12,7 +12,7 @@
     internal class Program
     {
         private static void Main(string[] args)
-        {                        
+        {
             Console.WriteLine(DateTime.Now);
             var tester = PerformanceTester.Create("Zaliznyak-1251.txt", Encoding.GetEncoding(1251));
             tester.TestVsHashSet();
@@ -72,7 +72,9 @@
         {
             var r = new Random();
             File.WriteAllLines(
-                outputPath, File.ReadAllLines(originalPath, encoding).OrderBy(line => r.Next()).ToArray(), encoding);
+                outputPath,
+                File.ReadAllLines(originalPath, encoding).OrderBy(line => r.Next()).ToArray(),
+                encoding);
         }
 
         private static void TestStringConversion()

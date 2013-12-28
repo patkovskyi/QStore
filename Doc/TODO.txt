@@ -1,0 +1,5 @@
+1. Finalize signatures.
+2. Move to .NET 2? Don't forget attributes.
+3. Move to NUnit?
+4. Nuget.
+5. Optimize transition struct.

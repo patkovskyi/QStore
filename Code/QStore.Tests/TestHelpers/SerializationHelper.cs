@@ -27,9 +27,9 @@
         }
 
         public static T BinaryLoop<T>(T map)
-        {            
+        {
             var bytes = map.BinarySerialize();
-            map = bytes.BinaryDeserialize<T>();            
+            map = bytes.BinaryDeserialize<T>();
             return map;
         }
 
@@ -63,9 +63,9 @@
         }
 
         public static T BsonLoop<T>(T map)
-        {            
+        {
             var bytes = map.BsonSerialize();
-            map = bytes.BsonDeserialize<T>();            
+            map = bytes.BsonDeserialize<T>();
             return map;
         }
 
@@ -99,9 +99,9 @@
         }
 
         public static T DataContractLoop<T>(T map)
-        {            
+        {
             var bytes = map.DataContractSerialize();
-            map = bytes.DataContractDeserialize<T>();            
+            map = bytes.DataContractDeserialize<T>();
             return map;
         }
 
@@ -133,9 +133,9 @@
         }
 
         public static T ProtoLoop<T>(T map)
-        {            
+        {
             var bytes = map.ProtoSerialize();
-            map = bytes.ProtoDeserialize<T>();            
+            map = bytes.ProtoDeserialize<T>();
             return map;
         }
 

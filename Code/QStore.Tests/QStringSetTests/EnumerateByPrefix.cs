@@ -17,8 +17,8 @@
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected =
                 strings.Where(s => s.StartsWith(prefix, StringComparison.Ordinal))
-                       .OrderBy(s => s, sequenceComparer)
-                       .ToArray();
+                    .OrderBy(s => s, sequenceComparer)
+                    .ToArray();
 
             var actual = target.EnumerateByPrefix(prefix).ToArray();
             CollectionAssert.AreEqual(expected, actual, sequenceComparer);

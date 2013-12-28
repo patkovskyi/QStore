@@ -12,6 +12,10 @@
         [DataMember(Order = 1)]
         protected internal QStringIndexedSet StringIndexedSet;
 
+        private QStringMap()
+        {
+        }
+
         [DataMember(Order = 2)]
         public TValue[] Values { get; protected set; }
 
@@ -56,10 +60,6 @@
             }
         }
 
-        private QStringMap()
-        {
-        }
-
         public static QStringMap<TValue> Create(IEnumerable<string> keySequences, IComparer<char> comparer)
         {
             if (keySequences == null)
@@ -89,13 +89,13 @@
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
         {
             return this.StringIndexedSet.EnumerateByPrefix(prefix);
-        }        
+        }
 
         public IEnumerable<KeyValuePair<string, TValue>> EnumerateByPrefixWithValue(IEnumerable<char> prefix)
         {
             return this.EnumerateByPrefix(prefix).Select(p => new KeyValuePair<string, TValue>(p, this[p]));
         }
-        
+
         public IEnumerable<KeyValuePair<string, TValue>> EnumerateWithValue()
         {
             return this.Enumerate().Select((key, i) => new KeyValuePair<string, TValue>(key, this.Values[i]));

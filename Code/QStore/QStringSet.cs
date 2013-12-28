@@ -175,7 +175,7 @@
             {
                 throw new ArgumentNullException("prefix");
             }
-            
+
             var prefixStr = prefix as string ?? new string(prefix.ToArray());
             QTransition transitionAfterPrefix;
             if (this.TrySendWord(this.RootTransition, prefixStr, out transitionAfterPrefix))
@@ -191,11 +191,6 @@
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> Successors(IEnumerable<char> word)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetComparer(IComparer<char> comparer)
         {
             if (comparer == null)
@@ -206,6 +201,11 @@
             this.ComparerField = comparer;
 
             // TODO: safety check?
+        }
+
+        public IEnumerable<string> Successors(IEnumerable<char> word)
+        {
+            throw new NotImplementedException();
         }
 
         protected internal IEnumerable<string> Enumerate(QTransition fromTransition, string prefix)
@@ -251,7 +251,10 @@
                 else
                 {
                     upperStack.Pop();
-                    if (word.Length > 0) word.Remove(word.Length - 1, 1);
+                    if (word.Length > 0)
+                    {
+                        word.Remove(word.Length - 1, 1);
+                    }
                 }
             }
         }

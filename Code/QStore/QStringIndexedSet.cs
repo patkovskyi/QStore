@@ -2,22 +2,23 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Runtime.Serialization;
-    using System.Text;
 
     using QStore.Extensions;
-    using QStore.Structs;
 
     [DataContract]
     [Serializable]
     public class QStringIndexedSet
     {
+        [DataMember(Order = 2)]
+        protected internal int[] PathsLeft;
+
         [DataMember(Order = 1)]
         protected internal QStringSet Set;
 
-        [DataMember(Order = 2)]
-        protected internal int[] PathsLeft;        
+        private QStringIndexedSet()
+        {
+        }
 
         public int Count
         {
@@ -33,10 +34,6 @@
             {
                 return this.Set.Comparer;
             }
-        }
-
-        private QStringIndexedSet()
-        {        
         }
 
         public static QStringIndexedSet Create(IEnumerable<string> sequences, IComparer<char> comparer)

@@ -9,6 +9,8 @@
 
     public class PerformanceTester
     {
+        private char[] alphabet;
+
         private Dictionary<string, int> dictionary;
 
         private HashSet<string> hashSet;
@@ -23,8 +25,6 @@
 
         private string[] words;
 
-        private char[] alphabet;
-
         public static PerformanceTester Create(string fromFile, Encoding encoding)
         {
             var tester = new PerformanceTester { words = File.ReadAllLines(fromFile, encoding) };
@@ -35,66 +35,39 @@
 
         public bool TestPrefixSearchInSet()
         {
-            this.InitSet();            
+            this.InitSet();
 
             Console.WriteLine(@"Testing qset prefix search time (|alphabet|={0})", this.alphabet.Length);
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             bool b = false;
-            for (int i = 0; i < alphabet.Length; i++)
+            for (int i = 0; i < this.alphabet.Length; i++)
             {
-                var prefix = new string(alphabet[i], 1);
-                b ^= this.set.EnumerateByPrefix(prefix).ToArray().Length % 17 == 0;                
+                var prefix = new string(this.alphabet[i], 1);
+                b ^= this.set.EnumerateByPrefix(prefix).ToArray().Length % 17 == 0;
             }
 
             stopwatch.Stop();
             Console.WriteLine(
-                @"1-symbol prefix search time in {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"1-symbol prefix search time in {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
 
             stopwatch.Restart();
-            for (int i = 0; i < alphabet.Length; i++)
+            for (int i = 0; i < this.alphabet.Length; i++)
             {
-                for (int j = 0; j < alphabet.Length; j++)
+                for (int j = 0; j < this.alphabet.Length; j++)
                 {
-                    var prefix = new string(new[] { alphabet[i], alphabet[j] });
+                    var prefix = new string(new[] { this.alphabet[i], this.alphabet[j] });
                     b ^= this.set.EnumerateByPrefix(prefix).ToArray().Length % 17 == 0;
                 }
             }
 
             stopwatch.Stop();
             Console.WriteLine(
-                @"2-symbol prefix search time in {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
-            Console.WriteLine();
-            return b;
-        }
-
-        public bool TestVsHashSet()
-        {
-            this.InitSet();
-            this.InitHashSet();
-
-            Console.WriteLine(@"Testing qset vs hashset");
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            bool b = false;
-            for (int i = 0; i < words.Length; i++)
-            {
-                b ^= this.hashSet.Contains(words[i]);
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine(
-                @"HashSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
-
-            stopwatch.Restart();
-            for (int i = 0; i < words.Length; i++)
-            {
-                b ^= this.set.Contains(words[i]);
-            }
-            stopwatch.Stop();
-            Console.WriteLine(
-                @"   QSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"2-symbol prefix search time in {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return b;
         }
@@ -115,7 +88,9 @@
             }
             stopwatch.Stop();
             Console.WriteLine(
-                @"Dictionary time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"Dictionary time for {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
 
             stopwatch.Restart();
             foreach (var word in this.words)
@@ -124,9 +99,40 @@
             }
             stopwatch.Stop();
             Console.WriteLine(
-                @"       Map time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"       Map time for {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return x;
+        }
+
+        public bool TestVsHashSet()
+        {
+            this.InitSet();
+            this.InitHashSet();
+
+            Console.WriteLine(@"Testing qset vs hashset");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            bool b = false;
+            for (int i = 0; i < this.words.Length; i++)
+            {
+                b ^= this.hashSet.Contains(this.words[i]);
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(@"HashSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+
+            stopwatch.Restart();
+            for (int i = 0; i < this.words.Length; i++)
+            {
+                b ^= this.set.Contains(this.words[i]);
+            }
+            stopwatch.Stop();
+            Console.WriteLine(@"   QSet time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine();
+            return b;
         }
 
         public int TestVsSortedDictionary()
@@ -145,7 +151,9 @@
             }
             stopwatch.Stop();
             Console.WriteLine(
-                @"Sorted dictionary time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"Sorted dictionary time for {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
 
             stopwatch.Restart();
             foreach (var word in this.words)
@@ -154,7 +162,9 @@
             }
             stopwatch.Stop();
             Console.WriteLine(
-                @"              Map time for {0} words: {1} ms", this.words.Length, stopwatch.ElapsedMilliseconds);
+                @"              Map time for {0} words: {1} ms",
+                this.words.Length,
+                stopwatch.ElapsedMilliseconds);
             Console.WriteLine();
             return x;
         }

@@ -11,8 +11,7 @@
     [TestClass]
     public class EnumerateByPrefix
     {
-        public static void EnumerateByPrefixTestHelper(
-            IComparer<char> comparer, string prefix, params string[] words)
+        public static void EnumerateByPrefixTestHelper(IComparer<char> comparer, string prefix, params string[] words)
         {
             var map = QStringMap<int>.Create(words, comparer);
             foreach (var word in words)
@@ -23,9 +22,9 @@
             var sequenceComparer = new SequenceComparer<char>(comparer);
             var expected =
                 words.Where(s => s.StartsWith(prefix, StringComparison.Ordinal))
-                     .OrderBy(s => s, sequenceComparer)
-                     .Select(s => new KeyValuePair<string, int>(s, s.GetHashCode()))
-                     .ToArray();
+                    .OrderBy(s => s, sequenceComparer)
+                    .Select(s => new KeyValuePair<string, int>(s, s.GetHashCode()))
+                    .ToArray();
 
             var actual = map.EnumerateByPrefixWithValue(prefix).ToArray();
             CollectionAssert.AreEqual(expected, actual);
