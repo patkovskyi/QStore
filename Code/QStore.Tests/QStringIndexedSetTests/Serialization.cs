@@ -6,6 +6,8 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+    using ProtoBuf.Meta;
+
     using QStore.Tests.TestComparers;
     using QStore.Tests.TestHelpers;
 
@@ -16,11 +18,12 @@
             Func<QStringIndexedSet, QStringIndexedSet> serializationLoop,
             params string[] words)
         {
+            RuntimeTypeModel.Default[typeof(QStringSet)].AddSubType(5, typeof(QStringIndexedSet));
             var comparer = new NonSerializableComparer<char>();
             var set = QStringIndexedSet.Create(words, comparer);
             set = serializationLoop(set);
             set.SetComparer(comparer);
-            Assert.AreEqual(words.Length, set.Count);
+            Assert.AreEqual(words.Length, set.WordCount);
             var expectedWords = words.OrderBy(s => s, StringComparer.Ordinal).ToArray();
             CollectionAssert.AreEqual(expectedWords, set.Enumerate().ToArray());
         }

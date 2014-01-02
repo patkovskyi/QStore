@@ -23,7 +23,7 @@
         {
             get
             {
-                return this.StringIndexedSet.Count;
+                return this.StringIndexedSet.WordCount;
             }
         }
 
@@ -73,7 +73,7 @@
             }
 
             var indexedSet = QStringIndexedSet.Create(keySequences, comparer);
-            return new QStringMap<TValue> { StringIndexedSet = indexedSet, Values = new TValue[indexedSet.Count] };
+            return new QStringMap<TValue> { StringIndexedSet = indexedSet, Values = new TValue[indexedSet.WordCount] };
         }
 
         public bool Contains(IEnumerable<char> sequence)

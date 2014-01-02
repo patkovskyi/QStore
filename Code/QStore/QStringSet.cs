@@ -12,6 +12,7 @@
     using QStore.Structs;
 
     [DataContract]
+    // [KnownType(typeof(QStringIndexedSet))]
     [Serializable]
     public class QStringSet
     {
@@ -27,7 +28,7 @@
         [DataMember(Order = 3)]
         protected internal QTransition[] Transitions;
 
-        private QStringSet()
+        protected QStringSet()
         {
         }
 
@@ -44,108 +45,7 @@
 
         public static QStringSet Create(IEnumerable<string> words, IComparer<char> comparer)
         {
-            if (words == null)
-            {
-                throw new ArgumentNullException("words");
-            }
-
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-
-            // outer list represents states, inner lists represent transitions from this state
-            // State1 -------> State2 -------> ...... -------> StateN
-            // |               |
-            // a->State2       b->State3
-            // |               |
-            // d->State5       e->State4,final
-            // |
-            // z->StateN,final
-            // capacity is set to alphabet.Length just to avoid few initial resizings
-            var rootTransition = default(QTransition);
-            var transitions = new List<List<QTransition>> { new List<QTransition>() };
-
-            int sequenceCounter = 0;
-            foreach (var word in words)
-            {
-                int nextState = 0, transitionIndex = -1;
-                List<QTransition> currentStateTransitions = null;
-                foreach (var symbol in word)
-                {
-                    currentStateTransitions = transitions[nextState];
-                    transitionIndex = currentStateTransitions.GetTransitionIndex(
-                        symbol,
-                        comparer,
-                        0,
-                        currentStateTransitions.Count);
-                    if (transitionIndex >= 0)
-                    {
-                        // transition from currentState by symbol already exists
-                        nextState = currentStateTransitions[transitionIndex].StateIndex;
-                    }
-                    else
-                    {
-                        // transition from currentState by symbol doesn't exist
-                        transitionIndex = ~transitionIndex;
-
-                        // add new state
-                        nextState = transitions.Count;
-                        transitions.Add(new List<QTransition>());
-
-                        // add transition from current state to new state                                                
-                        var newTransition = new QTransition(symbol, nextState, false);
-
-                        // I know this Insert in the middle of the List<> doesn't look very clever,
-                        // but I tried SortedDictionary and LinkedList approach: they are slower in practice
-                        currentStateTransitions.Insert(transitionIndex, newTransition);
-                    }
-                }
-
-                // mark last transition in this word as final
-                // throw an exception if it's already final
-                if (currentStateTransitions == null)
-                {
-                    if (rootTransition.IsFinal)
-                    {
-                        throw new ArgumentException(string.Format(Messages.DuplicateKey, string.Empty));
-                    }
-
-                    rootTransition = rootTransition.MakeFinal();
-                }
-                else
-                {
-                    if (currentStateTransitions[transitionIndex].IsFinal)
-                    {
-                        throw new ArgumentException(string.Format(Messages.DuplicateKey, word));
-                    }
-
-                    currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
-                }
-
-                ++sequenceCounter;
-            }
-
-            var result = new QStringSet
-            {
-                ComparerField = comparer,
-                RootTransition = rootTransition,
-                LowerBounds = new int[transitions.Count],
-                Transitions = new QTransition[transitions.Sum(s => s.Count)],
-                WordCount = sequenceCounter
-            };
-
-            for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
-            {
-                result.LowerBounds[i] = transitionIndex;
-                for (int j = 0; j < transitions[i].Count; j++, transitionIndex++)
-                {
-                    result.Transitions[transitionIndex] = transitions[i][j];
-                }
-            }
-
-            result.Minimize();
-            return result;
+            return Create(new QStringSet(), words, comparer);
         }
 
         public bool Contains(IEnumerable<char> word)
@@ -291,6 +191,109 @@
             }
 
             return true;
+        }
+
+        protected static T Create<T>(T set, IEnumerable<string> words, IComparer<char> comparer) where T : QStringSet
+        {
+            if (words == null)
+            {
+                throw new ArgumentNullException("words");
+            }
+
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+
+            // outer list represents states, inner lists represent transitions from this state
+            // State1 -------> State2 -------> ...... -------> StateN
+            // |               |
+            // a->State2       b->State3
+            // |               |
+            // d->State5       e->State4,final
+            // |
+            // z->StateN,final
+            // capacity is set to alphabet.Length just to avoid few initial resizings
+            var rootTransition = default(QTransition);
+            var transitions = new List<List<QTransition>> { new List<QTransition>() };
+
+            int sequenceCounter = 0;
+            foreach (var word in words)
+            {
+                int nextState = 0, transitionIndex = -1;
+                List<QTransition> currentStateTransitions = null;
+                foreach (var symbol in word)
+                {
+                    currentStateTransitions = transitions[nextState];
+                    transitionIndex = currentStateTransitions.GetTransitionIndex(
+                        symbol,
+                        comparer,
+                        0,
+                        currentStateTransitions.Count);
+                    if (transitionIndex >= 0)
+                    {
+                        // transition from currentState by symbol already exists
+                        nextState = currentStateTransitions[transitionIndex].StateIndex;
+                    }
+                    else
+                    {
+                        // transition from currentState by symbol doesn't exist
+                        transitionIndex = ~transitionIndex;
+
+                        // add new state
+                        nextState = transitions.Count;
+                        transitions.Add(new List<QTransition>());
+
+                        // add transition from current state to new state                                                
+                        var newTransition = new QTransition(symbol, nextState, false);
+
+                        // I know this Insert in the middle of the List<> doesn't look very clever,
+                        // but I tried SortedDictionary and LinkedList approach: they are slower in practice
+                        currentStateTransitions.Insert(transitionIndex, newTransition);
+                    }
+                }
+
+                // mark last transition in this word as final
+                // throw an exception if it's already final
+                if (currentStateTransitions == null)
+                {
+                    if (rootTransition.IsFinal)
+                    {
+                        throw new ArgumentException(string.Format(Messages.DuplicateKey, string.Empty));
+                    }
+
+                    rootTransition = rootTransition.MakeFinal();
+                }
+                else
+                {
+                    if (currentStateTransitions[transitionIndex].IsFinal)
+                    {
+                        throw new ArgumentException(string.Format(Messages.DuplicateKey, word));
+                    }
+
+                    currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
+                }
+
+                ++sequenceCounter;
+            }
+
+            set.ComparerField = comparer;
+            set.RootTransition = rootTransition;
+            set.LowerBounds = new int[transitions.Count];
+            set.Transitions = new QTransition[transitions.Sum(s => s.Count)];
+            set.WordCount = sequenceCounter;
+
+            for (int i = 0, transitionIndex = 0; i < transitions.Count; i++)
+            {
+                set.LowerBounds[i] = transitionIndex;
+                for (int j = 0; j < transitions[i].Count; j++, transitionIndex++)
+                {
+                    set.Transitions[transitionIndex] = transitions[i][j];
+                }
+            }
+
+            set.Minimize();
+            return set;
         }
 
         private MergeList GetMergeList()

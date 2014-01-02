@@ -41,7 +41,7 @@
             const int BadIndex = -1;
             var target = QStringIndexedSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
             var e = ExceptionAssert.Throws<IndexOutOfRangeException>(() => target.GetByIndex(BadIndex));
-            Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.Count), e.Message);
+            Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.WordCount), e.Message);
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@
             const int BadIndex = 3;
             var target = QStringIndexedSet.Create(new[] { "aa", "ab" }, Comparer<char>.Default);
             var e = ExceptionAssert.Throws<IndexOutOfRangeException>(() => target.GetByIndex(BadIndex));
-            Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.Count), e.Message);
+            Assert.AreEqual(string.Format(ErrorMessages.IndexOutOfRange, BadIndex, target.WordCount), e.Message);
         }
 
         [TestMethod]
