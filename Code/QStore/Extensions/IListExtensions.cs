@@ -57,11 +57,6 @@
             }
 
             return ~i;
-        }
-
-        internal static int GetUpperBound<T>(this IList<T> list, IList<int> lowerBounds, int lowerIndexIndex)
-        {
-            return lowerIndexIndex + 1 < lowerBounds.Count ? lowerBounds[lowerIndexIndex + 1] : list.Count;
-        }
+        }               
     }
 }

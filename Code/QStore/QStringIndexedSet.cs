@@ -4,8 +4,6 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
-    using QStore.Extensions;
-
     [DataContract]
     [Serializable]
     public class QStringIndexedSet : QStringSet
@@ -18,8 +16,7 @@
             var indexedSet = QStringSet.Create(new QStringIndexedSet(), sequences, comparer);
             indexedSet.PathsLeft = new int[indexedSet.Transitions.Length];
             var pathsFromState = new int[indexedSet.LowerBounds.Length];
-            indexedSet.CountPaths(indexedSet.RootTransition.StateIndex, pathsFromState);
-            indexedSet.WordCount += indexedSet.RootTransition.IsFinal ? 1 : 0;
+            indexedSet.CountPaths(indexedSet.RootState, pathsFromState);            
             return indexedSet;
         }
 
@@ -27,12 +24,12 @@
         {
             this.ThrowIfIndexIsOutOfRange(index);
             var list = new List<char>();
-            var nextTransition = this.RootTransition;
-            while (index > 0 || !nextTransition.IsFinal)
+            var state = this.RootState;
+            while (index > 0 || !IsFinal(state))
             {
-                int lower = this.LowerBounds[nextTransition.StateIndex];
-                int upper = this.Transitions.GetUpperBound(this.LowerBounds, nextTransition.StateIndex);
-                index -= nextTransition.IsFinal ? 1 : 0;
+                int lower = LowerBound(state);
+                int upper = UpperBound(state);
+                index -= IsFinal(state) ? 1 : 0;
 
                 int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, index);
                 if (nextTransitionIndex < 0)
@@ -42,8 +39,9 @@
 
                 index -= this.PathsLeft[nextTransitionIndex];
 
-                nextTransition = this.Transitions[nextTransitionIndex];
-                list.Add(nextTransition.Symbol);
+                var transition = this.Transitions[nextTransitionIndex];
+                state = transition.StateIndex;
+                list.Add(transition.Symbol);
             }
 
             return new string(list.ToArray());
@@ -56,13 +54,13 @@
                 throw new ArgumentNullException("sequence");
             }
 
-            int currentState = this.RootTransition.StateIndex;
+            int currentState = this.RootState;
             int pathsAfterThisChoice = this.WordCount;
-            int lexicographicIndex = this.RootTransition.IsFinal ? 1 : 0;
+            int lexicographicIndex = IsFinal(currentState) ? 1 : 0;
 
             foreach (var element in sequence)
             {
-                int upper = this.Transitions.GetUpperBound(this.LowerBounds, currentState);
+                int upper = UpperBound(currentState);
                 int transitionIndex;
                 if (this.TrySendSymbol(currentState, element, out transitionIndex))
                 {
@@ -72,9 +70,9 @@
                     }
 
                     var transition = this.Transitions[transitionIndex];
-                    lexicographicIndex += transition.IsFinal ? 1 : 0;
-                    lexicographicIndex += this.PathsLeft[transitionIndex];
                     currentState = transition.StateIndex;
+                    lexicographicIndex += IsFinal(currentState) ? 1 : 0;
+                    lexicographicIndex += this.PathsLeft[transitionIndex];                    
                 }
                 else
                 {
@@ -98,14 +96,14 @@
 
         private void CountPaths(int fromState, int[] pathsFromState)
         {
-            int lower = this.LowerBounds[fromState];
-            int upper = this.Transitions.GetUpperBound(this.LowerBounds, fromState);
+            int lower = LowerBound(fromState);
+            int upper = UpperBound(fromState);
             int pathsLeftCounter = 0;
 
             for (int i = lower; i < upper; i++)
             {
                 this.PathsLeft[i] = pathsLeftCounter;
-                pathsLeftCounter += this.Transitions[i].IsFinal ? 1 : 0;
+                pathsLeftCounter += IsFinal(fromState) ? 1 : 0;
                 int nextState = this.Transitions[i].StateIndex;
                 if (pathsFromState[nextState] == 0)
                 {

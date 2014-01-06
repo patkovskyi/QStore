@@ -12,7 +12,6 @@
     using QStore.Structs;
 
     [DataContract]
-    // [KnownType(typeof(QStringIndexedSet))]
     [Serializable]
     public class QStringSet
     {
@@ -23,7 +22,7 @@
         protected internal int[] LowerBounds;
 
         [DataMember(Order = 2)]
-        protected internal QTransition RootTransition;
+        protected internal int RootState;
 
         [DataMember(Order = 3)]
         protected internal QTransition[] Transitions;
@@ -55,10 +54,10 @@
                 throw new ArgumentNullException("word");
             }
 
-            QTransition transition;
-            if (this.TrySendWord(this.RootTransition, word, out transition))
+            int outState;
+            if (this.TrySendWord(this.RootState, word, out outState))
             {
-                return transition.IsFinal;
+                return this.IsFinal(outState);
             }
 
             return false;
@@ -66,7 +65,7 @@
 
         public IEnumerable<string> Enumerate()
         {
-            return this.Enumerate(this.RootTransition, string.Empty);
+            return this.Enumerate(this.RootState, string.Empty);
         }
 
         public IEnumerable<string> EnumerateByPrefix(IEnumerable<char> prefix)
@@ -77,10 +76,10 @@
             }
 
             var prefixStr = prefix as string ?? new string(prefix.ToArray());
-            QTransition transitionAfterPrefix;
-            if (this.TrySendWord(this.RootTransition, prefixStr, out transitionAfterPrefix))
+            int stateAfterPrefix;
+            if (this.TrySendWord(this.RootState, prefixStr, out stateAfterPrefix))
             {
-                return this.Enumerate(transitionAfterPrefix, prefixStr);
+                return this.Enumerate(stateAfterPrefix, prefixStr);
             }
 
             return Enumerable.Empty<string>();
@@ -108,9 +107,9 @@
             throw new NotImplementedException();
         }
 
-        protected internal IEnumerable<string> Enumerate(QTransition fromTransition, string prefix)
+        protected internal IEnumerable<string> Enumerate(int fromState, string prefix)
         {
-            if (fromTransition.IsFinal)
+            if (this.IsFinal(fromState))
             {
                 yield return prefix;
             }
@@ -119,8 +118,8 @@
             var lowerStack = new Stack<int>();
             var upperStack = new Stack<int>();
 
-            int lower = this.LowerBounds[fromTransition.StateIndex];
-            int upper = this.Transitions.GetUpperBound(this.LowerBounds, fromTransition.StateIndex);
+            int lower = this.LowerBound(fromState);
+            int upper = this.UpperBound(fromState);
 
             lowerStack.Push(lower);
             upperStack.Push(upper);
@@ -132,18 +131,17 @@
 
                 if (lower < upper)
                 {
-                    fromTransition = this.Transitions[lower];
+                    QTransition fromTransition = this.Transitions[lower];
                     word.Append(fromTransition.Symbol);
 
-                    if (fromTransition.IsFinal)
+                    int nextState = fromTransition.StateIndex;
+                    if (this.IsFinal(nextState))
                     {
                         yield return word.ToString();
                     }
 
-                    int nextState = fromTransition.StateIndex;
-                    int nextLower = this.LowerBounds[nextState];
-                    int nextUpper = this.Transitions.GetUpperBound(this.LowerBounds, nextState);
-
+                    int nextLower = this.LowerBound(nextState);
+                    int nextUpper = this.UpperBound(nextState);
                     lowerStack.Push(lower + 1);
                     lowerStack.Push(nextLower);
                     upperStack.Push(nextUpper);
@@ -159,32 +157,26 @@
             }
         }
 
-        protected internal bool TrySendSymbol(int inState, char symbol, out int outTransitionIndex)
+        protected internal bool TrySendSymbol(int inState, char symbol, out int outState)
         {
-            outTransitionIndex = this.GetTransitionIndex(inState, symbol);
-            if (outTransitionIndex >= 0)
+            int trIndex = this.GetTransitionIndex(inState, symbol);
+            if (trIndex >= 0)
             {
+                outState = this.Transitions[trIndex].StateIndex;
                 return true;
             }
 
+            outState = -1;
             return false;
         }
 
-        protected internal bool TrySendWord(
-            QTransition inTransition,
-            IEnumerable<char> word,
-            out QTransition outTransition)
+        protected internal bool TrySendWord(int inState, IEnumerable<char> word, out int outState)
         {
-            outTransition = inTransition;
+            outState = inState;
 
             foreach (var element in word)
             {
-                int transitionIndex;
-                if (this.TrySendSymbol(outTransition.StateIndex, element, out transitionIndex))
-                {
-                    outTransition = this.Transitions[transitionIndex];
-                }
-                else
+                if (!this.TrySendSymbol(inState, element, out outState))
                 {
                     return false;
                 }
@@ -213,72 +205,58 @@
             // d->State5       e->State4,final
             // |
             // z->StateN,final
-            // capacity is set to alphabet.Length just to avoid few initial resizings
-            var rootTransition = default(QTransition);
+            // capacity is set to alphabet.Length just to avoid few initial resizings            
             var transitions = new List<List<QTransition>> { new List<QTransition>() };
-
+            var final = new List<bool> { false };
             int sequenceCounter = 0;
             foreach (var word in words)
             {
-                int nextState = 0, transitionIndex = -1;
-                List<QTransition> currentStateTransitions = null;
+                int currentState = 0;
                 foreach (var symbol in word)
                 {
-                    currentStateTransitions = transitions[nextState];
-                    transitionIndex = currentStateTransitions.GetTransitionIndex(
+                    List<QTransition> currentStateTransitions = transitions[currentState];
+                    int trIndex = currentStateTransitions.GetTransitionIndex(
                         symbol,
                         comparer,
                         0,
                         currentStateTransitions.Count);
-                    if (transitionIndex >= 0)
+                    if (trIndex >= 0)
                     {
                         // transition from currentState by symbol already exists
-                        nextState = currentStateTransitions[transitionIndex].StateIndex;
+                        currentState = currentStateTransitions[trIndex].StateIndex;
                     }
                     else
                     {
                         // transition from currentState by symbol doesn't exist
-                        transitionIndex = ~transitionIndex;
+                        trIndex = ~trIndex;
 
                         // add new state
-                        nextState = transitions.Count;
+                        currentState = transitions.Count;
                         transitions.Add(new List<QTransition>());
+                        final.Add(false);
 
                         // add transition from current state to new state                                                
-                        var newTransition = new QTransition(symbol, nextState, false);
+                        var newTransition = new QTransition(symbol, currentState);
 
                         // I know this Insert in the middle of the List<> doesn't look very clever,
                         // but I tried SortedDictionary and LinkedList approach: they are slower in practice
-                        currentStateTransitions.Insert(transitionIndex, newTransition);
+                        currentStateTransitions.Insert(trIndex, newTransition);
                     }
                 }
 
-                // mark last transition in this word as final
-                // throw an exception if it's already final
-                if (currentStateTransitions == null)
+                // throw exception if last state is already final (means duplicate word)
+                if (final[currentState])
                 {
-                    if (rootTransition.IsFinal)
-                    {
-                        throw new ArgumentException(string.Format(Messages.DuplicateKey, string.Empty));
-                    }
-
-                    rootTransition = rootTransition.MakeFinal();
-                }
-                else
-                {
-                    if (currentStateTransitions[transitionIndex].IsFinal)
-                    {
-                        throw new ArgumentException(string.Format(Messages.DuplicateKey, word));
-                    }
-
-                    currentStateTransitions[transitionIndex] = currentStateTransitions[transitionIndex].MakeFinal();
+                    throw new ArgumentException(string.Format(Messages.DuplicateKey, word));
                 }
 
+                // mark last state in this word as final
+                final[currentState] = true;
                 ++sequenceCounter;
             }
 
             set.ComparerField = comparer;
-            set.RootTransition = rootTransition;
+            set.RootState = 0;
             set.LowerBounds = new int[transitions.Count];
             set.Transitions = new QTransition[transitions.Sum(s => s.Count)];
             set.WordCount = sequenceCounter;
@@ -290,10 +268,32 @@
                 {
                     set.Transitions[transitionIndex] = transitions[i][j];
                 }
+
+                if (final[i])
+                {
+                    set.MakeFinal(i);
+                }
             }
 
-            set.Minimize();
+            // set.Minimize();
             return set;
+        }
+
+        protected bool IsFinal(int state)
+        {
+            return (this.LowerBounds[state] & -2147483648) != 0;
+        }
+
+        protected int LowerBound(int state)
+        {
+            return this.LowerBounds[state] & 2147483647;
+        }
+
+        protected int UpperBound(int state)
+        {
+            return state + 1 < this.LowerBounds.Length
+                ? this.LowerBounds[state + 1] & 2147483647
+                : this.Transitions.Length;
         }
 
         private MergeList GetMergeList()
@@ -310,16 +310,21 @@
         /// <returns>Transition index or bitwise complement to the index where it should be inserted.</returns>
         private int GetTransitionIndex(int fromState, char symbol)
         {
-            int lower = this.LowerBounds[fromState];
-            int upper = this.Transitions.GetUpperBound(this.LowerBounds, fromState);
+            int lower = this.LowerBound(fromState);
+            int upper = this.UpperBound(fromState);
             return this.Transitions.GetTransitionIndex(symbol, this.ComparerField, lower, upper);
+        }
+
+        private void MakeFinal(int state)
+        {
+            this.LowerBounds[state] |= -2147483648;
         }
 
         private void Minimize()
         {
             var registered = new Dictionary<StateSignature, int>(new StateSignatureEqualityComparer());
             var mergeList = this.GetMergeList();
-            this.Register(this.RootTransition.StateIndex, registered, mergeList);
+            this.Register(this.RootState, registered, mergeList);
 
             var registeredArray = registered.ToArray();
             var oldToNewStates = Enumerable.Range(0, registered.Count)
@@ -332,26 +337,24 @@
                 for (int j = 0; j < old.Key.Transitions.Length; j++)
                 {
                     var oldTr = old.Key.Transitions[j];
-                    this.Transitions[transIndex + j] = new QTransition(
-                        oldTr.Symbol,
-                        oldToNewStates[oldTr.StateIndex],
-                        oldTr.IsFinal);
+                    this.Transitions[transIndex + j] = new QTransition(oldTr.Symbol, oldToNewStates[oldTr.StateIndex]);
                 }
 
                 this.LowerBounds[i] = transIndex;
+                if (registeredArray[i].Key.IsFinal)
+                {
+                    this.MakeFinal(i);
+                }
                 transIndex += old.Key.Transitions.Length;
             }
 
-            this.RootTransition = new QTransition(
-                '\0',
-                oldToNewStates[this.RootTransition.StateIndex],
-                this.RootTransition.IsFinal);
+            this.RootState = oldToNewStates[this.RootState];
         }
 
         private int Register(int state, Dictionary<StateSignature, int> registered, MergeList mergeList)
         {
-            int lower = this.LowerBounds[state];
-            int upper = this.Transitions.GetUpperBound(this.LowerBounds, state);
+            int lower = this.LowerBound(state);
+            int upper = this.UpperBound(state);
             int registeredState;
 
             for (int i = lower; i < upper; i++)
@@ -364,7 +367,7 @@
                     foreach (var t in mergeList.GetTransitionIndexes(sj))
                     {
                         var transition = this.Transitions[t];
-                        this.Transitions[t] = new QTransition(transition.Symbol, registeredState, transition.IsFinal);
+                        this.Transitions[t] = new QTransition(transition.Symbol, registeredState);
                     }
 
                     mergeList.Merge(registeredState, sj);
@@ -377,7 +380,7 @@
                 sigTransitions[i - lower] = this.Transitions[i];
             }
 
-            var signature = new StateSignature(sigTransitions);
+            var signature = new StateSignature(sigTransitions, this.IsFinal(state));
             if (registered.TryGetValue(signature, out registeredState))
             {
                 return registeredState;
