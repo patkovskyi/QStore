@@ -176,7 +176,7 @@
 
             foreach (var element in word)
             {
-                if (!this.TrySendSymbol(inState, element, out outState))
+                if (!this.TrySendSymbol(outState, element, out outState))
                 {
                     return false;
                 }
@@ -275,7 +275,7 @@
                 }
             }
 
-            // set.Minimize();
+            set.Minimize();
             return set;
         }
 
