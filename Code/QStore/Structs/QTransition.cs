@@ -7,16 +7,16 @@
     [Serializable]
     public struct QTransition
     {
-        [DataMember(Order = 1)]
-        internal readonly char Symbol;
-        
         [DataMember(Order = 2)]
         internal readonly int StateIndex;
+
+        [DataMember(Order = 1)]
+        internal readonly char Symbol;
 
         public QTransition(char symbol, int nextState)
         {
             this.Symbol = symbol;
             this.StateIndex = nextState;
-        }        
+        }
     }
 }

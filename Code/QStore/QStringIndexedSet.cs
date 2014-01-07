@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using System.Text;
 
     [DataContract]
     [Serializable]
@@ -16,37 +17,37 @@
             var indexedSet = QStringSet.Create(new QStringIndexedSet(), sequences, comparer);
             indexedSet.PathsLeft = new int[indexedSet.Transitions.Length];
             var pathsFromState = new int[indexedSet.LowerBounds.Length];
-            indexedSet.CountPaths(indexedSet.RootState, pathsFromState);            
+            indexedSet.CountPaths(indexedSet.RootState, pathsFromState);
             return indexedSet;
         }
 
         public string GetByIndex(int index)
         {
             this.ThrowIfIndexIsOutOfRange(index);
-            var list = new List<char>();
+            var sb = new StringBuilder();
             var state = this.RootState;
-            while (index > 0 || !IsFinal(state))
+            while (index > 0 || !this.IsFinal(state))
             {
-                int lower = LowerBound(state);
-                int upper = UpperBound(state);
-                index -= IsFinal(state) ? 1 : 0;
+                int lower = this.LowerBound(state);
+                int upper = this.UpperBound(state);
 
                 int nextTransitionIndex = Array.BinarySearch(this.PathsLeft, lower, upper - lower, index);
                 if (nextTransitionIndex < 0)
                 {
-                    nextTransitionIndex = (~nextTransitionIndex) - 1;
+                    nextTransitionIndex = ~nextTransitionIndex - 1;
                 }
 
                 index -= this.PathsLeft[nextTransitionIndex];
 
                 var transition = this.Transitions[nextTransitionIndex];
                 state = transition.StateIndex;
-                list.Add(transition.Symbol);
+                sb.Append(transition.Symbol);
             }
 
-            return new string(list.ToArray());
+            return sb.ToString();
         }
 
+        // TODO: think of simplifying this method
         public int GetIndex(IEnumerable<char> sequence)
         {
             if (sequence == null)
@@ -56,34 +57,32 @@
 
             int currentState = this.RootState;
             int pathsAfterThisChoice = this.WordCount;
-            int lexicographicIndex = IsFinal(currentState) ? 1 : 0;
+            int lexicographicIndex = 0;
 
             foreach (var element in sequence)
             {
-                int upper = UpperBound(currentState);
-                int transitionIndex;
-                if (this.TrySendSymbol(currentState, element, out transitionIndex))
+                int upper = this.UpperBound(currentState);
+                int nextTransition;
+                if (this.TrySendSymbol(currentState, element, out nextTransition))
                 {
-                    if (transitionIndex + 1 < upper)
+                    if (nextTransition + 1 < upper)
                     {
-                        pathsAfterThisChoice = this.PathsLeft[transitionIndex + 1];
+                        pathsAfterThisChoice = this.PathsLeft[nextTransition + 1];
                     }
 
-                    var transition = this.Transitions[transitionIndex];
+                    var transition = this.Transitions[nextTransition];
                     currentState = transition.StateIndex;
-                    lexicographicIndex += IsFinal(currentState) ? 1 : 0;
-                    lexicographicIndex += this.PathsLeft[transitionIndex];                    
+                    lexicographicIndex += this.PathsLeft[nextTransition];
                 }
                 else
                 {
-                    return ~transitionIndex < upper
-                        ? ~(lexicographicIndex + this.PathsLeft[~transitionIndex])
+                    return ~nextTransition < upper
+                        ? ~(lexicographicIndex + this.PathsLeft[~nextTransition])
                         : ~pathsAfterThisChoice;
                 }
             }
 
-            // we added one extra for last final transition
-            return lexicographicIndex - 1;
+            return this.IsFinal(currentState) ? lexicographicIndex : lexicographicIndex - 1;
         }
 
         protected internal void ThrowIfIndexIsOutOfRange(int index)
@@ -96,14 +95,13 @@
 
         private void CountPaths(int fromState, int[] pathsFromState)
         {
-            int lower = LowerBound(fromState);
-            int upper = UpperBound(fromState);
-            int pathsLeftCounter = 0;
+            int lower = this.LowerBound(fromState);
+            int upper = this.UpperBound(fromState);
+            int pathsLeftCounter = this.IsFinal(fromState) ? 1 : 0;
 
             for (int i = lower; i < upper; i++)
             {
                 this.PathsLeft[i] = pathsLeftCounter;
-                pathsLeftCounter += IsFinal(fromState) ? 1 : 0;
                 int nextState = this.Transitions[i].StateIndex;
                 if (pathsFromState[nextState] == 0)
                 {

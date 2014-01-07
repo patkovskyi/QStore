@@ -157,16 +157,14 @@
             }
         }
 
-        protected internal bool TrySendSymbol(int inState, char symbol, out int outState)
+        protected internal bool TrySendSymbol(int inState, char symbol, out int outTransitionIndex)
         {
-            int trIndex = this.GetTransitionIndex(inState, symbol);
-            if (trIndex >= 0)
+            outTransitionIndex = this.GetTransitionIndex(inState, symbol);
+            if (outTransitionIndex >= 0)
             {
-                outState = this.Transitions[trIndex].StateIndex;
                 return true;
             }
 
-            outState = -1;
             return false;
         }
 
@@ -176,10 +174,13 @@
 
             foreach (var element in word)
             {
-                if (!this.TrySendSymbol(outState, element, out outState))
+                int nextTransition;
+                if (!this.TrySendSymbol(outState, element, out nextTransition))
                 {
                     return false;
                 }
+
+                outState = this.Transitions[nextTransition].StateIndex;
             }
 
             return true;
