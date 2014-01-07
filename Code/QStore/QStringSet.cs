@@ -90,16 +90,30 @@
             throw new NotImplementedException();
         }
 
-        public void SetComparer(IComparer<char> comparer)
+        public void SetComparer(IComparer<char> comparer, bool checkConsistency = false)
         {
             if (comparer == null)
             {
                 throw new ArgumentNullException("comparer");
             }
 
-            this.ComparerField = comparer;
+            if (checkConsistency)
+            {
+                for (int i = 0; i < this.LowerBounds.Length; i++)
+                {
+                    int lower = this.LowerBound(i);
+                    int upper = this.UpperBound(i);
+                    for (int j = lower + 1; j < upper; j++)
+                    {
+                        if (comparer.Compare(this.Transitions[j].Symbol, this.Transitions[j - 1].Symbol) < 0)
+                        {
+                            throw new ArgumentException(Messages.ComparerMismatch, "comparer");
+                        }
+                    }
+                }
+            }
 
-            // TODO: safety check?
+            this.ComparerField = comparer;
         }
 
         public IEnumerable<string> Successors(IEnumerable<char> word)
